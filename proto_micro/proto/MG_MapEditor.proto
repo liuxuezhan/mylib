@@ -1,0 +1,78 @@
+syntax = "proto3";
+option optimize_for = LITE_RUNTIME;
+option cc_generic_services = false;
+package proto_micro;
+
+import "MG_CommonProtocol.proto";
+
+//主城地图信息
+message ST_MapData_PB
+{
+	 uint32					cityBorderX			= 1;//主城X轴边长
+	 uint32					cityBorderY			= 2;//主城Y轴边长
+	repeated ST_Vector2Int_PB		obstacleList 		= 3;//不可用格子列表
+	repeated ST_Vector2Int_PB		unreachableList 	= 4;//不可触及格子列表
+}
+
+//大地图格子
+message ST_TileData_PB
+{
+	 uint32 				px 					= 1;
+	 uint32 				py 					= 2;
+	 bool 					isAvaliable 		= 3;//格子是否可用
+	 uint32 				resourceLevel 		= 4;//资源带等级
+	repeated uint32					belongCityList		= 5;//所属城市ID(废弃)
+}
+
+//单个地块内装饰物信息
+message ST_BlockDecoList_PB
+{
+	 string					blockName			= 1;
+	repeated ST_DecoData_PB			decoList			= 2;
+}
+
+//装饰物
+message ST_DecoData_PB
+{
+	 string					decoName			= 1;
+	 uint32 				px 					= 2;//位置
+	 uint32 				py 					= 3;
+	 uint32 				lx 					= 4;//长宽
+	 uint32 				ly 					= 5;
+	 uint32 				sx 					= 6;//缩放(万分数)(暂未使用, 预留)
+	 uint32 				sy 					= 7;
+	 uint32 				sz 					= 8;
+	 uint32 				rotation 			= 9;//旋转(度数)(暂未使用, 预留)
+	 bool					isObstacle			= 10;//是否是装饰物
+}
+
+//大地图城市信息
+message ST_WorldCityData_PB
+{
+	 uint32					cityID				= 1;//城市ID
+	 uint32					cityLevel			= 2;//城市等级
+	 uint32					px					= 3;//城市坐标X
+	 uint32					py					= 4;//城市坐标Y
+	 int32					resAreaX			= 5;//城市资源带边长X
+	 int32					resAreaY			= 6;//城市资源带边长Y
+	 int32					resDeltaX			= 7;//城市资源带偏移X
+	 int32					resDeltaY			= 8;//城市资源带偏移Y
+	 int32					territoryAreaX		= 9;//城市领地边长X
+	 int32					territoryAreaY		= 10;//城市领地边长Y
+	 int32					territoryDeltaX		= 11;//城市领地偏移X
+	 int32					territoryDeltaY		= 12;//城市领地偏移Y
+	
+}
+
+//大地图信息
+message ST_WorldMapData_PB
+{
+	 uint32					worldBorderX			= 1;//大地图X轴边长
+	 uint32					worldBorderY			= 2;//大地图Y轴边长
+	 uint32					blockBorderX			= 3;//地块X轴边长
+	 uint32					blockBorderY			= 4;//地块Y轴边长
+	repeated ST_TileData_PB			tileList				= 5;//格子列表
+	repeated ST_DecoData_PB			decoList				= 6;//装饰列表(已废弃, 使用blockList)
+	repeated ST_WorldCityData_PB	cityList				= 7;//城市列表
+	repeated ST_BlockDecoList_PB	blockList				= 8;//地块上装饰物列表
+}

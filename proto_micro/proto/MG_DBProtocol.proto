@@ -1,0 +1,45 @@
+syntax = "proto3";
+package proto_micro;
+option optimize_for = LITE_RUNTIME;
+option cc_generic_services = false;
+
+message PB_User
+{
+    uint64 AccountId                        = 1;  //账号id
+    string GoogleName                       = 2;
+    string FaceBookName                     = 3;
+    string TwitterName                      = 4;
+    string DeviceId                         = 5;
+    string GameCenterName                   = 6;
+    string CmderName                        = 7;
+    string HeaderUrl                        = 8;
+    map<uint64,PB_Player> player            = 9;
+    uint64 CurPlayerID                      = 10;
+
+}
+message PB_Player
+{
+    uint64 ID                               = 1;  //玩家id
+    uint64 AccountId                        = 2;
+    uint32 HeaderId                         = 3;
+    uint32 AvatarBoxID                      = 4;
+    uint32 MainCityLevel                    = 5;
+    uint32 CreateTime                       = 6;
+    uint32 LastLoginTime                    = 7;
+    uint32 Sid                              = 8;
+    uint32 CurrentSid                       = 9;
+    string Name                             = 10;
+
+}
+
+message PB_ServerList
+{
+    uint64 ID                               = 1;
+    int32 Status                            = 2;
+    uint64 ServerInitTime                   = 3;
+    uint32 WhiteList                        = 4;
+    uint32 Online                           = 5;
+    string SName                            = 6;
+    string SAddr                            = 7;
+    string CanMoveIn                        = 8;
+}

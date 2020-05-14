@@ -1,0 +1,22 @@
+syntax = "proto3";
+package proto_micro;
+
+option optimize_for = LITE_RUNTIME;
+option cc_generic_services = false;
+
+message MG_LC_OSS_PB
+{
+	 fixed32 ServerID	= 1; //区服ID需要为全局唯一，不能出现安卓和IOS平台都用一个区服ID的情况
+	 fixed32 UserID	   	= 2; //账号ID需要为全局唯一，即从所有的游戏服务器来看，账号ID都是唯一的，充值的账号id和所有上报协议里的账号id必须一致
+	 string  CharID		= 3; //充值的角色id和所有上报协议里的角色id必须一致
+	 fixed32 EventID	= 4; //事件id
+	 int32   Level     	= 5; //角色等级
+	 string	 Value		= 6; //json的数据
+	 int32   ProductID	= 7; //产品号[c4:1006]
+	 int32   VIPlevel 	= 8; //VIP等级
+	 string  Channel 	= 9; //渠道号
+	 string  Region     = 10; //地区[国内|日本|越南|台湾]
+	 int32   Platform   = 11; //客户端操作系统 [1:IOS|2:安卓|3:WP|4:其他]
+	 string  Version    = 12; //客户端版本
+	 int32   Time      	= 13; //按北京时间的unix时间戳填写 
+}

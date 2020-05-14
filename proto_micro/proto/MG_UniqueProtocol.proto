@@ -1,0 +1,51 @@
+syntax = "proto3";
+package proto_micro;
+
+//只生成lite版本的代码
+option optimize_for = LITE_RUNTIME;
+//不生成RPC代码
+option cc_generic_services = false;
+
+//含有待检测名字的包,同时也是含有结果的包
+message ST_GS2US_UserName_Check {
+     string     Name    = 1;
+     int32      result  = 2;    // 0, 1
+}
+
+message ST_GS2US_UserName_Change {
+     string     Name    = 1;
+     string     newName = 2;
+}
+
+message ST_GS2US_LeagueName_Check {
+     string     Name    = 1;
+     string     sName   = 2;
+     int32      result  = 3;    // 0, 1
+}
+
+message ST_GS2US_LeagueName_Change {
+     string     Name    = 1;
+     string     sName   = 2;
+     string     newName = 3;
+     string     newSName= 4;
+}
+
+message ST_GS2US_LeagueName_Delete {
+     string     Name    = 1;
+     string     sName   = 2;
+}
+
+message ST_LeagueName_PB {
+     string leagueName = 1;
+     string leagueLName = 2;
+}
+
+message ST_GS2US_NameList {
+     uint32 serverID = 1;
+    repeated string userNames = 2;
+    repeated ST_LeagueName_PB leagueNames = 3;
+}
+
+message ST_GS2US_ServerCheck {
+     uint32 serverID = 1;
+}

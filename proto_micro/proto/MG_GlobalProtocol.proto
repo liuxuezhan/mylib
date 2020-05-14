@@ -1,0 +1,95 @@
+syntax = "proto3";
+package proto_micro;
+option optimize_for = LITE_RUNTIME;
+option cc_generic_services = false;
+
+import "MG_GameProtocol.proto";
+
+//初始化排行榜
+message ST_InitRanking_Req_PB
+{
+	 string rankingName = 1;//榜单名字
+	 uint32 refresh 	= 2;//榜单更新时间
+}
+
+message ST_InitRanking_Respon_PB
+{
+	 int32 result = 1;
+}
+
+message ST_GS2Global_Connect_Req_PB {
+     uint32 serverID = 1;
+     string serverHost = 2;
+     uint32 serverPort = 3;
+}
+
+message ST_GS2Global_Connect_Respon_PB {
+}
+
+//更新排行榜数据
+message ST_UpdateRankingScore_Req_PB
+{
+	 uint64 activityId  = 1; //排行榜名字
+	 uint64 uid 		= 2; //角色uid
+	 uint64 score 		= 3; //分数
+	 uint32 serverid 	= 4; //服务器id
+}
+
+message ST_UpdateRankingScore_Respon_PB
+{
+	 int32 result = 1;
+}
+
+//获取时时榜单
+message ST_RealTimeRanking_Req_PB
+{
+	 uint64 activityId = 1;
+	 uint32 serverid = 2;
+}
+
+message ST_RealTimeRanking_Respon_PB
+{
+	repeated ST_RankingScore_PB ranking = 1;
+}
+
+message ST_RankingScore_PB
+{
+	 uint64 key = 1;
+	 uint64 val = 2;
+}
+
+//获取玩家基础信息
+message ST_GetPlayerInfo_Req_PB
+{
+	 uint64 uid 	= 1;//角色uid
+}
+
+message ST_GetPlayerInfo_Respon_PB
+{
+	 ST_PowerRankingListItem info = 1;
+}
+
+
+//跨服排行榜主动推送榜单信息
+message ST_PushRanking_Req_PB
+{
+	 string rankingName = 1; //排行榜名字
+	 ST_PowerRankingList info = 2; //榜单
+}
+
+message ST_PushRanking_Respon_PB
+{
+	 int32 result = 1;
+}
+
+//GameServer首次启动获取排行榜
+message ST_GetRanking_Req_PB
+{
+	 uint64 activityId = 1;
+	 uint32 serverid = 2;
+}
+
+message ST_GetRanking_Respon_PB
+{
+	repeated ST_PushRanking_Req_PB infos = 1;
+}

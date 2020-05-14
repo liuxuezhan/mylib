@@ -1,0 +1,4058 @@
+syntax = "proto3";
+package proto_micro;
+option optimize_for = LITE_RUNTIME;
+option cc_generic_services = false;
+
+import "MG_CommonProtocol.proto";
+import "MG_GameDefine.proto";
+
+message ST_CharBasic_Server_PB
+{
+	 uint64        uid                       = 1;  //玩家id
+	 string        charname                  = 2;  //角色名
+	 string        signature                 = 3;  //签名
+	 int32         location				     = 4;  //玩家坐标
+	 uint64        worlddataid               = 5;  //玩家大地数据id
+	 string        lordIcon				     = 6;  //领主头像
+	 uint32        avatarBoxID               = 7;  //玩家头像框ID
+	 string        avatar                    = 8;  //玩家头像
+	 uint64        lastRefreshTimestamp      = 9;  //最后刷新时间戳
+	 uint32        language                  = 10; //玩家所用语言
+	 uint64        loginTimestamp            = 11; //玩家登陆时间
+	 uint64        forbidLogin               = 12; //禁止登陆开始时间
+	 uint64        createTime                = 13; //创建时间
+	 uint64        forbidLoginDur            = 14; //禁止登陆持续时间
+	 string        forbidLoginMsg            = 15; //禁止登陆原因
+	 string        nickName                  = 16; //昵称
+	 uint32        platform                  = 17; //平台
+	 uint64        lastLogoutTime            = 18; //上次登出时间
+	 bool          changedName               = 19; //改变过名字
+	 string        avatarFileName            = 20; //头像文件名
+	 string        logFileName               = 21; //日志文件名
+	 uint64        nextUploadAvatarTimestamp = 22; //在这时间点之前不能上传头像
+	 string        fcmToken                  = 23; //fcm Token
+	 int32         airDropPoolIndex          = 24; //玩家当前的礼物池子ID，-1表示没有池子，需要随机
+	 int32         airDropRaffleTimes        = 25; //玩家在当前池子中的抽奖次数
+	 uint64        airDropFreeTime           = 26; //玩家免费抽奖重置时间	
+	repeated int32         historyItemList           = 27; //玩家历时上获得的物品ID
+	 uint32	       sid 						 = 28; //所属服务器id
+	 uint32        currentSid 				 = 29; //当前所在服务器
+	 int32 		   keepPay					 = 30; //连续付费天数(与连续不付费天数互斥)
+	 int32 		   keepNoPay				 = 31; //连续不付费天数(与连续付费天数互斥)
+	 ST_CommanderInfo_PB		commanderInfo = 32; // 指挥官信息
+	 uint32			modelId					= 33; //领主模型id
+	 string 		channelID				= 34; // 渠道id
+	 uint32 		mainCityLevel			= 35; // 主城等级
+	 int64 			SrcVer					= 36; // 老玩家版本号(186,187 )
+	 uint64 		lastPower 				= 37; //下线前的战斗力
+	 uint64 		accountid 				= 38; //账号id
+	 uint32 		bubbleid 				= 39; //汽泡id
+	 uint32 		TotalPay				= 40; //累计充值金额
+	 uint64 		ChangeServerCD 			= 41; //跨服CD
+	 uint64 		reportGlobalTime 		= 42; //上次上报GlobalSever的时间
+	 string 		IP 						= 43;
+}
+message ST_UserServer_PB //服务器私有数据
+{
+	//30日充值记录
+	repeated  ST_Vector4UInt64_PB	TimeChar	= 1;
+	//当前标签
+	 int64		CurLabel			= 2;
+	//历史最高标签
+	 int64		MaxLabel			= 3;
+	//当前标签达标数据
+	 int32		CurLabelNum			= 4;
+	//历史充值次数
+	 uint64		PayCount			= 5;
+	//首充金额
+	 uint64		FirstNum		= 6;
+	//首充时间
+	 uint64		FirstTm			= 7;
+	//最后充值时间
+	 uint64		LastTm			= 8;
+	//30日充值每笔记录
+	repeated  ST_Vector4UInt64_PB	history30	= 9;
+	//领取联盟科技捐献排行榜邮件时间
+	 uint64		LeagueDevoteDayRankMailTm	= 10;
+	//领取联盟科技捐献排行榜邮件时间
+	 uint64		LeagueDevoteWeekRankMailTm	= 11;
+}
+// 指挥官信息
+message ST_CommanderInfo_PB
+{
+	 uint32		status				= 1;//指挥官状态，GameDefine.HeroStatus
+	 uint64		imprisoneOwner		= 2;//坏人的UID
+	 uint64		stepStartTime		= 3;//死亡时间,关押时间,复活时间
+	 uint64		stepRemainTime		= 4;//死亡时间,关押时间,复活时间剩余时间
+	 ST_Vector4Int_PB		ransom	= 5;//赎金
+	 ST_Vector4Int_PB		bounty	= 6;//赏金
+	 string         Token           = 7; //app唯一
+	 uint64         LoginDay        = 8; //登录天数
+}
+
+message ST_CharBasic_PB
+{
+     uint64     uid                       = 1; //玩家id
+     string     charname                  = 2; //角色名
+     string     signature                 = 3; //签名
+     int32      location                  = 4; //玩家坐标
+     uint64     worlddataid               = 5; //玩家大地数据id
+     string     lordIcon                  = 6; //领主头像
+     uint32     avatarBoxID               = 7; //玩家头像框ID
+     string     avatar                    = 8; //玩家头像URL
+     uint32     language                  = 9; //玩家所用语言
+     string     nickName                  = 10; //昵称
+	 uint32		sid				          = 11; //归属服务器id
+	 bool 		changeName		          = 12; //是否已经使用免费改名机会
+	 uint64     nextUploadAvatarTimestamp = 13; //在这时间点之前不能上传头像
+	 uint64 	createTime                = 14; //创建时间
+	 uint64     airDropFreeTime           = 15; //玩家免费抽奖重置时间	
+	repeated int32      historyItemList           = 16; //玩家历时上获得的物品ID
+	 ST_CommanderInfo_PB		commanderInfo = 17; // 指挥官信息
+	 uint32		modelId					= 18; //领主模型id
+	 int64 			SrcVer					= 19; // 老玩家版本号(186,187 )
+	 uint64 		ChangeServerCD 			= 20; //跨服CD
+	 uint32 		bubbleid 				= 21; //汽泡id
+	 uint32 	currentSid					= 22; // 当前服务器id
+}
+
+message ST_CharExp_PB
+{
+	 uint64					exp				= 1; //玩家经验
+	 uint32					level			= 2; //主城等级
+	 uint64					restexp			= 3; //当前等级剩余经验
+	 uint32					nextactionid	= 4; //下一个actionid
+}
+
+message ST_Statistics_PB
+{
+	 uint64           power                      = 1; //战力
+	 uint64           receiveResourceToday       = 2; //当天收到的盟友资源运输
+	 uint64           lastClearTime	             = 3; //数据上次清空时间
+	 uint32           killedMonsterLevel         = 4; //当前已经杀死的最高等级的野怪
+	 uint32           STA		      		     = 5; //体力值
+	 uint64           staRefresh                 = 6; //上体力恢复时间
+	 bool             needRecoverSTA             = 7; //是否需要恢复体力
+	 uint64           unitLoss                   = 8; //兵力损失
+	 uint32           attackWin                  = 9; //进攻胜利
+	 uint32           attackFail                 = 10;//进攻失败
+	 uint32           defenceWin                 = 11;//防御胜利
+	 uint32           defenceFail                = 12;//防御失败	
+	 uint64           sendResourceToday          = 13;//当日向盟友运输资源
+	 ST_UnitAsset_PB  lossUnit                   = 14;//
+	 ST_UnitAsset_PB  killUnit                   = 15;//
+	 ST_UnitAsset_PB  repairUnit                 = 16;//
+	 uint32           spyTimes                   = 17;//
+	 uint32           arestHero                  = 18;//
+	 uint32           killHero                   = 19;//
+	 uint64           getReward                  = 20;//
+	 uint32           captivedTime               = 21;//
+	 uint32           escapeTime                 = 22;//
+	 uint32           executedTime               = 23;//
+	 uint32           leagueHelpTime             = 24;//
+	 uint64           massLimit                  = 25;//
+	 ST_CashAsset_PB  transforResource           = 26;//
+	 ST_CashAsset_PB  collectResource            = 27;//
+	 bool             firstSpy                   = 28;//是否是每天第一次侦查
+	 bool             firstBeAttack              = 29;//是否是每天第一次被攻击
+	 uint64           lastFeedbackTime           = 30;//上次问题反馈时间
+	 uint64           loginGetVIPPointTimestamp  = 31;//领军衔点的时间戳
+	 uint32           loginGetVIPPointTotalCount = 32;//总共登录领取VIP点次数
+	 uint32			  continuousLoginTimes 		 = 33;//连续登陆天数
+	 uint64           continuousLoginRecordPoint = 34;//连续登陆记录点
+	 bool             firstUploadAvatar          = 35;//第一次上传头像
+	 uint32           reportedTimes              = 36;//非法头像被举报次数
+	 bool             firstBindAccount           = 37;//第一次绑定账号
+	 uint32		 	  mainCityRewardLevel		 = 38;//已经领取的主城奖励等级
+	 uint32 		  energy 					 = 39;// 精力值
+	 uint64			  lastEnergyTime			 = 40;//上一次精力增长时间
+	 uint64           mutiMonsterRewardTimes     = 41;//当日剩余多人怪奖励次数
+	 uint64           lastMutiMonsterRewardTime  = 42;//上次获取多人怪奖励的时间
+}
+
+//减少时间奖励
+message ST_StrollHeroEventCountDownTimeReward
+{
+     uint32 actionId    = 1; //活动id
+     uint64 seconds     = 2; //减少时间
+}
+
+//兵奖励
+message ST_StrollHeroEventAddUnitReward
+{
+     uint64 unitId      = 1; //兵种id
+     uint64 number      = 2; //兵种数量
+}
+
+//英雄行走奖励内容
+message ST_StrollHeroEventRewardContent_PB 
+{
+	 uint32 								heroID 			= 1;
+	 uint32 								heroQuality 	= 2;
+	 ST_StrollHeroEventCountDownTimeReward  countDownTime   = 3;
+     ST_StrollHeroEventAddUnitReward        addUnit         = 4;
+     ST_Vector4IntList_PB                   resource        = 5;
+}
+
+//行走英雄奖励
+message ST_StrollHeroEventReward_PB
+{
+    repeated ST_StrollHeroEventRewardContent_PB content 	= 1; //奖励内容
+}
+
+message ST_Building_PB
+{
+	 uint32 				        buildingID			= 1;  //建筑ID
+	 bool					        activated			= 2;  //是否激活
+	 uint32					        x					= 3;  //位置X
+	 uint32 				        y					= 4;  //位置Y
+	 uint32 				        buildingtype 		= 5;  //建筑类型
+	 uint32 				        buildinglevel 		= 6;  //建筑等级
+	 uint32					        heroId				= 7;  //英雄ID
+	 ST_UnitAsset_PB		        units				= 8;  //建筑逻辑需要的兵种资产
+	 ST_CashAsset_PB		        resource			= 9;  //建筑逻辑需要的资源资产
+     ST_StrollHeroEventReward_PB    strollHeroReward    = 10; //行走英雄奖励
+     uint32 					    equipCSVID		    = 11; //指挥官装备CSVID
+}
+
+message ST_BuildingAsset_PB
+{
+	repeated ST_Building_PB buildings = 1;
+	 uint32 nextBuildingId = 2;
+	 ST_AttributeList_PB buildingAttrs = 3;
+}
+
+message ST_LocalActionEntry_PB
+{
+	 uint32                  actionid    = 1;
+	 uint32                  actiontype  = 2;
+	 uint32					 buildingID	 = 3;
+	 uint64                  starttime   = 4;
+	 uint64                  remaintime  = 5;
+	 uint64                  totaltime   = 6;
+	repeated int32                   details     = 7;
+	 string                  appenddata  = 8;
+	 bool					 isHelped	 = 9;//是否请求帮助
+	 ST_UnitAsset_PB	 	units	     = 10;//本地行为的兵种数据
+	//队列序号(1,2)
+	 uint32					 startid	 = 11;
+}
+
+message ST_GlobalActionVersion_PB
+{
+	 uint64					actionID	= 1;
+	 uint32					versionid	= 2;
+}
+message ST_GlobalActionVersionList_PB
+{
+	repeated ST_GlobalActionVersion_PB			list = 1;
+}
+
+message ST_LeagueMassJoins{
+	 uint64 userId = 1;
+	 string name = 2;
+	 string avatar = 3; //头像
+	 uint32 avatarBoxID = 4; //边框ID
+}
+
+message ST_LeagueMassDetail{
+	 uint64 actionId = 1;//集结id
+	 uint64 leagueId = 2;
+	 string leagueName = 3;
+	 ST_ArmyHerosDetail  massInitiator = 4;//发起者
+	repeated ST_LeagueMassJoins joinMembers = 5;//发起者援军
+	 ST_ArmyHerosDetail  massDefender = 6;//被集结者
+	repeated ST_LeagueMassJoins joinDefenceMembers = 7;//驻防援军	
+}
+
+message ST_GlobalActionEntry_PB
+{
+	 uint64                  actionid    = 1;
+	 uint32                  actiontype  = 2; //类型
+	 uint32					 stage		 = 3; //所处于的状态
+	 uint64					 uid		 = 4; 
+	 uint64                  starttime   = 5; //时间精度毫秒
+	 uint64                  remaintime  = 6; //时间精度毫秒
+	 uint64                  totaltime   = 7; //时间精度毫秒
+	 int32					 startTileID = 8;
+	 int32					 endTileID	 = 9;
+	 uint64					 worldDataID = 10;
+	repeated uint64                  details     = 11;
+	 ST_UnitAsset_PB		 units   	 = 12;//派兵
+	 string                  appenddata  = 13;
+	 uint32					 heroId_Old		 = 14;//废弃
+	 uint64					 leagueID	 = 15;
+	 uint64					 parentID	 = 16;//参加集结时使用，加入的集结actionid
+	repeated uint64					 childrenID	 = 17;//集结时使用，参加集结部队的actionid
+	 uint32					 versionid	 = 18;
+	 ST_Vector2Int_PB		 startScope	 = 19; //出发点范围大小
+	 ST_Vector2Int_PB		 endScope	 = 20; //目标点范围大小
+	 uint32					 oriActionType = 21; //原始action类型	
+	repeated uint64 				 recvActionIDList = 22;//雷达预警用，存放驻军时收到的行为ID
+	repeated uint32 				 heroIDList  = 23;//出征英雄ID列表
+	 uint32 				 formation   = 24;//出征阵型
+	 ST_LeagueMassDetail     massDetail  = 25;//集结详情
+	 uint32 				 hit   	     = 26;//连续猎杀
+	repeated uint32 				 HoldHeroIDList  = 27;//出征驻守英雄ID列表
+	 int64 					 targetWorldEntryType  	  = 28;//目标点类型
+	 uint64 				 targetWorldEntryLeagueID = 29;//目标点联盟ID
+	 uint32 				 CrossSpecialTile  	     = 30;//通过荆棘地
+	 uint64 				 costSta	= 31;//扣除体力(用于取消时返还)
+	 int64 					 macMonsterId = 32; //怪物攻城的怪物WorldEntryConfig id
+}
+
+message ST_LocalActionAsset_PB
+{
+	repeated ST_LocalActionEntry_PB actionList = 1;
+	//第二队列时间(vip永久时间生效时不使用)
+	 uint64	SecondTime   = 2;
+}
+
+message ST_GlobalActionAsset_PB
+{
+	repeated uint64       actionIDList = 2;
+}
+
+message ST_GlobalActionList_PB
+{
+	repeated ST_GlobalActionEntry_PB actionList = 1;
+}
+
+message ST_ColonyAsset_PB
+{
+	repeated uint64 				 ownColonyIDList = 1;	//拥有的要塞列表
+	repeated uint64                  shareColonyIDList = 2;
+}
+message ST_DefenseAsset_PB
+{
+	 uint32					durable				= 1; //耐久值
+	 uint64					lastRefreshTime		= 2; //上次更新时间
+	 uint32					burnTime			= 3; //燃烧结束时间
+	 bool					isBurning			= 4; //城防是否在燃烧
+	 bool					canRecover			= 5; //是否可以恢复
+	 uint32					burningSpeed		= 6; //燃烧速度
+	 bool					bootcap				= 7; //是否开启保护罩
+	 uint64					capStartTime		= 8; //保护罩开启时间
+	 uint64					capDuration			= 9; //保护罩持续时间
+	 uint64					burningStartTime	= 10; //燃烧开始时间
+	 bool					blackout			= 11; //是否开启黑障
+	 uint64					blackStartTime		= 12; //黑障开启时间
+	 uint64					blackDuration		= 13; //黑障持续时间
+	 uint64					svrPauseTime		= 14; //停服持续时间
+	 uint32        			defValue      		= 15; //城墙防御
+	repeated uint32 				heroIDList 			= 16; //驻守英雄列表
+	 uint32					maxDurable			= 17; //最大耐久值
+	 bool					Newbootcap			= 18; //新手保护罩
+	//生命力为0,被击飞
+	 uint64					hp					= 19;
+	 uint64					burningEndTime	    = 20; //燃烧结束时间
+     bool					tip			        = 21; //弹窗
+	//修复hp时间
+	 uint64					HpTime		        = 22;
+	repeated bool 					heroWayList			= 23; //英雄驻防方式(true:自动,false手动)
+	repeated bool 					heroFirstCap 		= 24; //英雄首次入驻(true:首次,false非首次)				
+}
+message ST_CashAsset_PB
+{
+	 uint64 cash1 = 1;
+	 uint64 cash2 = 2;
+	 uint64 cash3 = 3;
+	 uint64 cash4 = 4;
+	 uint64	cash5 = 5;
+	 uint64 cash100 = 6;
+	 uint64	cash6 = 7;
+	 uint64	cashExpedition = 8;
+}
+message ST_Market_PB
+{
+	 uint64					uid 			= 1;
+	 ST_CashAsset_PB		resource 		= 2;
+	 uint64					receiveTime		= 3;
+	 uint64					max				= 4;
+}
+message ST_MarketAsset_PB
+{
+	repeated	ST_Market_PB		needReceive		= 1;//待收取的资源
+	repeated	ST_Market_PB		received		= 2;//已收取的资源
+	repeated	ST_Market_PB		send			= 3;//给盟友运输的资源
+}
+message ST_Unit_PB
+{
+	 uint32 unitid  = 1;//兵种ID
+	 uint64 unitnum = 2;//兵种数量
+	 uint64  Lv = 3; // 升级前等级
+}
+
+message ST_UnitAsset_PB
+{
+	repeated ST_Unit_PB units = 1;
+	 ST_Vector2Int_PB  capacityItem = 2; // 容量道具
+}
+
+message ST_UnitVague_PB
+{
+	 uint32 				unitid		= 1;
+	 ST_Vector2Int64_PB		unitNum		= 2;
+}
+message ST_UnitVagueAsset_PB
+{
+	repeated ST_UnitVague_PB units	= 1;
+}
+
+message ST_TeamConf_PB
+{
+	 uint32				confid  	= 1;
+	 string				confName  	= 2;
+	 ST_UnitAsset_PB 	unitList 	= 3;
+	repeated uint32 			heroIDList 	= 4;
+
+}
+
+message ST_TeamConfList_PB
+{
+	repeated ST_TeamConf_PB confList	= 1;
+}
+
+message ST_WorldDataVersion_PB
+{
+	 uint64           id     	 = 1;
+	 uint32           version    = 2;
+}
+
+message ST_WorldDataVersionList_PB
+{
+	repeated ST_WorldDataVersion_PB list = 1;
+}
+
+message ST_WorldDataBasic_PB
+{
+	 ST_WorldDataVersion_PB 		id			= 1;
+	 ST_WorldDataSimpleInfo_PB		simple		= 2;
+	//行军中队列
+	 ST_Uint64List_PB 			   actionlist	= 3;
+
+}
+
+message ST_WorldDataBasicList_PB
+{
+	repeated ST_WorldDataBasic_PB			list	= 1;
+}
+
+message ST_WorldDataSimpleInfo_PB
+{
+	 uint64						uid        			= 1; //所属uid
+	 uint64 					leagueId 			= 2; //所属联盟id
+	 int32  					tileId				= 3; //坐标
+	 ST_Vector4Int_PB 			dataEntry 			= 4; //基础数据
+	repeated uint64						gActionList			= 5; //针对当前地块的行为ID，对应全局action列表
+	repeated uint32						cityID				= 6; //归属城市ID
+	 uint32						status				= 7; //当前状态
+	 uint64						locationChangeTime	= 8; //位置改变时间
+	 uint64						attackLeagueID		= 9; //发生攻击行为时攻击方的联盟id
+	 int32 						miracleStage 		= 10; //奇迹战阶段
+	 uint64						stageEndTime 		= 11; //结束时间
+	 ST_OccupyInfo_PB			occupyInfo			= 12; //奇迹战占领信息
+	 uint32						skinId				= 13; //皮肤id
+	 uint32						prisonCount			= 14; //俘虏数量
+	 uint64 					hp 					= 15; //野怪hp
+	 uint64						did     			= 16;//所属联盟堡垒
+	 ST_CashHouse_PB			res		     		= 17;//联盟仓库资源
+	 uint64						lid     			= 18;//谁的联盟堡垒
+	 uint64						stagStartTime 		= 19;
+	 bool						IsOk     			= 20;//生效
+	//首次生效,客户端使用
+	 bool						First     			= 21;
+	 uint64 					mstLid 				= 22;//怪物攻城招唤怪所属联盟
+	 uint32						sid 				= 23; // 所属sid
+
+}
+message ST_CashHouse_PB {
+	repeated ST_Market_PB		list	= 1;
+}
+message ST_WorldDataDetail_Mine_PB
+{
+	 uint32						CashType 		= 1;
+	 double						CashTotalCount 	= 2;
+	 uint32						CollectSpeed 	= 3;
+	 double						CashLeftCount 	= 4;
+	 uint32						Playernum		= 5;
+	 uint32						Star			= 6;
+	 double						RealLeftCount			= 7;
+}
+
+message ST_ColonyCapture_PB
+{
+	 uint64						userID			= 1;	//占领玩家ID
+	 uint64						produceTime		= 2;	//占领时间
+}
+
+message ST_WorldDataDetail_Colony_PB
+{
+	   ST_ColonyCapture_PB                	captureUser 		= 1;  //占领的玩家ID
+	   uint64                 				leagueId     		= 2;  //联盟ＩＤ
+	   uint64								updateTime			= 3;  //上次更新时间
+	repeated   ST_ColonyCapture_PB	                sharedUser     		= 4;  //共同占领的玩家id列表
+	   ST_UnitAsset_PB						units				= 5;  //城市废墟驻扎兵种
+	   ST_DefenseAsset_PB					defense				= 6;  //城市废墟城防资产
+	   bool									needRecoverUnits	= 7;  //需要恢复兵种
+	   bool									needRecoverDefense	= 8;  //需要恢复城防
+	   uint64								unitsUpdateTime		= 9;  //兵种更新时间
+}
+
+message ST_WorldDataDetail_NoUse_PB
+{
+	   int32				 NoUse = 1; //无用，占位数据
+}
+
+message ST_WorldDataDetail_Bestationed_PB
+{
+	repeated	uint32				heroIdList		= 1; //英雄ID
+		ST_UnitAsset_PB		units			= 2; //驻扎地的兵种资产
+	    uint32  			formation 		= 3; //阵型ID
+}
+message ST_WorldDataDetail_MutiMonster_PB
+{
+		ST_UnitAsset_PB		units			= 1; //剩余兵力
+}
+message ST_WorldDataDetail_City_PB
+{
+	   uint64                 		leagueId     		= 1;  //联盟ＩＤ
+	   uint64						stageStartTime		= 2;  //攻打开始时间
+	   uint64						defenseUpdateTime	= 3;  //城防上次更新时间
+	   ST_DefenseAsset_PB			defense				= 4;  //城防资产
+	   ST_UnitAsset_PB				npcUnits			= 5;  //城市NPC驻扎兵种
+	   uint64						garrisonCapalibity	= 6;  //城市驻军上限
+	   uint32						stage				= 7;  //开始城市争夺
+	   bool							isFirstCapture		= 8;  //是否首次占领
+	   int64						currentMonsterID	= 9;  //当前怪物等级
+}
+message ST_WorldDataDetail_MainCity_PB
+{
+	 ST_DefenseAsset_PB								defense					= 1; 	//城防耐久
+}
+
+message ST_WorldDataDetail_UndergroundPalace_PB
+{
+	repeated uint64											containUser				= 1;	//已经驻扎的玩家
+	 uint64											liveTime				= 2;	//存在时间
+	 uint64											createTime				= 3;	//刷新时间
+}
+
+message ST_CityArchon_PB  //占领者数据
+{
+	 uint64 LeagueID = 1;				//
+	 uint64 uid = 2;						// 
+	
+}
+
+
+message ST_CityOccupyInfo_PB
+{
+	 uint64 uid = 1; 						// 玩家Uid
+	 uint64 lid = 2;						// 联盟id
+	 int32 	tid = 3;							// titleid
+	 uint64 KillValue = 4;					// 杀敌数
+	 uint64 HoldValue = 5;	 			   	// 已结算占领值
+	 uint64 HoldTm = 6;	 			   		// 占领开始时间	
+	 uint64 HoldSpeed = 7;	 			   	// 占领速度
+	 string uName = 8;						// 玩家名称
+	 ST_LeagueCustomFlag_PB leagueFlag = 9;	// 联盟旗帜
+	 string lShortName = 10;					// 联盟简称
+	 uint64 aid = 11;						// 行军队列id
+	
+}
+
+// 查询城市争霸
+message ST_SC_CityWarList_PB
+{
+  repeated ST_SC_CityWarInfo_PB   list = 1;  
+  
+}
+
+message ST_SC_CityWarInfo_PB
+{
+   uint32    cid = 1;              // 城市id
+   int32     stage = 2;            // 当前阶段
+   string    LeagueName = 3;        // 联盟名字
+   uint64    StageStartTime = 4;
+   uint64    StageEndTime = 5;
+   bool      End = 6;
+}
+
+// 城市争霸
+message ST_CityWar_PB
+{
+	 int32 stage = 1;						// 当前阶段
+	 uint64 stageEndTime = 2; 				// 当前当前阶段的结束时间
+	 uint64 stageStartTime = 3;				// 当前当前阶段的开始时间
+	 uint64  LeagueId = 4; 				// 王盟id
+	 uint64  Killer = 5;					// 征服者
+	 uint64  Holder = 6;					// 捍卫者
+	 uint64  Holder1 = 7;					// 
+	 uint64  Holder2 = 8;					// 
+	 uint64  Holder3 = 9;					//
+	repeated ST_CityOccupyInfo_PB occupy = 10;		//占领信息
+	 uint64  Killernum = 11;					// 征服者占领值
+	 uint64  Holdernum = 12;					// 捍卫者杀敌数
+	// 活动结束
+	 bool  End = 13;
+}
+
+message ST_WorldDataDetailInfo_PB
+{
+	 ST_WorldDataDetail_NoUse_PB					detail_nouse			= 1;
+	 ST_WorldDataDetail_Mine_PB   					detail_mine  			= 2;	//野外矿产
+	 ST_WorldDataDetail_Colony_PB 					detail_colony 			= 3;	//殖民地
+	 ST_WorldDataDetail_Bestationed_PB				detail_Bestationed		= 4;	//驻扎信息
+	 ST_WorldDataDetail_MutiMonster_PB				detail_MutiMonster		= 5;	//多人野怪
+	 ST_WorldDataDetail_City_PB						detail_City				= 6;	//城市详情协议
+	 ST_WorldDataDetail_MainCity_PB					detail_mainCity			= 7; 	//玩家主城详情数据
+	 ST_WorldDataDetail_UndergroundPalace_PB		detail_palace			= 8;	//机械入侵
+	 ST_MiracleWar_PB								detail_miraclewar		= 9;	//王战
+	 ST_CityWar_PB									CityWar					= 10;	//城市争霸
+}
+
+message ST_WorldDataEntry_PB
+{
+	 ST_WorldDataVersion_PB   		versionEntry           = 1;
+	 ST_WorldDataSimpleInfo_PB		simpleEntry			   = 2;
+	 ST_WorldDataDetailInfo_PB		detailEntry			   = 3;
+}
+message ST_WorldDataEntryList_PB
+{
+	repeated ST_WorldDataEntry_PB			dataList				= 1;
+}
+message ST_Research_PB
+{
+	 uint32 rID					= 1;	//科技等级
+}
+
+message ST_ResearchEntryList_PB
+{
+	repeated  ST_Research_PB		entryList = 1; //科技资产
+}
+
+message ST_ItemEntry_PB
+{
+	 uint32					itemId		= 1; //物品ID
+	 uint32					itemNum		= 2; //物品名字
+}
+
+message ST_Asset_ItemPack_PB
+{
+	repeated ST_ItemEntry_PB		itemList	= 1; //背包资产
+}
+
+message ST_Asset_Chat_Item_PB
+{
+	 uint64 titleID = 1; 			// 话题ID
+	 uint64 timestamp = 2;			// 关注或者发布时间
+	 uint32 lastReplyCount = 3;		// 最后查看的回复数量
+}
+
+message ST_ForbiddenChat_PB
+{
+	 uint32 forbiddenType = 1; 	// 禁言类型
+	 uint64 startTime = 2; 		// 禁言开始时间
+	 uint64 duration = 3;		// 禁言持续时间
+	 string msg = 4; 			// 禁言原因
+}
+
+message ST_PrivateChat_PB
+{
+	 uint64 Uid = 1;
+	 uint64 FTime = 2;
+	 uint32 NewCount = 3;	// 新消息的数量
+	 string Name = 4;
+	 string avatar = 5;
+	 uint32 avatarBoxID = 6;
+	 string avatarID = 7;
+	 string LeagueName = 8;
+	repeated ST_PrivateChat_Content_PB ChatList = 9;
+	 uint64 NextId = 10;
+	 int32 kingWarTitle = 11;
+	 uint32 bubbleId = 12;
+}
+
+message ST_PrivateChat_Content_PB
+{
+	 uint64 SenderUid = 1;
+	 uint64 Time = 2;
+	 string Content = 3;
+	 uint64 ID = 4;
+	 string post = 5;
+}
+
+message ST_Asset_Chat_PB
+{
+	repeated ST_Asset_Chat_Item_PB followTitleIDList = 1; //关注的话题ID
+	repeated ST_Asset_Chat_Item_PB praiseTitleIDList = 2; //点赞的话题ID
+	repeated ST_Asset_Chat_Item_PB myTitleIDList = 3;		//我的话题ID
+	 uint64 lastChatTime = 4;	//上次发送世界话题的时间
+	 uint32 dayChatCount = 5;	//当天发送世界话题的次数
+	repeated ST_ForbiddenChat_PB forbidden = 6; // 禁言
+	repeated ST_PrivateChat_PB PrivateChatList = 7; // 私聊
+}
+
+//----------------主动侦查报告（不同等级能查看不同的侦查结果）----------------//
+//领主信息
+message ST_ActiveSpy_Lord
+{
+	 bool 									lordInCity					= 1;  //领主是否在城内
+	 uint32 								lordLevel					= 2;  //领主等级
+	 uint32 								lordQuality					= 3;  //领主星级
+	 uint32 								lordRank					= 4;  //领主品级
+	 uint64 								heroID						= 5;  //
+	
+}
+
+//援军信息
+message ST_GarrisonInfo_PB
+{
+	 uint64		uid		 			= 1; 
+	 string 	garrisonUserName 	= 2;	//援军所属玩家的名字
+	 uint32 	mainCityLevel		= 3;	//援军所属主城等级
+	 ST_UnitVagueAsset_PB	vagueReinforcementsUnit		= 4;  //援军兵力类型和模糊数量
+	 ST_Vector2Int64_PB		vagueReinforcementsCount	= 5;  //援军模糊数量
+	 ST_UnitAsset_PB 		reinforcementsCount			= 6;  //援军准确数量
+}
+
+message ST_ActiveSpy_Reinforcements
+{
+	repeated ST_GarrisonInfo_PB 	garrisonInfo					= 1;  //援军信息
+	 ST_Vector2Int64_PB 	vagueReinforcementsTotalCount 	= 2;  //援军总模糊数量
+	 uint64 				reinforcementsTotalCount		= 3;  //援军总准确数量
+}
+
+//资源信息
+message ST_ActiveSpy_Cash
+{
+	 ST_CashAsset_PB 						resources 					= 1;  //拥有资源
+	 ST_CashAsset_PB 						canReceiveResources 		= 2; //未收取资源
+}
+
+//防守部队模糊信息
+message ST_ActiveSpy_Vague
+{
+	 ST_Vector2Int64_PB						vagueTrapCount				= 1;  //模糊陷阱数量
+	 ST_UnitVagueAsset_PB					vagueTrapUnit				= 2;  //陷阱类型和模糊数量	
+	 ST_Vector2Int64_PB						vagueUnitCount				= 3;  //防守方部队模糊数量	
+	 ST_UnitVagueAsset_PB					vagueDefenceUnit			= 4;  //防守方兵力类型和模糊数量	
+	 ST_UnitVagueAsset_PB 					vagueHospitalUnit			= 5;  //防守方医院部队类型和模糊数量	
+}
+//防守部队精确信息
+message ST_ActiveSpy_Exact
+{
+	 ST_UnitAsset_PB 						trapCount					= 1; //准确陷阱数量
+	 ST_UnitAsset_PB 						defenceUnit					= 2; //防守方兵力类型和准确数量	
+	 ST_UnitAsset_PB 						hospitalUnit				= 3; //防守方医院部队类型和准确数量	
+}
+//防守方护盾信息
+message ST_ActiveSpy_Hardiness
+{
+	 uint32 								enemyHardiness				= 1; //敌方护盾耐久力
+	 uint32 								enemyCurrentHardiness		= 2; //敌方护盾当前耐久力
+}
+
+//科技等级
+message ST_Radar_TechInfo
+{
+	 bool 	hasTechnology	= 1; //是否有科技
+	repeated uint32 technologyLevel	= 2; //预警敌军部队科技等级
+}
+//天赋
+message ST_Radar_NaturalGift
+{
+	 bool 				hasNaturalGift	= 1; //是否有天赋
+	repeated uint32				naturalGift		= 2; //天赋	
+}
+
+message ST_Simple_Statue
+{
+	 string effectType	= 1;//加成类型
+	 uint32 effectValue = 2;//加成值	
+}
+//雕像
+message ST_Radar_Statue
+{
+	 bool 				hasStatue	= 1; //是否有天赋
+	repeated ST_Simple_Statue	statue		= 2; //天赋
+}
+
+message ST_ArmyHerosDetail
+{
+	 uint64          userId = 1; //对手id
+	 string          name = 2; //对手name
+	 uint32          avatarBoxID = 3; //玩家头像框ID
+	 string          avatar = 4; //玩家头像
+	repeated ST_HeroEntry_PB heroList = 5; //对手英雄信息
+	 bool          heroAttrShow = 6;//是否雷达显示英雄属性
+	repeated ST_Attribute_PB comanderWearEquipsAttr = 7; //指挥官装备属性
+	 bool          cmderEquipAttrShow = 8;//是否雷达显示指挥官装备属性
+}
+
+//侦查信息
+message ST_ActiveSpyReport_PB
+{			
+	 ST_ActiveSpy_Lord 		loadInfo		= 1;	//领主信息
+	 ST_ActiveSpy_Reinforcements reinforcementsInfo 	= 2;//援军信息
+	 ST_ActiveSpy_Cash		cashInfo		= 3;	//资源信息
+	 ST_ActiveSpy_Vague		vagueInfo 		= 4;	//防守部队模糊信息
+	 ST_ActiveSpy_Exact 	exactInfo 		= 5; 	//防守部队精确信息
+	 ST_ActiveSpy_Hardiness hardinessInfo 	= 6;	//防守部队护盾信息
+	 ST_Radar_TechInfo		techInfo 		= 7;	//防守部队科技等级信息
+	 ST_Radar_NaturalGift   naturalGiftInfo	= 8; 	//防守部队天赋信息	
+	 ST_Radar_Statue 		statueInfo 		= 9; 	//防守部队雕像信息
+	 ST_ArmyHerosDetail     enemyHerosInfo  = 10;    //侦查英雄信息
+	 bool  					isArrest 		= 11;    //是否已被逮捕
+}
+
+//侦查信息（怪物）
+message ST_ActiveSpyMonsterReport_PB
+{			
+	 int64 					monsterID		= 1;//怪物组ID，WorldMonsterConfig.xlsx
+	 int32					targetTileId	= 2;//对应坐标ID
+	repeated int64  				heroIDList 		= 3;//驻守的英雄ID
+	 ST_MonsterSpy_Vague	vagueInfo 		= 4;//模糊信息
+	 ST_MonsterSpy_Exact 	exactInfo 		= 5;//精确信息
+	 int64 					wallHp 			= 6;//城墙耐久
+	 bool 					spyWallFlag     = 7;//侦察城墙标记
+}
+
+//怪物模糊信息
+message ST_MonsterSpy_Vague
+{
+	 ST_Vector2Int64_PB						vagueTrapCount				= 1;  //模糊陷阱总数量
+	 ST_UnitVagueAsset_PB					vagueTrapUnit				= 2;  //陷阱类型和模糊数量	
+	 ST_Vector2Int64_PB						vagueUnitCount				= 3;  //军团总模糊数量	
+	 ST_UnitVagueAsset_PB					vagueDefenceUnit			= 4;  //兵力类型和模糊数量		
+}
+//怪物精确信息
+message ST_MonsterSpy_Exact
+{
+	 ST_UnitAsset_PB 						trapCount					= 1; //准确陷阱总数量
+	 ST_UnitAsset_PB 						defenceUnit					= 2; //兵力类型和准确数量		
+}
+
+//----------------主动侦查报告（不同等级能查看不同的侦查结果）----------------//
+
+//------------------预警报告（不同等级能查看不同的预警结果）------------------//
+//敌方指挥官信息
+message ST_EarlyWarning_Commander
+{
+	 uint64		uid				= 1;  //对方UID
+	 string		commanderName	= 2;  //指挥官名字	
+}
+//敌方行军英雄信息
+message ST_EarlyWarning_Hero
+{
+	 bool 		hasHero			= 1; //是否有英雄
+	 uint32		heroID			= 2; //敌方部队英雄ID
+	 uint32		heroLevel		= 3; //敌方部队英雄等级
+	 uint32 	heroQuality		= 4; //敌方部队英雄星级
+	 uint32 	heroRank		= 5; //敌方部队英雄品级
+}
+//敌方行军部队模糊信息
+message ST_EarlyWarning_Vague
+{
+	 ST_Vector2Int64_PB		vagueUnitCount	= 1;  //行军部队模糊数量
+	 ST_UnitVagueAsset_PB	vagueUnit		= 2;  //敌方部队类型和模糊数量
+}
+//敌方行军部队精确信息
+message ST_EarlyWarning_Exact
+{
+	 ST_UnitAsset_PB 	exactUnit	= 1;	//敌方部队类型和准确数量
+}
+//敌方部队起始信息
+message ST_EarlyWarning_StartInfo
+{
+	 uint64		arriveTime		= 1;  	//部队到达时间
+	 int32		startTileID		= 2;  	//行军部队发起坐标	
+	 uint32		mainCityLevel	= 3;  	//敌方部队的主城等级
+}
+//敌方行军目的地信息
+message ST_EarlyWarning_EndInfo
+{
+	 ST_Vector4Int_PB 	targetDataEntry 	= 1; //行军目标名称
+	 int32				endTileID			= 2; //行军目标TileID
+}
+
+
+//存储于邮件的预警信息(貌似没用了，不敢删除，只改了名字)
+message ST_EarlyWarningReportMail_PB
+{
+	 uint64							gActionID			= 1;	//对应全局actionid	
+	 uint32							actionType			= 2;	//行军目的1
+	 ST_EarlyWarning_StartInfo		startInfo 			= 3;	//敌方部队起始信息
+	 ST_EarlyWarning_EndInfo		endInfo 			= 4;	//敌方行军目的地信息
+	 ST_EarlyWarning_Commander		conmmanderInfo		= 5; 	//敌方指挥官信息
+	 ST_EarlyWarning_Hero			heroInfo			= 6;	//敌方行军英雄信息
+	 ST_EarlyWarning_Vague			vagueInfo 			= 7;	//敌方行军部队模糊信息		
+	 ST_EarlyWarning_Exact 			exactInfo			= 8; 	//敌方行军部队精确信息		
+	 ST_Radar_TechInfo				techInfo 			= 9;	//敌方部队科技等级信息
+	 ST_Radar_NaturalGift   		naturalGiftInfo		= 10; 	//敌方部队天赋信息	
+	 ST_Radar_Statue 				statueInfo 			= 11; 	//敌方部队雕像信息
+} 
+
+
+//预警基本信息
+message ST_BaseEarlyWarningReport_PB
+{
+	 uint64							gActionID			= 1;	//对应全局actionid	
+	 uint32							actionType			= 2;	//行为
+	 ST_EarlyWarning_StartInfo		startInfo 			= 3;	//敌方部队起始信息
+	 ST_EarlyWarning_EndInfo		endInfo 			= 4;	//敌方行军目的地信息
+	 ST_EarlyWarning_Commander		conmmanderInfo		= 5; 	//敌方指挥官信息
+	 ST_MonsterAtkCityWarning_PB 	macInfo 			= 6; 	//怪物攻城信息
+} 
+
+message ST_MonsterAtkCityWarning_PB{
+	 uint64 monsterid = 1; //怪物id
+	 uint32 waves 	  = 2; //当前第几波
+}
+
+//预警详细信息
+message ST_EarlyWarningEx_PB
+{
+	 uint64 						gActionID			= 1;	//对应全局actionid	
+	 uint32							actionType			= 2;	//行为
+	 uint32							actionStage			= 3;	//行为状态 MapStageType
+	 ST_EarlyWarningTime_PB     	timeInfo 			= 4;	//行为时间	
+	repeated ST_MultiplayerEarlyWarning_PB 	MultiplayerList 	= 5;	//玩家信息
+	 ST_UnitTotal_PB 				unitTotal 			= 6;
+	 ST_EarlyWarningGreen_PB 	 	greenData 			= 7;	//援助预警所需数据
+	 ST_ArmyHerosDetail            enemyDetail         = 8;    //发起侦查敌人信息 
+}
+
+//援助
+message ST_EarlyWarningGreen_PB
+{
+	 ST_CashAsset_PB 				transport 			= 1;	//运输资源
+	 ST_UnitAsset_PB 				garrisonUnit		= 2;	//运输驻军
+}
+
+//行军部队精确/模糊数量
+message  ST_UnitTotal_PB
+{
+	 ST_Vector2Int64_PB				vagueCount		= 1;  	//模糊总量
+	 uint64							exactCount		= 2;  	//精确总量
+}
+
+message  ST_EarlyWarningTime_PB
+{
+	 uint64                  starttime   = 1; //时间精度毫秒
+	 uint64                  remaintime  = 2; //时间精度毫秒
+	 uint64                  totaltime   = 3; //时间精度毫秒
+}
+
+//玩家的信息(预警)
+message  ST_MultiplayerEarlyWarning_PB
+{
+	 ST_EarlyWarning_Commander		playerInfo			= 1;	//玩家信息
+	 ST_EarlyWarning_Hero			leadheroInfo		= 2;	//英雄信息
+	 ST_EarlyWarning_Vague			vagueInfo 			= 3;	//行军部队模糊信息		
+	 ST_EarlyWarning_Exact 			exactInfo			= 4; 	//行军部队精确信息	
+	 ST_Radar_TechInfo				techInfo 			= 5;	//科技等级信息
+	 ST_Radar_NaturalGift   		naturalGiftInfo		= 6; 	//天赋信息	
+	 ST_Radar_Statue 				statueInfo 			= 7; 	//雕像信息	
+	 bool  						 	isMain 				= 8;    //是否是行为发起者
+	 bool  						 	isArrest 			= 9;    //是否被逮捕
+}
+
+//------------------预警报告（不同等级能查看不同的预警结果）------------------//
+
+message ST_RadarAsset_PB 
+{
+	repeated ST_BaseEarlyWarningReport_PB			radarList					= 1; //预警报告列表
+	 uint32									warningType					= 2; //预警类型EarlyWarningType
+}
+//采集报告
+message ST_CollectReport_PB
+{
+	 ST_CashAsset_PB		resource = 1; //采集获得资产
+	 ST_UnitAsset_PB		unit	 = 2; //采集兵力
+	 int64					time	 = 3; //采集消耗时间
+	repeated ST_ItemEntry_PB		itemList = 4; //采集获取物品
+}
+
+//联盟运输
+message ST_LeagueTransportReport_PB
+{
+     uint64             fromUserId  = 1; //源
+     uint64             toUserId    = 2; //目的
+     uint64             timestamp   = 3; //时间戳
+     ST_CashAsset_PB    resource    = 4; //资源
+}
+
+//联盟邀请邮件
+message ST_LeagueInvitationJoinMail_PB
+{
+	 uint64                leagueId           = 1; //联盟id
+	 uint32                acceptedOrRejected = 2; //1已接受|2已拒绝
+}
+
+//邮件基本信息
+message ST_MailBasicInfo_PB
+{
+     uint64                mailId        = 1; //邮件ID
+     uint32                mailtype      = 2; //邮件类型
+     bool                  readStatus	 = 3; //是否已读
+     bool                  receiveStatus = 4; //是否已经领取附件
+     bool                  kept          = 5; //邮件是否收藏
+     bool                  locked        = 6; //是否锁定
+     uint32                serverId      = 7; //服务器id
+	 int32				   versionId 	 = 8; //版本号
+}
+
+//资产和奖励列表
+message ST_MailRewardList_PB
+{
+	repeated ST_Vector4Int_PB			reward			= 1; //可能出现的奖励和资产
+}
+
+message ST_Vector4IntList_PB
+{
+	repeated ST_Vector4Int_PB			reward			= 1;
+}
+
+//邮件简单信息
+message ST_MailSimple_PB
+{
+	 uint64						senderId		= 1;  //发送者ID
+	 string						senderName		= 2;  //发送者名字
+	 uint64						receiverId		= 3;  //收件人ID
+	 string						title			= 4;  //邮件用户自定义标题
+	 string						content			= 5;  //邮件用户自定义文字内容
+	 ST_Tips_PB					titleTips		= 6;  //邮件语系标题
+	 ST_Tips_PB					contentTips		= 7;  //邮件语系内容
+	 int64						sendTime		= 8;  //发送时间
+	 int32						targetTileId	= 9;  //对应坐标ID
+	 uint64						otherId			= 10; //侦查对方id（玩家）
+	 string 					otherName		= 11; //侦查对方名称（玩家）
+	 string 					otherAvatar		= 12; //侦查对方名称（玩家）
+	 uint64						npcID			= 13; //侦查NPC ID（WorldEntryConfig ID）
+	 ST_MailRewardList_PB		rewards			= 14; //可能出现的奖励和资产
+	 int32						giftPacketID	= 15; // 购买礼包id
+	 int32 						mailSource		= 16; // 邮件来源
+	 bool 						isPresidentRedward= 17; //是否是总统赏赐
+	 int32						appointTitle	= 18; //任命头衔
+	 int32 						rewardSource  = 19; // 奖励来源
+}
+
+//邮件数据
+message ST_MailData_PB
+{
+     ST_MailBasicInfo_PB		    basic				     = 1;  //邮件ID
+     ST_MailSimple_PB			    simple				     = 2;  //邮件概况
+     int32						    unreadCount			     = 3;  //未读邮件数量
+     int32						    totalCount			     = 4;  //未读邮件数量
+    //添加邮件具体的PB
+     ST_BattleReport_PB			    battleReport 		     = 5;  //战斗报告
+     ST_MonsterKill_PB			    monsterKillReport 	     = 6;  //怪物猎杀报告(boss、推图)
+     ST_CollectReport_PB		    collectionReport	     = 7;  //采集报告
+     ST_ActiveSpyReport_PB 		    activeSpyReport		     = 8;  //主动侦查报告
+     ST_BaseEarlyWarningReport_PB 	earlyWarningReport 	     = 9;  //预警报告
+     ST_LeagueTransportReport_PB    leagueTransportReport    = 10; //联盟运输报告
+     ST_LeagueInvitationJoinMail_PB leagueInvitationJoinMail = 11; //联盟邀请邮件
+     ST_ActiveSpyMonsterReport_PB   activeSpyMonsterReport   = 12; //怪物侦察
+     int64 							battleNoticeUID 	     = 13; //战斗信息唯一ID，用于查找
+	 ST_Rank_PB   						Rank   = 14; //排行数据
+}
+
+//邮件资源
+message ST_MailAsset_PB
+{
+	repeated ST_MailData_PB     mailList        = 1; //邮件ID
+    repeated uint32             lockedTypeList  = 2; //锁定列表
+}
+
+//玩家身上的邮件资源，专门用于客户端做本地存储
+message ST_MailAssetForClientSave_PB
+{
+	 ST_MailAsset_PB    mailData        = 1; //邮件的资产，是完整的数据
+     uint64             playerUid  		= 2; //邮件data对应的玩家ID
+    repeated ST_MailAssetSummary_Entry    summaryEntryList  = 3; //未获取详细信息的邮件列表
+}
+
+//邮件资产列表
+message ST_MailDBAsset_PB
+{
+    repeated ST_MailBasicInfo_PB	mailIdList		 = 1; //邮件ID列表
+}
+
+//邮件服务器存储结构
+message ST_MailStorage_PB
+{
+     ST_MailAsset_PB    client                      = 1; //客户端
+     ST_MailDBAsset_PB  server                      = 2; //服务器
+     uint64             lastEveryoneMailTimestamp   = 3; //最新全员邮件时间戳
+     uint32             languageId                  = 4; //用户语言id
+	 int32 				versionId					= 5; //版本号
+}
+
+message ST_LeagueDepotUsedResource_PB
+{
+	 ST_CashAsset_PB				cureUnit		= 1; //治疗使用资源
+	 ST_CashAsset_PB				produceUnit		= 2; //造兵使用资源
+	 ST_CashAsset_PB				build			= 3; //建筑使用资源
+	 ST_CashAsset_PB				research		= 4; //科研使用资源
+}
+
+//拒绝列表
+message ST_LeagueInvitationReject_PB
+{
+     uint64 leagueId        = 1; //联盟id
+     uint64 rejectTimestamp = 2; //拒绝时间
+}
+
+message ST_LeagueAsset_PB
+{
+     bool   inLeague                                    = 1; //是否加入了联盟
+     bool   joinedLeague                                = 2; //是否加入过联盟
+     bool   isLeader                                    = 3; //是盟主么	
+     string leagueName                                  = 4; //联盟名称	 
+     uint64 leagueID                                    = 5; //联盟ID
+     uint32 devoteCount                                 = 6; //联盟捐献次数
+     uint32 glodDevoteCount                             = 7; //元宝捐献次数
+     uint32 devoteCost                                  = 8; //砖石捐献消耗
+     uint64 lastClearTime                               = 9; //联盟捐献上次清零时间
+     int32	memberlevel                                 = 10;//个人在联盟的权限等级
+     uint32	todayHelpCount                              = 11;//今日被帮助次数
+     uint32	leagueDevote                                = 12;//联盟贡献
+    repeated uint64 appliedLeagueList                           = 13;//已经申请过的联盟ID列表
+     uint64 leagueMoveCityTime                          = 14;//联盟迁城使用时间
+     uint64 leagueMoveCityCDTime                        = 15;//联盟迁城CD时间
+     ST_LeagueDepotUsedResource_PB	depotUsed           = 16;//已经使用的联盟资源
+    repeated uint32	repairCityList                              = 17;//今日修理过的城市列表
+     uint32 helpMemberCount                             = 18;//今日帮助盟友次数
+     uint64 joinCDTime                                  = 19;//加入联盟CD时间
+     uint64 lastGetDevoteCountTime                      = 20;//上次获得联盟捐献次数的时间
+    repeated ST_LeagueInvitationReject_PB invitationRejectList  = 21;//拒绝列表
+     uint64 lastTimeLeagueMessage                       = 22;//上次阅读联盟消息的时间
+     uint32 goldArrayIndex                              = 23;//金币捐献数组索引
+     uint64 devoteResetTimestamp                        = 24;//捐献重置时间点
+	 uint64 joinLeagueTime 								= 25;//加入联盟的时间点
+	 uint64 LeagueGiftScore 							= 26;//联盟礼物积分
+	  KeyBoxInfo keyBoxInfo 							= 27;//钥匙宝箱信息
+}
+
+//钥匙宝箱信息
+message KeyBoxInfo
+{
+	 uint32 itemId 	= 1; //道具id
+	 uint64 endTime = 2; //过期时间
+}
+
+message ST_LeagueHelpBaisc_PB
+{
+	 uint64 uid					= 1;
+	 uint32 actionID			= 2;
+}
+message ST_Gift_PB
+{
+	 uint32						leagueGiftID		= 1;
+	 uint32						state				= 2;//1：没领 2：已领 3：过期
+	 uint64						addTime				= 3;
+	 ST_ItemEntry_PB			itemId				= 4;
+	 string 					buyer				= 5;//礼包购买者名字
+	 uint64 					packName 	 		= 6;//礼包Langueid
+	 uint64 					initItemId 			= 7;//初始id item			
+}
+message ST_LeagueExtra_PB
+{
+	repeated uint64 					massList			= 1; //当前我的联盟集结ID列表 globalActionID
+	repeated ST_LeagueHelpBaisc_PB		helpList			= 2; ///联盟成员 请求的联盟帮助列表
+	repeated uint64						garrisonList		= 3; //联盟成员派给我的 globalActionID list
+	repeated ST_Gift_PB					leagueGiftList		= 4; //可以领取的联盟礼包ID
+	 bool						canRepairCity		= 5; //是都可以修复联盟城市
+}
+message ST_LeagueBattleNOTJoin_PB
+{
+	 uint64						targetWorldDataID	= 1; //目标地点ID
+	 uint64						attackActionID		= 2; //进攻方actionid
+	repeated uint64						defenceList			= 3; //防守方actionlist
+	 uint64						targetTroopNum		= 4; //目标主城兵力数量
+}
+message ST_LeagueBattle_PB
+{
+	 uint64						targetWorldDataID	= 1; //目标地点ID
+	repeated uint64						attackList			= 2; //进攻方actionlist
+	repeated uint64						defenceList			= 3; //防守方actionlist
+	 uint64						targetTroopNum		= 4; //目标主城兵力数量
+	 uint64						attLeagueID			= 5; //攻击方联盟
+	 uint64						attackActionID		= 6; //如果攻击方没有联盟，用来判断的actionid
+}
+
+//客户端通信的数据，比存db的多一些项，比如玩家姓名等
+message ST_League_Member_Info
+{
+	 uint64 					id 						= 1; //id
+	 int32 						level 					= 2; //成员权限等级
+	 uint64						lastRefreshTimestamp	= 3; //掉线时间
+	 uint64 					power					= 4;//成员战力值
+	 uint64 					killNum					= 5;//成员杀敌数量
+	 uint64 					title					= 6;//成员官职
+	 uint32 					MainCityLevel			= 7;//主城等级
+
+}
+
+message ST_League_Simple_Info
+{	
+	 string 										name 				= 1; 	// 名称 
+	 uint64 										ownerID 			= 2; 	//盟主id
+	 string 										ownerName 			= 3;
+	 string 										shortName 			= 4; 	//联盟别名
+ 	 string 										slogan    			= 5; 	//联盟口号  
+	 uint32 										memberCount			= 6;
+	 uint64 										battle 				= 7; 	// 联盟战力
+	 uint64 										leagueID 			= 8; 	//联盟的唯一ID
+	 uint64											score				= 9; 	//联盟积分
+	 uint32											versionid			= 10; 	//联盟资产版本号
+	 bool											needReview			= 11; 	//加入是否需要审核
+	 uint32											leagueLanguage		= 12; 	//联盟语言
+	 uint64											mainCityLevel		= 13; 	//成员的主城等级
+	 uint64 										minPower			= 14; 	//加入联盟时的最小战力
+	repeated ST_LeagueMessageEntry_PB 						messageList			= 15;	//联盟留言数据
+	 uint32											memberCapacity		= 16;	//联盟人数容量
+	 uint32 										powerRank			= 17;	//联盟战力排名
+	 ST_LeagueCustomFlag_PB							flag 				= 18;	//联盟旗帜
+	 uint32											giftLevel			= 19;	//联盟礼包等级
+	repeated uint32											ownCitys			= 20;	//联盟占领的城市列表(typeid)
+	 uint64											createDate			= 21; 	//联盟创建时间
+	 string											OutSlogan			= 22;	//联盟对外公告
+	 uint64											autoDismissTime		= 23;	//自动结束时间
+	 uint32											sid					= 24;	//联盟所属服务器id
+	 ST_List_Uint64									Building			= 25;	//联盟领地
+	 string 										channelId 			= 26; 	//联盟聊天频道ID
+}
+message ST_List_Uint64
+{
+	repeated uint64		List			= 1;
+}
+
+message ST_League_Operation_Result
+{
+	 LeagueResult result = 1;
+}
+
+message ST_League_Simple_Info_List
+{
+	repeated ST_League_Simple_Info simpleInfoList = 1;
+}
+
+message ST_LeagueTechnology_PB
+{
+	 uint32 					rID					= 1;	//科技等级
+	 uint32 					exp					= 2;	//科技经验
+	repeated ST_CashAsset_PB			devoteRequest		= 3;	//单次捐献需求
+	repeated ST_Vector4Int_PB			onceDevoteIncome	= 4;	//单次捐献的收益
+	repeated ST_Vector4Int_PB			goldDevoteIncome	= 5;	//金币捐献的收益
+}
+
+message ST_League_Help_Simple_PB
+{
+	 ST_LeagueHelpBaisc_PB		basic				= 1;
+	 uint32						actionType			= 2;
+	 uint32						helpCount			= 3;
+	 string						username			= 4;
+	 uint32						buildingType		= 5;
+	 uint32						buildingLevel		= 6;
+	 uint32						techID				= 7;
+	 uint32						maxCount			= 8; //可以帮助的最大次数
+}
+
+message ST_LeagueHelpDetail_PB
+{
+	repeated ST_League_Help_Simple_PB	helpList			= 1;
+}
+
+message ST_League_Help_Info_PB
+{
+	 ST_League_Help_Simple_PB	simple				= 1;
+	repeated uint64						helperID			= 2;
+}
+
+message ST_League_Help_Asset_PB
+{
+	repeated ST_League_Help_Info_PB		leagueHelpList		= 1; //联盟帮助列表
+}
+message ST_LeagueGift_PB
+{
+	 uint32						giftID				= 1;
+	 ST_ItemEntry_PB			giftData			= 2;
+	 uint64						addTime				= 3;
+}
+message ST_LeagueGiftList_PB
+{
+	repeated  ST_LeagueGift_PB			giftList			= 1; //联盟礼包列表
+}
+message ST_LeagueGiftSpecial_PB
+{
+	 uint32						currentGiftID		= 1;
+	 uint64						giftExp				= 2;
+	
+	 uint32						leaguePackLevel		= 3; //【废弃】
+	 uint32						leagueExp			= 4; //【废弃】
+	 uint64 					keyNum 				= 5; //钥匙数量
+	 uint32 					keyBoxQuality 		= 6; //钥匙宝箱当前品质
+}
+
+message ST_LeagueMemberTitleName_PB
+{
+		uint32 memberLevel 	= 1;
+		string titleName 	= 2;
+}
+message ST_LeagueDepot_PB
+{
+	 bool							enableDepot				= 1;	//是否开启联盟仓库
+	 uint32							depotCityid				= 2;	//开启仓库的城市TypeID
+	 uint32							depotPercent			= 3;	//仓库资源使用比例
+	 ST_CashAsset_PB				maxAllowResource		= 4;	//总共允许使用资源
+	 uint64							openTime				= 5;	//开启时间
+}
+message ST_LeagueManagement_PB
+{
+	 ST_LeagueDepot_PB				cureUnit					= 1;	//治疗
+	 ST_LeagueDepot_PB				produceUnit					= 2;	//造兵
+	 ST_LeagueDepot_PB				build						= 3;	//建筑
+	 ST_LeagueDepot_PB				research					= 4;	//科研
+}
+
+message ST_League_Detail_Info
+{
+	 ST_League_Simple_Info 			simpleInfo 						= 1;
+	repeated ST_League_Member_Info 			memberList 						= 2;
+	repeated ST_ItemEntry_PB				shop							= 3; //联盟商店
+	repeated ST_LeagueTechnology_PB 		technologyList					= 4; //联盟科技资产
+	 ST_League_Help_Asset_PB		leagueHelp						= 5; //联盟帮助列表
+	repeated ST_LeagueGift_PB				giftList						= 6; // 
+	 ST_LeagueGiftSpecial_PB		giftSpecial						= 7; //特殊联盟礼包
+	repeated uint64							requestJionList					= 8; //请求加入联盟的玩家列表
+	 ST_LeagueDonationRank_PB		devoteRank						= 9;//联盟捐献排行榜
+	 ST_LeagueStatus_PB				leagueStatus					= 10;//联盟状态条目
+	repeated ST_LeagueMemberTitleName_PB 	memberTitleList					= 11;//联盟成员等级自定义名称
+	 ST_LeagueManagement_PB			managerment						= 12; //联盟管理数据 - 仓库
+	repeated ST_LeagueBattle_PB				leagueBattleList				= 13; //本联盟相关的战斗信息(压秒)
+	repeated ST_LeagueBattleNOTJoin_PB		leagueBattleNotJoinList			= 14; //本联盟相关的战斗信息(集结)
+	repeated ST_LeagueBox_Item_PB 			leagueBox 						= 15; //联盟宝箱
+	repeated uint32 						recommendTechList				= 16; //推荐科技
+	 uint32					 	 	leagueCityScore					= 17; //联盟城市活动积分
+	 uint32 						leagueCupClass 					= 18; //联盟杯赛的赛级
+	repeated ST_LeagueCampLeader_PB 		campInfo 						= 19; //驻防队长信息
+	repeated ST_League_Member_BuffTitle 	buffTitle 						= 20; //头衔
+}
+
+message ST_League_Member_BuffTitle {
+	 int64 			id 		= 1; //头衔
+	 uint64 		addtime	= 2; //添加头衔时间	
+	 uint64 		uid 	= 3; //uid
+}
+
+
+message ST_LeagueCampLeader_PB {
+	 uint64 campId 		= 1; //联盟堡垒id 
+	 uint64 leaderUid	= 2; //队长id
+}
+
+message ST_LeagueBox_List_PB
+{
+	repeated ST_LeagueBox_Item_PB 			leagueBoxList 					= 1; //联盟宝箱
+}
+
+//邀请我加入的联盟信息
+message ST_InvitationLeague_Info
+{
+	 uint64 					leagueID			= 1;//邀请加入的联盟ID
+	 string						leagueName			= 2;//邀请加入的联盟名称
+	 uint64						inviterUID			= 3;//邀请者UID
+}
+
+message ST_PopUpAsset_PB
+{
+	repeated ST_InvitationLeague_Info			leagueInvitation			 = 1; //邀请加入联盟弹窗
+	 uint64 							recommendLeagueID			 = 2; //推荐联盟ID
+}
+
+//联盟留言数据
+message ST_LeagueMessageEntry_PB
+{
+	 uint64 					senderUID	= 1;//留言人UID
+	 uint64						sendTime	= 2;//留言时间
+	 string 					message		= 3;//留言内容
+	 uint32						deleted     = 4;//删除状态
+}
+
+//--------------战斗记录相关(回放)-------------
+
+//同类型单位数量
+message ST_UnitCount_PB
+{
+	 uint32 	unitType 	= 1;//单位类型
+	 uint32 	unitCount 	= 2;//当前类型的总数	
+}
+
+//当前战斗回合的BUFF信息
+message ST_BuffBattleInfo_PB
+{
+	 uint32 	buffID 		= 1;//BUFFID,数据要传输给客户端，所以不存储BUFF名字
+	 uint32 	buffType 	= 2;//buff类型，1:增益 2：负面 3：伤害 4：持续伤害	
+}
+
+//技能信息
+message ST_HeroSkillInfo_PB
+{
+	 uint32     			skillID	= 1;//主动释放的技能
+	 uint32 				targetType 	= 2;//释放对象 	
+}
+
+//当前回合的英雄战斗信息
+message ST_HeroBattleInfo_PB
+{
+	 uint32 				heroID 		= 1;//英雄ID
+	repeated ST_BuffBattleInfo_PB 	buffList 	= 2;//BUFF信息
+	repeated ST_Unit_PB  			killList  	= 3;//击杀敌方战斗单位(会出现一对多)
+	repeated ST_Unit_PB	  			recoveryList= 4;//治疗己方战斗单位(会出现一对多)
+	 ST_HeroSkillInfo_PB 	useSkill 	= 5;//使用了的主动技能	
+	 uint32                 useOrder 	= 6;//技能使用顺序
+}
+
+//当前回合的战斗单位信息
+message ST_CorpBattleInfo_PB
+{	
+	 uint32 				unitType	= 1;//己方军团类型
+	 uint32 				unitNum 	= 2;//己方军团当前总量
+	repeated ST_BuffBattleInfo_PB 	buffList 	= 3;//BUFF信息
+	repeated ST_Unit_PB 	  		unitKill  	= 4;//击杀敌方总量(只会一对一)
+	repeated ST_Unit_PB  			unitLost  	= 5;//己方损失总量	
+	 uint32 				unitId 		= 6;//己方军团类型
+
+}
+
+//回合基础信息
+message ST_RoundBaseInfo_PB
+{
+	 uint64 				curPower 	= 1;//每回合的战斗力
+	repeated ST_HeroBattleInfo_PB	heroList = 2; //英雄信息
+	repeated ST_CorpBattleInfo_PB	CorpList = 3; //军团信息
+	 ST_WallReport_PB 		wallHp 	 = 4; //城墙血量,战斗前以及回合后血量
+}
+
+//战斗回合信息
+message ST_BattleRoundInfo_PB
+{
+	 uint32 				round 			= 1; //第几回合	
+	 ST_RoundBaseInfo_PB 	atkRoundInfo 	= 2;//攻击方回合信息
+	 ST_RoundBaseInfo_PB 	defRoundInfo 	= 3;//防守方回合信息
+}
+
+//战场显示的战斗单位ID
+message ST_ShowUnit_PB
+{
+	 uint32 				showUnitType	= 1;
+	 int64 				    showUnitID 		= 2;
+}
+
+//起始信息
+message ST_SimpleStartInfo_PB
+{
+	 uint64 				allStartPower 	= 1;//战斗开启时的战斗力
+	 uint64 				startWallHp 	= 2;//城墙起血量
+	repeated uint32 				startHeroList	= 3;//起始英雄
+	repeated ST_UnitCount_PB 		startUnitList	= 4;//起始军团
+	repeated ST_ShowUnit_PB 		showUnit 		= 5;//最高等级的战斗单位ID,包含陷阱
+	 uint32 				wallLevel       = 6;//城墙等级
+	 uint64 				heroPower 		= 7;//战斗开启时的英雄战斗力
+}
+
+//战斗信息(非战斗报告，用于战斗回放)
+message ST_BattleInfo_PB
+{
+	repeated ST_BattleRoundInfo_PB 	roundInfo 		= 1;//战斗回合信息
+	 uint32 				atkFormation	= 2;//攻击方阵型
+	 uint32 				defFormation	= 3;//防守方阵型
+	 ST_SimpleStartInfo_PB 	atkSimpleStartInfo = 4;//进攻方部分起始信息
+	 ST_SimpleStartInfo_PB 	defSimpleStartInfo = 5;//防守方部分起始信息
+	 bool 					isAtkWin 		= 6;
+	 uint32 				targetType		= 7;//目标类型
+}
+
+//--------------战斗记录相关(回放)-------------
+//--------------战斗报告相关-----------------
+
+//指挥官简单信息
+message ST_BattleCommanderSimpleInfo_PB
+{
+	 uint64				uid			= 1; //UID
+	 string				name		= 2; //名字
+	 string				leagueName	= 3; //公会名称
+	 uint32				tileID		= 4; //大地图坐标
+	 uint64 			addExp		= 5; //战斗经验
+}
+
+//出征英雄报告
+message ST_HeroBattleReport_PB
+{
+	 uint32 	id 					= 1;
+	 uint32 	level 				= 2;//等级
+	 uint32		star				= 3;//星级
+	 uint32 	rank				= 4;//品阶
+	 uint64     exp 				= 5;//经验	
+	repeated ST_HeroSkill_PB 	skillList 	= 6;//技能ID
+	repeated uint32 	branchValue			= 7;//4属性,顺序存储
+	 uint64 	power 				= 8;//战斗力
+	 uint32     useSkillTimes 		= 9;//释放技能次数
+	 uint64		destoryUnitCount	= 10;//消灭敌方战斗单位总数	
+	 uint64		recoveryUnitCount	= 11;//治疗己方战斗单位总数	
+	 uint64 	addExp 				= 12;//杀敌经验
+	 bool 		isLevelUp 			= 13;//是否升级
+	repeated ST_Unit_PB killList  			= 14;//击杀敌方战斗单位，仅仅用于战斗后续逻辑，客户端不用
+}
+
+message ST_GetExp_PB
+{
+	 uint32					heroID					= 1; //英雄ID
+	 uint64					commanderExp			= 2; //指挥官获得经验	
+	
+}
+
+//单一战斗单位报告
+message ST_UnitBattleReport_PB
+{	
+	 uint32 	 					 	unitID		  	= 1;//己方参战的战斗单位ID
+	 uint32 	 					 	join		  	= 2;//己方参战的战斗单位数量	
+	 uint32 	 						survival		= 3;//己方存活战斗单位数量
+	 uint32 							injured	  		= 4;//己方受伤战斗单位详情
+	 uint32 							death	  		= 5;//己方死亡战斗单位详情	
+	 uint32 		 					kill 		  	= 6;//消灭敌方战斗单位的总数
+	 ST_UnitAsset_PB 					killList	  	= 7;//消灭敌方的战斗单位列表		
+}
+
+//城墙报告
+message ST_WallReport_PB
+{
+	 uint32 	beforeHp = 1;//战斗前生命
+	 uint32 	afterHp  = 2;//战斗后生命
+	 uint32 	level    = 3;//城墙等级
+}
+
+//属性加成报告
+message ST_OtherAddition_PB
+{
+	 uint32 	buffID    = 1;//buff表里的ID
+	 uint32 	buffValue = 2;//值 
+}
+
+//单个指挥官的详细报告
+message ST_BattleReportDetail_PB
+{
+	 bool 								isBigBrother 	= 1;//战斗发起者
+	 ST_BattleCommanderSimpleInfo_PB 	commanderReport	= 2;//指挥官信息
+	repeated ST_HeroBattleReport_PB 			heroListReport 	= 3;//出征英雄信息	
+	repeated ST_UnitBattleReport_PB 			unitListReport 	= 4;//战斗单位,包含陷阱
+	 int64 								totalPower 		= 5;//兵力总战斗力
+	 ST_WallReport_PB 					wallReport 		= 6;//城墙信息，防守方才有
+
+	repeated uint32								naturalGift		= 7; //天赋等级,属性加成
+	repeated uint32 							technologyLevel	= 8; //科技等级,属性加成
+	repeated ST_Simple_Statue					statue			= 9; //雕像加成,属性加成
+	repeated uint32          					equipList		= 10;//指挥官装备列表,属性加成	
+	 uint64 							actionID 		= 11;//指挥官行为ID				
+	 string 							reward 			= 12;//攻击方战斗胜利个人奖励(目前只显示资源类道具)
+	repeated ST_ItemEntry_PB					mutirMonReward	= 13; //多人野怪的道具奖励
+	 bool  						 	    isArrest 		= 14; //是否被逮捕
+	 uint32 							macScore 		= 15;//怪物攻城积分
+}
+
+//战损比报告
+message ST_PowerReport_PB
+{
+	 int64 	lossValue			= 1; //损失的战斗力
+	 float 	lossRatio			= 2; //比例
+	 int64 allPower			= 3; //总战力
+}
+
+//守城方失败信息
+message ST_DefFailInfo_PB
+{
+	 uint32 	burningTime = 1;	//城墙燃烧时间
+	 uint64 	prisonID    = 2;	//被抓的指挥官UID
+}
+
+//战斗报告
+message ST_BattleReport_PB
+{	
+	 bool						isWin				= 1; //ture 收信人胜利 false 收信人失败
+	repeated ST_BattleReportDetail_PB	atkInfo				= 2; //进攻方信息(第一个永远是发起者)
+	repeated ST_BattleReportDetail_PB	defInfo				= 3; //防守方信息(第一个永远是目标拥有者)
+	 ST_PowerReport_PB 			atkPowerReport 		= 4; //进攻方战损比
+	 ST_PowerReport_PB 			defPowerReport 		= 5; //防守方战损比
+	 string 					totalReward			= 6; //进攻方战斗胜利总奖励(目前只显示资源类道具)	
+	 ST_DefFailInfo_PB 			defFailInfo 		= 7; //失败方信息
+	 uint32 					targetType 			= 8; //战斗类型
+	 int64						WorldEntryConfigID	= 9;
+	 int64 						returnUnitsTotal    = 10;//多人野怪战后返还兵力总量
+	repeated ST_ReturnUnits_PB          returnUnitsList     = 11;
+     ST_AttributeList_PB        atkAllBattleAttri   = 12;//进入战斗时总的
+     ST_AttributeList_PB        defAllBattleAttri   = 13;
+}
+
+//返还兵力详细信息
+message ST_ReturnUnits_PB
+{
+	 uint64 actionID = 1;
+	 ST_UnitAsset_PB returnUnitInfo = 2;
+}
+
+
+//怪物猎杀报告
+message ST_MonsterInfo_PB
+{
+	 uint32					currentHP		= 1; //当前剩余血量
+	 uint32					dropHP			= 2; //击杀血量
+	 uint32					times 			= 3; // 猎杀倍数
+	 uint32 				count 			= 4; // 连续猎杀次数
+	 uint64					tileID			= 5; // 怪物坐标
+	 uint32					addDamage		= 6; // 伤害加成
+}
+//目前用于单人boss怪和推图
+message ST_MonsterKill_PB
+{
+	 ST_UnitAsset_PB		uints			= 1; //出兵量
+	repeated ST_ItemEntry_PB		reward			= 2; //获得奖励
+	 uint32					commanderExp	= 3; //指挥官经验
+	repeated ST_HeroBattleReport_PB heroListReport 	= 4; //出征英雄信息	
+	 ST_MonsterInfo_PB		monsterInf		= 5; //怪物信息
+	 int64					monsterid		= 6; //WorldEntryConfig ID 
+	 uint64 				uid				= 7; // 玩家id
+}
+
+message ST_BattleNotice_PB
+{
+	 int64 	    noticeUID			= 1;//全局唯一ID，与ST_BattleInfo_PB关联
+	 uint32		languageID			= 2;//语言包ID
+	repeated uint32		paraUint32 			= 3;//语言ID，language中的参数
+	repeated string		paraString			= 4;//字符参数		
+     uint64     timestamp       	= 5;//产生的时间戳
+     bool       battleRlt 			= 6;//战斗结果	
+     bool 		isHaveBattleInfo	= 7;//是否有战斗过程数据
+     uint64 	mailID			    = 8;//邮件ID
+	 int32		type 				= 9;//提示类型 0 表示战斗， 1 表示侦察
+}
+
+
+//战后右下角弹框信息
+message ST_BattleNoticesAsset_PB
+{
+	repeated ST_BattleNotice_PB notices = 1;
+}
+
+//--------------战斗报告相关-----------------
+
+
+message ST_TileInfo_PB
+{
+	 uint64 leagueID = 1; //联盟id
+	repeated int32  tileIDList = 2;//联盟地块列表
+}
+
+message ST_TileInfo_List
+{
+	repeated ST_TileInfo_PB leagueTileList = 1;//联盟地块列表
+}
+
+//聊天条目
+message ST_Chat_Entry_PB
+{
+	 uint32 entryIndex			= 1; //条目ID
+	 uint64 senderID 			= 2; //发送者ID
+	 uint64 sendTime 			= 3; //发送时间
+	 string chatContent			= 4; //聊天内容（原始内容）
+	 uint32 chatType			= 5; //聊天类型
+	 string Name 				= 6; //玩家名称
+	 string avatar 				= 7; //头像url
+	 uint32 avatarBoxID 		= 8; //边框ID
+	 string loardIcon 			= 9; //头像名称
+	 string LeagueName 			= 10; //联盟名称
+	 int32 kingWarTitle			= 11; //王战头衔
+	 uint32 bubbleid 			= 12; ///汽泡id
+}
+
+//聊天话题	
+message ST_Chat_Title_PB
+{
+	 uint64 titleID				= 1; //话题ID
+	 uint64 senderID 			= 2; //发送者ID(0:为该频道内的系统消息)
+	 uint64 sendTime 			= 3; //发送时间
+	 string chatContent			= 4; //聊天内容（原始内容）
+	 uint32	praiseCount			= 5; //点赞人数
+	 uint32	replyCount			= 6; //回复人数
+	 uint64	sortValue			= 7; //排序值
+	 uint32 praised				= 8; //是否已点赞
+	 uint32 senderLanguageID	= 9; //发送者的语言代码
+	 uint32 chatType 			= 10; //聊天类型
+	 string Name 				= 11; //玩家名称
+	 string avatar 				= 12; //头像url
+	 uint32 avatarBoxID 		= 13; //边框ID
+	 string loardIcon 			= 14; //头像名称
+	 string LeagueName 			= 15; //联盟名称
+	 int32 kingWarTitle			= 16; //王战头衔
+	 uint32 bubbleid 			= 17; //汽泡id
+	 uint32 currentSid 			= 18; //发送消息玩家的服务器ID
+	 string photourl 			= 19; //发送图片路径
+	 int32  photowindth			= 20; //发送图片宽度
+	 int32  photoheight			= 21; //发送图片高度
+}
+
+message ST_Chat_League_PB
+{
+	repeated ST_Chat_Title_PB titles = 1;
+}
+
+//聊天话题列表
+message ST_Chat_TitleList_PB
+{
+	 int32 channle = 1; //频道
+	repeated ST_Chat_Title_PB titleList = 2;//话题列表
+	 int32 subChannel = 3; //子频道
+}
+
+//聊天条目列表
+message ST_Chat_EntryList_PB
+{
+	 int32  channle = 1; //频道
+	 uint64 titleID = 2; //所属话题ID
+	repeated ST_Chat_Entry_PB entryList = 3;//条目列表
+}
+
+//聊天频道概述
+message ST_Chat_ChannelInfo_PB
+{
+   int32  channle                 	= 1;
+   int32   childChannle           	= 2;
+   uint64  version                 	= 3;
+  repeated ST_WorldChatTitleInfo_PB worldChatTitleList   = 4;
+   uint64  timestamp				= 5;//发送最新消息的时间戳
+   uint64  senderUID				= 6;//最新消息的发送者uid
+}
+
+message ST_WorldChatTitleInfo_PB
+{
+   uint64  chatTitleID   = 1;
+   uint32  replayCount   = 2;//话题回复总数
+   uint32  praiseCount   = 3;//话题点赞总数
+}
+
+message ST_Chat_ReplyList_PB
+{
+	repeated ST_Chat_Entry_PB replyList = 1;
+}
+
+message ST_Hot_Chat_Item_PB
+{
+	 uint64 userID = 1;		// 用户ID
+	 int32 value = 2;		// 热度贡献
+}
+
+message ST_Hot_Chat_Info_PB
+{
+	repeated ST_Hot_Chat_Item_PB 	currentHotInfo = 1;	//当天热度
+	 ST_Int32List_PB		countedHotInfo = 2; //统计过的热度
+	 uint64					ftime = 3;			//最后刷新热度时间
+}
+
+//聊天频道概述列表
+message ST_Chat_ChannelInfoList_PB
+{
+	repeated ST_Chat_ChannelInfo_PB	list = 1;
+}
+
+//聊天条目概述
+message ST_Chat_TitleInfo_PB
+{
+	 uint64 titleID 	= 1;
+	 int32	praiseCount	= 2;//点赞人数
+	 int32	replyCount	= 3;//回复人数
+}
+
+//聊天条目概述列表
+message ST_Chat_TitleInfoList_PB
+{
+	 int32	channle = 1;
+	 uint64	maxtitleID = 2;	
+}
+
+//英雄信息
+message ST_HeroEntry_PB
+{
+	 uint32 	id 					= 1;
+	 uint32 	level 				= 2;//英雄等级
+	 uint32		star				= 3;//英雄星级
+	 uint64		exp					= 4;//英雄经验
+	 uint32     heroStatus			= 6;//英雄状态，GameDefine.HeroStatus
+	repeated ST_HeroSkill_PB skillList 		= 12; // 英雄技能
+	repeated uint32 	branchValue			= 13; // 英雄4属性
+	 uint64 	power 				= 14; // 战斗力
+	 uint32 	skillUpTimes		= 17; // 技能升级次数
+	 bool 		manuCap				= 18; // 是否手动驻防
+	 uint32 	manuIdx 			= 19; // 手动驻防位置
+}
+
+message ST_HeroSkill_PB
+{
+	 uint32	skillLogicType 	= 1;//技能类型
+	 uint32 skillID 		= 2;//技能ID
+	 uint64 curExp			= 3;//技能经验(废弃)
+}
+
+//英雄非正常状态详细信息
+message ST_Prison_PB
+{
+	 uint32					heroId				= 1;//英雄ID(废弃)
+	 uint32 				heroLevel 			= 2;//英雄等级(废弃)
+	 uint32					heroQuality			= 3;//英雄品质(废弃)
+	 uint64					Owner				= 4;//被抓玩家uid
+	 uint64					stepStartTime		= 5;//关押开始时间
+	 uint64					stepRemainTime		= 6;//关押剩余时间
+	 uint32					resourceType		= 7;//英雄产出资源类型
+	 uint32					resourceSpeed		= 8;//英雄产出资源速度(分钟)
+	 uint64					heroExp				= 9;//英雄总经验（无用)
+	 ST_Vector4Int_PB		ransom				= 10;//赎金
+	 ST_Vector4Int_PB		bounty				= 11;//赏金
+}
+
+message ST_PrisonAsset_PB
+{
+	repeated ST_Prison_PB	heroList		= 1;//监狱资产
+	 uint32 		prisonMaxLevel 	= 2;//被抓玩家最高等级
+}
+
+//英雄资产
+message ST_HeroAsset_PB
+{
+	repeated ST_HeroEntry_PB 		heroList 		= 1;//英雄列表
+	repeated uint32 				levelUpList		= 2; //升级的英雄ids 
+}
+
+//buff资产
+message ST_Buff_PB
+{
+	 uint64					id				= 1;//buffID 
+	 uint64					startime		= 2;//buff开始时间
+	 uint64					remaintime		= 3;//buff持续时间
+	 uint32					value			= 4;//增加的属性值
+}
+
+message ST_BuffAsset_PB
+{
+	repeated ST_Buff_PB	list			= 1;//buff列表
+}
+
+message ST_GlobalBuff_PB
+{
+	 uint32 serverID = 1;
+	 uint32 activityID = 2;
+	 uint32 activityType = 3;
+
+	 uint32 stage = 4;
+	 uint64 stageStartTime = 5;
+	 uint64 stageEndTime = 6;
+}
+
+//天赋
+message ST_TalentAsset_PB
+{
+	 uint32					canUsePoint			= 1; //可用天赋点数
+	 uint32					totalPoint			= 2; //总共天赋点数
+	repeated uint32					talentList			= 3; //已经学习天赋
+}
+//召唤师技能
+message ST_Skill_PB
+{
+	 uint64					CDTime				= 1; //技能CD时间
+	 uint32					skillID				= 2; //技能ID
+	 bool					canUse				= 3; //技能是否已经激活
+	 uint64					lastUseTime			= 4; //上次使用技能时间
+}
+message ST_SkillAsset_PB
+{
+	 uint64					totalCD				= 4; //技能总的CD时间
+	repeated ST_Skill_PB			skillList			= 5; //技能列表
+}
+//TIPS
+message ST_Tips_PB
+{
+	 uint32					languageID		= 1;
+	repeated string					paraString		= 2;
+	repeated uint32					paraUint32		= 3;
+     uint64                 timestamp       = 4; //产生时间戳
+	repeated int32 					paraInt32		= 5; // 物品id
+}
+
+message ST_TipsAsset_PB
+{
+	repeated ST_Tips_PB				tipsList		= 1;
+}
+
+//任务
+message ST_TaskAsset_PB
+{
+	repeated uint32 				taskList		= 1;
+}
+
+//VIP
+message ST_Vip_PB
+{
+	 uint32					vipID					= 1;
+	 uint64					vipPoint				= 2;//获得的总军衔点数
+	 uint32                 vipLevel                = 3;//VIP等级
+	 uint32                 nextLoginGetVIPPoint    = 4;//下一次登录可获得的军衔点数
+	 uint32					vipGift					= 5;// 已经买过的VIP礼包（用位表示， 1：已够买，0：未购买）
+	 bool					canGetDailyReward 		= 6;// 是否可领取每日礼包
+	 ST_Vector2IntList_PB   VipStoreItems           = 7;//已购买道具
+	 uint64   				VipStoreRefreshTime     = 8;//vip商城刷新时间
+}
+//属性加成
+message ST_Attribute_PB
+{
+	 uint32					type			= 1;
+	 uint32					value			= 2;
+}
+message ST_AttributeList_PB
+{
+	repeated ST_Attribute_PB		list			= 1;
+}
+
+
+//------------指挥官装备相关--------------//
+//指挥官装备资产
+message ST_Asset_CommanderEquipInfo
+{
+	repeated uint32 			unLockPos   	= 1; //已解锁的部位
+	repeated ST_WearEquip  		wearEquipList 	= 2; //当前穿着的装备信息列表
+}
+
+//装备穿戴信息
+message ST_WearEquip
+{
+	 uint32 	wearPos 	= 1;//穿戴位置
+	 uint64 	equipUID 	= 2;//装备唯一ID
+	 uint32 	csvid 		= 3;//配置表ID
+}
+
+//指挥官各类道具资产
+message ST_Asset_FactoryPackage
+{
+	 uint64 			EquipVarID		= 1; //下一件装备的UID
+	repeated ST_EquipBasic		equipList 		= 2; //拥有的装备列表
+	repeated ST_MaterialBase 	itemList 		= 3; //拥有的材料列表
+}
+
+
+//装备基础信息
+message ST_EquipBasic
+{
+	 uint64 	uid 	= 1;//装备唯一ID
+	 uint32 	csvid 	= 2;//配置表ID
+	 uint32 	isWear 	= 3;//是否穿戴中 	
+}
+
+//材料基础信息
+message ST_MaterialBase
+{
+	 uint32 	id = 1;
+	 uint64 	value = 2;
+}
+
+//------------指挥官装备相关--------------//
+
+//------------抽卡相关--------------//
+
+//存入玩家资产的数据
+message ST_Asset_TakeCard
+{
+	repeated ST_TakeCard_Basic takeCardList = 1;//已进行的抽卡信息
+}
+
+//抽卡基本信息
+message ST_TakeCard_Basic
+{
+	 uint32 		cardPoolID		= 1;//卡池ID
+	 uint32 		lastFreeTimes 	= 2;//剩余的免费次数
+	 uint32 		nomalExtra	 	= 3;//普通商店高级卡组额外权重
+	 uint64			refreshTime		= 4;// 更新免费次数的时间戳
+	 uint64			freeOpenTime 	= 5; //开启免费的时间
+	 bool 			getFirstReward  = 6; //获取首抽奖励
+	 uint32			extraRewardTimes = 7; //抽XXX次数后获取额外奖励
+}
+
+//发送给客户端的
+message ST_Client_CardPool
+{	
+	repeated ST_CardPool_basic openCardPoolList = 1;	//当前自己已开启的卡池信息
+}
+
+//卡池信息
+message ST_CardPool_basic
+{
+	 uint32 		cardPoolID		= 1;//当前开启的卡池ID	
+	 uint32 		freeTimes		= 2;//完整免费次数(ST_CardPool_DB)或者剩余免费次数(ST_CardPool_Info)
+	 uint64			freeOpenTime 	= 3; //开启免费的时间
+	 uint32			extraRewardTimes = 4; //抽XXX次数后获取额外奖励
+}
+
+
+//------------抽卡相关--------------//
+message ST_GiftHistory {
+	 uint64 giftID = 1;
+	 uint32 giftNum = 2;
+}
+//用户折扣礼包资产
+message ST_Asset_OfferGift
+{
+	repeated ST_OfferGiftPack   data	= 1;
+}
+message ST_OfferGiftPack
+{
+	// 配置id （GM后台唯一id）
+	 int64 id = 1;
+	// 条件类型
+	 uint32 cond = 2;
+	// 唯一值或最小值
+	 string condvalue1 = 3;
+	// 最大值
+	 string condvalue2 = 4;
+	// 开始时间
+	 int64 tmstart = 5;
+	// 结束时间
+	 int64 tmend = 6;
+	// 此次更新操作类型 1更新 2删除 3重置 4添加
+	 int32 op = 7;
+	// 礼包配置
+	repeated ST_OfferGiftPackConf conf = 8;
+	// 服务器id
+	 string sids = 9;
+	 int64 ver = 10;
+	 string condvalue3 = 11;
+}
+message ST_OfferGiftPackConf
+{
+	//模板id
+	 int64 offergiftid = 1;
+	//名称
+	 int64 name = 2;
+	//图标
+	 int64 icon = 3;
+	//banner
+	 int64 banner = 4;
+	//特殊标志
+	 int64 artname = 5;
+	//文本
+	 int64 txt = 6;
+	//文本参数
+	 string txtarg = 7;
+	//倍率
+	 int64 offer = 8;
+	//价格id
+	 int64 product = 9;
+	//钻石
+	 int64 cash100 = 10;
+	//奖励
+	 ST_Vector4IntList_PB award = 11;
+	//购买次数
+	 int64 buynum = 12;
+	//可以购买次数
+	 int64 canbuynum = 13;
+}
+//用户礼包资产
+message ST_Asset_GiftPack
+{
+	repeated ST_GiftPackBasic		giftList				= 1; //礼包列表
+	repeated ST_Asset_MonthGiftPack monthGiftPacks			= 2; //包含玩家的旧月卡数据
+	repeated uint64					purchasedGiftPackIDList	= 3; //已购买过无法购买的的礼包ID
+	 string  				orderId 				= 4; //订单ID
+	 uint64		  			lastClearTime 			= 5; //上次重置时间
+	 uint32		  			lastPayYearDay 			= 6; //上次付费时间
+	// double	 	   		totalPay 		        = 7; //玩家总付费数
+	repeated ST_GiftHistory			payHistory 				= 8; //玩家付费历史
+	repeated ST_SubscribeGiftPack   subscribeGiftPacks 		= 9; //玩家已订阅的礼包  
+	repeated uint64					firBuyRewardGiftIDList	= 10;//用于记录已发放首购买额外奖励的礼包ID
+	repeated uint64 				alreadyBuyGiftIDList    = 11;//已购买的礼包，用不删除
+	//档次
+	 uint64					Cashlv					= 12;
+	//剩余钻石
+	 int64 					Cash100 				= 13;
+	repeated string 				giftCodes 				= 14;//已经使用过的礼包码 
+}
+
+//礼包基本信息
+message ST_GiftPackBasic
+{
+	 uint32			type			= 1; //礼包类型
+	 uint64			id				= 2; //礼包唯一id //csvID
+	 string         productId       = 3; //礼包商品id         
+	 uint64			startTimeStamp	= 4; //开始时间戳
+	 uint64			endTimeStamp	= 5; //结束时间戳
+	 uint64			giftLimitTimes 	= 6; //限购次数
+     bool           onSale          = 7; //是否出售
+     int64          randomID 		= 8; //礼包的随机ID
+     uint64 		oldEndTimeStamp = 9;
+     bool 			isOssControl    = 10;
+     bool 			needPop			= 11; //是否拍脸 true:拍 false:不拍
+}
+
+//用户限时礼包数据
+message ST_Asset_MonthGiftPack
+{
+	 uint64		id								= 1; //礼包唯一id	// csvID
+	 uint64 	monthGiftPurchaseTimestamp		= 2; //月卡购买时间
+	 uint32		monthGiftRemainTimes			= 3; //月卡剩余领取次数
+	 uint64		monthGiftLastGetTimestamp		= 4; //月卡上次领取时间点
+	 bool 	  	expired 						= 9; //已失效
+}
+
+//用户订阅礼包数据
+message ST_SubscribeGiftPack
+{
+	 uint64		id							= 1; //礼包唯一id csvID
+	 uint32		getGiftTimes				= 2; //订阅已领取次数
+	 uint32		totalGiftTimes				= 3; //订阅总领取次数
+	 uint64 	endTimestamp				= 4; //订阅结束时间	
+	 uint64		lastGetTimestamp 			= 5; //上次领取时间点
+	 uint64		PayNum 						= 6; //购买次数
+}
+
+//角色简单信息
+message ST_CharSimpleInfo
+{
+	 bool 				isValid					= 1; //是否有效
+	 uint32				sid						= 2; //服务器ID
+	 uint32				tileId					= 3; //瓦块ID
+	 uint64 			userId					= 4; //用户ID
+	 uint32				avatarBoxID				= 5; //玩家头像框ID
+	 string				avatar					= 6; //用户头像URL
+	 string				charName				= 7; //用户角色名
+	 uint64				leagueID				= 8; //联盟ID
+	 string				leagueName				= 9; //联盟名
+	 uint32				capacityOfGarrison		= 10; //盟友联盟中心驻军总容量
+	 uint32 			curGarrisonValue		= 11;//盟友联盟中心当前驻军数量
+	 uint32				languageID				= 12;//玩家语言ID
+	 uint64				power					= 13;//玩家战力
+	 uint32				mainCityLevel			= 14;//玩家主城等级
+	 uint32				vipID					= 15;//玩家vipID
+	 uint32				commanderLevel			= 16;//指挥官等级
+	 string				signature				= 17;//玩家签名
+	 uint32				commanderID				= 18;//指挥官头像id
+	 uint32				commanderQuality		= 19;//指挥官品质
+	 uint32				commanderStatus			= 20;//指挥官状态
+	 string				nickName				= 21; //昵称
+	 string 			leagueShortName			= 22; //联盟简称
+	 int32 				kingwartitle 			= 23; // 奇迹战头衔
+	 uint32 			commanderModelId 		= 24; // 指挥官模型id
+	 ST_CommanderFashionInfo_PB boxExt 			= 25;//当前头像框信息
+	 ST_CommanderFashionInfo_PB bubbleExt 		= 26;//当前气泡信息
+	 uint32 currentSid = 27; //当前服务器id
+}
+
+//角色简单信息
+message ST_CharSimpleInfoList
+{
+	repeated ST_CharSimpleInfo	simpleInfoList			= 1; //基本信息列表
+}
+
+message ST_WorldCharSimple_PB
+{
+	 uint64				userID						= 1; //玩家ID
+	 string				userName					= 2; //玩家名字
+	 string				leagueName					= 3; //玩家联盟名字
+	 string				signature					= 4; //玩家签名
+	 int32				titleID						= 5; //头衔ID
+	 uint32 			bubbleId 					= 6; //汽泡id
+}
+message ST_WorldCharSimpleList_PB
+{
+	repeated ST_WorldCharSimple_PB				dataList	= 4; //玩家信息列表
+}
+
+//战力排行榜条目
+message ST_PowerRankingListItem
+{
+	 string				avatar					= 1; //头像
+	 uint64				userId					= 2; //用户ID
+	 string				userName				= 3; //用户名称
+	 uint64				leagueId				= 4; //联盟ID
+	 string				leagueName				= 5; //联盟名称
+	 string				leagueShortName			= 6; //联盟简称
+	 uint64				powerValue				= 7; //战力值
+	 uint32 			prisonCount				= 8; //监狱人数
+	 uint32				bounty					= 9; //赏金数量
+	 ST_RankingHeroInfo heroInfo 				= 10;//英雄信息
+	 ST_GlobalRankingItem globalRanking 		= 11;//跨服排行榜信息
+}
+
+message ST_GlobalRankingItem
+{
+	 uint32 			serverId 				= 1;//区服id
+	 uint32 			avatarBoxID 			= 2;//头像框
+	 uint32 			headerId 				= 3;//头像id
+}
+
+//排行榜英雄信息
+message ST_RankingHeroInfo
+{
+	 uint32 id 		= 1; //id
+	 uint32 lv 		= 2; //等级
+	 uint32 star 	= 3; //星级
+	 uint32 color 	= 4; //颜色
+}
+
+//战力排行榜
+message ST_PowerRankingList
+{
+	 uint32						rankingType		= 1; //类型	
+	repeated ST_PowerRankingListItem 	rankingList		= 2; //榜单
+	 int32						myRank			= 3; //我的排名
+	 int32						maxRankingListSize = 4;//最大排名数
+	 uint64						MyValue			= 5; //我的积分
+}
+
+message ST_RecommendUserAsset_PB
+{
+	repeated uint64						userList		= 4;
+}
+
+//联盟捐献排行榜
+message ST_LeagueDonationRankEntry_PB
+{
+	 uint64						uid				= 1;//玩家id
+	 uint64						devote			= 2;//玩家荣誉值
+	 uint64						tech_devote		= 3;//科技捐献值
+	 string						name			= 4;
+}
+
+message ST_LeagueDonationRank_PB
+{
+	repeated ST_LeagueDonationRankEntry_PB dailyRankList 	= 1;
+	repeated ST_LeagueDonationRankEntry_PB weeklyRankList 	= 2;
+	repeated ST_LeagueDonationRankEntry_PB historyRankList 	= 3;
+	 uint64						 	dailyClearTime	= 4;
+	 uint64							weeklyClearTime	= 5;
+}
+
+//联盟状态条目
+message ST_LeagueStatusEntry_PB
+{
+	 uint32 		type 			= 1;//联盟状态类型，GameDefind.LeagueStausType
+	 uint64			time			= 2;//状态修改时间
+	 uint64 		playerID		= 3;//成员uid
+	 uint32			oldLevel		= 4;//联盟成员等级修改前的等级
+	 string 		managerName		= 5;//操作联盟成员等级的管理员名字
+	 uint64			managerID 		= 6;//操作联盟成员等级的管理员uid
+	 int64 			buffTitleId 	= 7;//头衔id
+}
+
+message ST_LeagueStatus_PB
+{
+	repeated ST_LeagueStatusEntry_PB 	statusList = 1;
+}
+
+//成就完成列表
+message ST_AchievementFinishedItem_PB
+{
+     uint32        taskType = 1;  //当前任务的类型
+     uint64        taskId   = 2;  //当前类型任务下正在进行的id
+     uint64        needNum  = 3;  //当前任务id需要的总量
+     uint64        accNum   = 4;  //当前任务累加的总量
+}
+
+//成就资产列表
+message ST_AchievementAsset_PB
+{
+	repeated ST_AchievementFinishedItem_PB	finishedList = 2; //所有未完成或者完成未领奖的的成就ID列表
+}
+
+//联盟自定义旗帜
+message ST_LeagueCustomFlag_PB
+{
+	 uint32  color 			= 1;//旗帜颜色
+	 uint32  background 	= 2;//旗帜背景
+	 uint32  icon 			= 3;//旗帜标示
+	
+	 string  customFlag		= 4;//自定义旗帜地址
+}
+
+//主城事件资产
+message ST_MainCityEvent_PB 
+{
+	 uint64 	id						= 1;//ID
+	 uint64		eventID					= 2;//事件ID
+	 uint64		eventType				= 3;//事件ID
+	 uint64		eventStartTime 			= 4;//事件开始时间
+	 uint64		eventTotalTime			= 5;//事件有效时间
+	 uint64		eventExecuteStartTime 	= 6;//执行开始事件
+	 uint64		eventExecuteTotalTime	= 7;//执行持续时间
+	 uint32 	px						= 8;//坐标X
+	 uint32 	py						= 9;//坐标Y
+	 uint32		actionID				= 10; //localActionId
+	 uint32     progress                = 11;//进度
+}
+
+//主城事件资产（服务器)
+message ST_MainCityEvent_Server_Asset_PB 
+{
+	 uint64               nextEventID      = 1;//下一个事件ID
+	repeated ST_MainCityEvent_PB  randomEventList  = 2;//随机事件列表
+	repeated ST_MainCityEvent_PB  staticEventList  = 3;//固定事件or地块解锁列表
+	repeated ST_MainCityEvent_PB  allEventList     = 4;//所有事件列表（服务器使用）
+	repeated uint64               unlockLandIDList = 5;//已解锁地块ID列表
+	 uint32               maxEventNumber   = 6;//最大事件个数
+}
+
+//主城事件资产
+message ST_MainCityEventAsset_PB 
+{
+    repeated ST_MainCityEvent_PB    randomEventList   = 1;//随机事件列表
+    repeated ST_MainCityEvent_PB    staticEventList   = 2;//固定事件or地块解锁列表
+    repeated uint64                 unlockLandIDList  = 3;//已解锁地块ID列表
+}
+
+//派遣任务
+message ST_DispatchTaskEntry_PB
+{
+	 uint64 id					= 1;//唯一ID
+	 uint32 taskID				= 2;//任务ID
+	 uint32 status 				= 3;//任务状态，GameDefine.DispatchTaskStatus
+	 uint64 createTime			= 4;//创建时间
+	 uint64 startTime 			= 5;//任务开始时间
+	 uint32 lactionID 			= 6;//localAction的ID
+	repeated uint32 dispatchHeroList 	= 7;//派遣的英雄列表 
+	 uint32 finishedPercent		= 8;//任务完成百分比
+}
+
+//派遣任务资产 
+message ST_DispatchTaskAsset_PB
+{
+	repeated ST_DispatchTaskEntry_PB 	taskList 		= 1;//任务列表
+	 uint64						lastRefreshTime = 2;//上次刷新任务的时间
+}
+
+//雕像资产
+message ST_Statue_PB 
+{
+	 uint32			      actionID			= 1; //雕像action ID
+     uint32               buildingId        = 2; //雕像建筑ID
+	 uint32			      statueStatus		= 3; //雕像状态
+	 uint32			      statueID			= 4; //雕像类型
+	 uint32			      statueLevel 		= 5; //雕像档次
+	 uint32			      statueClass	    = 6; //雕像类别
+	 uint64			      buildStartTime	= 7; //雕像建造开始时间
+	 uint64			      buildRemainTime	= 8; //建造剩余时间
+	 uint64			      buildTotalTime	= 9; //建造总时间
+	 uint32			      locationX			= 10; //雕像位置X
+	 uint32			      locationY			= 11; //雕像位置Y
+	 uint32			      borderX			= 12; //雕像边长X
+	 uint32			      borderY			= 13; //雕像边长Y
+	repeated string			      funcKeyArr		= 14; //雕像加成Key
+	repeated uint32			      funcValueArr		= 15; //雕像加成Value
+    repeated ST_Vector4Int_PB     costs             = 16; //雕像建造消耗
+     bool     			  hasOpen           = 17; //当前建造完成的雕像是否已开箱
+     uint64			      EnhanceStartTime	= 18; //雕像增幅开始时间(为0时无增幅)
+     uint64			      EnhanceTotalTime	= 19; //增幅总时间
+	 uint64			      EnhanceRemainTime	= 20; //增幅剩余时间	
+}
+
+//雕像相关资产
+message ST_StatueAsset_PB 
+{
+	repeated ST_Statue_PB				statueList		= 1; //拥有雕像列表
+}
+
+//每日签到任务
+message ST_SignInAsset_PB 
+{
+	 uint64 id			= 1; //任务ID
+	 uint64 startTime 	= 2; //在线奖励开始时间
+	 uint64 lastDailyLoginTime = 3; // 上次领取登录奖励时间
+	 uint32 lastDailyLoginId = 4; // 上次领取登录奖励id
+	 uint32 dailyLoginId = 5; // 可领取的登录奖励id
+	 uint32 popDailyLogin = 6; // 是否弹领奖界面
+	 uint32 dailyLoginCount = 7; // 领取登录奖励累计天数
+	 uint64 endTime = 8; // 在线奖励结束时间(可领取时间)
+	 uint32 rewardTimes = 9;//在线奖励领取次数
+}
+//城市信息
+message ST_WorldCity_PB
+{
+	 uint32				cityID 		= 1; //城市ID
+	 uint64				leagueID 	= 2; //城市所属联盟ID
+}
+message ST_WorldCityList_PB
+{
+	repeated ST_WorldCity_PB	cityList	= 1; //被占领的城市信息列表
+}
+
+// 翻译结果
+message ST_TranslateResult_PB
+{
+	 uint32 status = 1; // 翻译结果
+	 string transResult = 2; // 翻译结果
+	 int32 channelID = 3;
+	 int32 subChannelID = 4;
+	 uint64 titleID = 5;
+	 uint64 chatEntryIndex = 6;//聊天回复索引
+	 uint32 translateType = 7;//翻译类型
+}
+
+//个人信息
+message ST_RoleInformation_PB
+{
+	 uint32 myRank = 1; // 战力排名
+	 uint64 power= 2;	
+	 ST_UnitAsset_PB lossUnits = 3; //损失部队包括陷阱	
+	 uint32 attackWin = 4;	//进攻胜利
+	 uint32 defenceWin = 5;	//防守胜利
+	 uint32 attackFail = 6;	//进攻失败
+	 uint32 defenceFail = 7; //防守失败
+	 ST_UnitAsset_PB killUnits = 8; //击杀部队包括陷阱	
+	 ST_UnitAsset_PB repairUnits = 9; //维修部队包括陷阱	
+	 uint32 spyTimes = 10; //侦查次数
+	
+	 uint32 arrestHero = 11;	//抓捕英雄数量
+	 uint32 killHero = 12;		//处决英雄数量
+	 uint64 getReward = 13;	//获得赏金数量
+	 uint32 captivedTime = 14;	//被俘虏次数
+	 uint32 escapeTime = 15;	//逃脱次数
+	 uint32 executedTime = 16;	//被处决次数
+	
+	 uint32 leagueHelpTime = 17;  //联盟帮助次数
+	 uint64 massLimit = 18;  //集结兵力上限
+	
+	 ST_CashAsset_PB transforResource = 19; //资源运输量
+	 ST_CashAsset_PB collectResource = 20; //采集获得资产
+}
+
+// 跑马灯消息
+message ST_GlobalMessage_PB
+{
+	 ST_Tips_PB tipsContent = 1;				// 多语言跑马灯
+	 string textContent = 2;					// 纯文本跑马灯
+	repeated ST_EveryoneMailCondition conditions = 3;	// 跑马灯条件
+}
+
+message ST_GlobalMessageList_PB
+{
+	repeated ST_GlobalMessage_PB messages = 1;
+}
+
+//主城漫步英雄时间资产
+message ST_StrollHeroEventAsset_PB
+{
+	repeated ST_StrollHeroEvent_PB eventList = 1;
+}
+
+message ST_StrollHeroEvent_PB
+{
+	 uint64         id				= 1;//唯一id
+	 uint64         eventID 		= 2;//事件ID
+	 uint32         heroID			= 3;//英雄ID
+	 uint32         heroQuality		= 4;//英雄品质
+	 uint64         ownerUID		= 5;//拥有者UID
+	 uint64         ownerLeagueID	= 6;//拥有者联盟ID
+	 uint32         posX 			= 7;//位置x
+	 uint32         posY 			= 8;//位置y
+     uint32 		heroType        = 9;//英雄功能
+	 uint32 		heroLevel       = 10;//英雄等级
+}
+message ST_LeagueShopRecordList_PB
+{
+	repeated ST_LeagueShopRecord_PB itemList = 1;
+}
+
+message ST_LeagueShopRecord_PB
+{
+	 uint64         	uid				= 1;//用户id
+	 uint64         	time	 		= 2;//时间戳
+	 ST_ItemEntry_PB 	itemData		= 3;//货物
+}
+
+//全员邮件文本内容
+message ST_EveryoneMailItem
+{
+     uint32         languageId  = 1; //语言id
+     string         title       = 2; //标题   
+     string         content     = 3; //内容
+}
+
+// 全员邮件领取条件
+message ST_EveryoneMailCondition
+{
+	 EveryoneMailConditionType conditionType = 1; 	// 条件类型
+	repeated string conditionValues = 2; 					// 条件值
+}
+
+//全员邮件
+message ST_EveryoneMailContent
+{
+    repeated ST_EveryoneMailItem content = 1; 			// 邮件内容
+	repeated ST_EveryoneMailCondition conditions = 2; 	// 领取条件
+	 string mailId = 3;							// 平台传过来的MailID
+}
+
+//设置
+message ST_SettingAsset_PB
+{
+	repeated uint64 blockListUid= 1;						//黑名单
+	 ST_AudioSetting_PB audio = 2; 					//音效
+	 ST_NotifictionSetting_PB notifiction = 3;  	//通知
+	repeated ST_PowerChat_PB power = 4;
+	 uint64 lastReportTime = 5;
+	 uint32 dayReportCount = 6;
+	 ST_FeedbackMark feedMark = 7;
+}
+
+message ST_PowerChat_PB
+{
+	 uint64 power = 1;
+	 bool isChat = 2;
+}
+
+//声音设置
+message ST_AudioSetting_PB
+{
+	 bool BgmChannel = 1;	//背景音乐
+	 bool SfxChannel = 2;	//音效
+}
+//通知设置
+message ST_NotifictionSetting_PB
+{
+	 int64 setting = 1;
+}
+
+//评分反馈弹窗
+message ST_FeedbackMark
+{
+	 bool firstOrangeHero = 1;	//首次抽卡获得橙色英雄
+	 bool firstWinPlayer  = 2;  //首次攻击其它玩家获胜
+	 uint32 power 		  = 3;  //最高战力
+	repeated uint32 popIds 		  = 4;  //已经弹过窗的id
+	 uint32 cancelTms 	  = 5;  //取消次数
+	 bool marked 		  = 6;  //已经评过分
+	 bool rewarded 		  = 7;  //是否发过奖励
+}
+
+
+//设置修改结构
+message ST_UserSettingsAlterParams
+{
+     uint32 languageId                    = 1; //语言id
+    repeated uint64 addIdList                     = 2; //添加列表
+    repeated uint64 removeIdList                  = 3; //删除列表
+     ST_AudioSetting_PB audio             = 4; //音频设置
+     ST_NotifictionSetting_PB notifiction = 5; //通知设置
+}
+//新手引导资产
+message ST_BeginnerTutorialAsset_PB
+{
+	repeated uint32 FinishedTutorialList 	= 1;//已经完成的新手引导ID
+	 bool 	FirstEnterBigMap		= 2;//第一次进入大地图时同步该标志为true
+	 bool  	FirstEnterGame			= 3;//第一次进入游戏
+	repeated ST_FirstTutorialAsset_PB FirstTutorialTime     = 4;//引导次数
+	 bool 	FirstLeagueBox 			= 5;//第一个联盟宝箱
+	 bool 	FirstLordPage 			= 6;//第一次领主界面
+	 bool 	FirstTechPage 			= 7;//第一次科技界面
+	 bool 	FirstPay 				= 8;//首充
+	 bool 	FirstProduceUnit 		= 9;//第一次造兵
+	 bool 	FirstCash5 		= 10;//收集1次可乐
+	 bool 	FirstCash3 		= 11;//收集1次瓦斯
+
+}
+
+//首次引导次数
+message ST_FirstTutorialAsset_PB
+{
+	 uint32 tutorialType = 1;
+	 uint32 tutorialTime = 2;
+} 
+
+message ST_SetMemberTitles_PB
+{
+	repeated ST_LeagueMemberTitleName_PB titles = 1;
+}
+
+message ST_Activity_PB
+{
+	 uint32 serverID = 1;				// 服务器ID
+	
+	 uint32 activityId = 2;				// 活动ID
+	 uint32 activityType = 3;			// 活动Type
+	// 随机组
+	 uint32 groupId = 4;
+	// 活动场次
+	 uint32 number = 5;
+	 uint32 stage = 6;					// 活动当前阶段
+	 uint64 stageStartTime = 7;			// 当前阶段开始时间
+	 uint64 stagetEndTime = 8;			// 当前阶段结束时间
+	// 排行总榜
+	 ST_ActivityDetail_PB totalList =10;
+	 uint32 idx = 11;
+	 bool isdirty = 12;
+	 int64 ver = 13;
+	// 联盟杯报名阶段
+	 uint32 substage = 14;
+	// 阶段时长
+	 string Time = 15;
+	 uint32 rankingGroupId = 16; //跨服排行榜组id
+}
+
+message ST_ActivityScore_PB
+{
+	 uint64 uid = 1;
+	 string name = 2;
+	 uint64 luid = 3;
+	 string lname = 4;
+	 string llname = 5;
+	 uint32 score = 6;
+
+	 uint32 rankOrder = 7;	//当前排名
+	 uint32 contentID = 8;	//所属Content
+}
+
+message ST_ActivityLeague_Task
+{
+	 uint64 openTime = 1;
+	 uint32 taskID = 2;
+	 uint32 order = 3;
+}
+
+message ST_ActivityLeague_TaskAction
+{
+	 uint64 actionEnd = 1;
+	 uint32 actionVal = 2;
+}
+
+message ST_MemberInfo_Base
+{
+	 uint64 uID = 1;
+	 string name = 2;
+	 uint64 luid = 3;	//公会ID
+	 string lname = 4;
+	 string llname = 5;
+}
+
+message ST_ActivityScore_User
+{
+	 uint64 uid = 1;
+	 ST_MemberInfo_Base baMember = 2;
+	 ST_ActivityScore_Base baScore = 3;
+}
+
+message ST_ActivityScore_LeagueUser
+{
+	 uint64 uid = 1;
+	 ST_MemberInfo_Base baMember = 2;
+	 ST_ActivityScore_Base baScore = 3;
+	repeated ST_ActivityLeague_TaskAction actionData = 9;
+	repeated int32  scoreLvStatue = 11;	//每个积分阶段的状态(-1，0，1|2|3)
+	 ST_ActivityScore_UserTask userTask = 13;
+}
+
+message ST_ActivityScore_UserTask
+{
+	 uint32 winTask = 1;
+	 uint32 leftTask = 2;
+	 uint32 totalTask = 3;
+
+	 uint32 taskID = 4;
+	 uint64 progress = 5;
+	 uint64 failTime = 6;
+	 int32  status = 7;
+
+	 uint64 uid = 8;
+	 uint64 luid = 9;
+}
+
+// 公会基本信息数据结构
+message ST_LeagueInfo_Base
+{
+	 uint64 leagueID = 1;
+	 string Icon = 4;
+	 string Name = 5;
+	 string lName = 6;
+	 string LeaderIcon = 7;
+	 string LeaderName = 8;
+	 uint32 memNum = 9;		// 联盟人数
+	 uint64 power = 10;
+	 uint32 serverID = 11;	//
+}
+
+// 活动基本积分结构
+message ST_ActivityScore_Base
+{
+	 uint64 uID = 1;		//uID(玩家ID或者公会ID，看情况)
+	 uint32 score = 2;		//积分
+	 uint32 Content = 3;	//活动组
+	 uint32 rankOrder = 4;	//排名
+	 uint32 scoreLevel = 5;	//积分等级	(nextScore由这个来计算)
+}
+
+message ST_ActivityScore_League
+{
+	 uint64 leagueID = 1;
+	 uint32 classID = 2;
+	 uint32 nextClass = 3;		//下次活动的赛级
+	 bool isdirty = 4;
+
+	repeated ST_ActivityLeague_Task tasks = 5;
+
+	 ST_LeagueInfo_Base baInfo = 6;
+	 ST_ActivityScore_Base baScore = 7;
+	 ST_Uint64List_PB memList = 8;
+	 int64 ver = 9;
+}
+
+message ST_ActivityDetail_PB
+{
+	 uint32 contentID = 1;
+	repeated ST_ActivityScore_PB scores = 2;	// 活动积分(个人)
+}
+
+message ST_ActivityContent_PB
+{
+	 uint32 cupClass = 1; 	// 联盟杯赛专用，赛级
+	 uint32 contentID = 2;	// 必要内容
+	repeated ST_ActivityScore_League leagueScores = 3;	// 活动积分(联盟)
+	 uint32 ActivityId = 4;
+	 bool isdirty = 5;
+	 int64 ver = 6;
+	 ST_ActivityRank_PB RankLeague = 7;
+}
+
+message ST_ActivityRank_League
+{
+	 uint64 uid = 1;
+	 uint32 nextClass = 2;		//下次活动的赛级
+	 ST_LeagueInfo_Base baInfo = 6;
+	 ST_ActivityScore_Base baScore = 7;	
+}
+
+message ST_ActivityRank_LeagueUser
+{
+	 uint64 uid = 1;
+
+	 ST_MemberInfo_Base baMember = 2;
+	 ST_ActivityScore_Base baScore = 3;
+	 uint32 winTask = 4;
+	 uint32 totalTask = 6;
+}
+
+message ST_ActivityRank_PB
+{
+	 uint32 contentID = 1;
+	repeated ST_ActivityScore_User userScore = 2;		// 排好序了(下同)
+	repeated ST_ActivityRank_League leagueScore = 3;
+	repeated ST_ActivityRank_LeagueUser leagueUser = 4;
+	 uint64 nextFresh = 5;
+}
+
+message ST_Asset_Activity_PB
+{
+	repeated ST_Asset_Activity_Item_PB activities = 1;
+	 int64 speExchangeEnd = 2;	//特殊兑换活动结束时间
+	 int64 resetTime 	= 3;	//每日0点重置类活动下次重置时间
+	 int64 speDailyTaskEnd = 4; //特殊日常任务结束时间
+}
+
+message ST_Asset_Activity_Item_PB
+{
+	 uint32 activityType = 1;   //活动类型
+	//contentID,不是活动id
+	 uint32 activityId = 2;
+	 uint32 number = 3;         //活动场次
+	 uint32 scroe = 4;          //积分
+	 uint32 stage = 5;          //状态(活动预告/准备/开启/领奖/下次预告时间)
+	 uint64 stageStartTime = 6;	//当前阶段开始时间
+	 uint64 stageEndTime = 7;	//当前阶段结束时间
+	 bool   leagueScore = 8;	//活动是否有新的工会进度（有就请求一次）
+	 uint32 parentID = 9;		//活动真实ID  
+	 uint32 leagueCupClass = 10;//联盟杯赛级
+	 bool 	rewarded = 11;		//已领奖
+	 bool   newMarks = 12;		//感叹号(新)标示
+	repeated ST_Vector2Int_PB exchangeTimes = 13; //兑换次数
+     ST_ActivityScore_LeagueUser  LeagueActivity =14;//联盟杯
+	 ST_Vector4IntList_PB  			Task =15;//任务
+	 ST_DailyTask_PB 				dailyTask = 16; //每日任务
+	 uint64 				Uid = 17; //玩家
+	 ST_Lottery_PB 			lottery = 18; //限定抽卡活动
+	 string  Time = 19; //阶段时间
+	 ST_MacActifityInfo macInfo = 20; //怪物攻城信息
+	//玩家参加活动时的等级
+	 uint32 MainCityLevel = 21;
+	 ST_FoolsDay foolsDay = 22;
+}
+
+message ST_MacActifityInfo{
+	 uint64 leagueId  = 1; //报名的公会
+	 uint32 failedTms = 2; //失败次数
+	 bool   rewarded = 3;  //是否领取过阶段奖励
+	 bool 	leagueRewards = 4; //是否领取过联盟奖励
+}
+
+//愚人节兑换活动
+message ST_FoolsDay{
+	 bool unlocked 				 = 1; //是否解锁史诗
+	 uint32 exp 				 = 2; //当前经验值 
+	repeated ST_FoolsDay_Rewards rewards = 3; //领奖信息
+}
+
+message ST_FoolsDay_Rewards{
+	 uint32 rewardsId = 1; //奖励id
+	 bool 	normal 	  = 2; //普通奖励是否已领取
+	 bool 	advanced  = 3; //高级奖励是否已领取
+}
+
+
+message ST_DailyTask_PB{
+	 uint32 			level		= 1;//首次参加活动时，大本营等级
+	repeated ST_Vector4Int_PB 	tasks 		= 2;//任务列表[id,分数,是否完成,是否领取奖励]
+	 uint32 			resetTime 	= 3;//下次重置时间【废弃】
+}
+
+message ST_Lottery_PB{
+	 uint32 lottTimes 		= 1;//抽取总次数
+	repeated uint32 extraRewardIds 	= 2;//已领取的额外奖励id列表
+	 uint32 lottTimesToday  = 3;//当天抽取次数
+	 bool 	first 			= 4;//是否已用首次免费true:已用， false：还没用
+	 bool 	todayFirst 		= 5;//是否已用当天首次免费true:已用， false：还没用
+}
+
+message ST_BookmarkEntry_PB
+{
+	 uint32 tileID 			= 1;//大地图坐标
+	 uint32 type 			= 2;//收藏类型
+	 string	name			= 3;//自定义扩展名-默认名称为worldentry的名称
+	 string	description		= 4;//自定义描述内容，60个字符长度限制
+}
+
+//大地图收藏夹资产
+message ST_Asset_Bookmark_PB
+{
+	repeated ST_BookmarkEntry_PB entryList 	= 1;//当前书签列表
+}
+
+// 王战战争记录
+message ST_MiracleWarRecord_PB
+{
+	 uint64 time = 1;
+	 ST_Tips_PB record = 2;
+}
+
+// 王战历任行政官记录
+message ST_HistoryArchon_PB
+{
+	 int32 number = 1;						//
+	 uint64 uid = 2;						//
+	 uint64 time = 3;						//
+	 ST_LeagueCustomFlag_PB leagueFlag = 4;	// 联盟旗帜
+	 string lShortName = 5;					// 联盟简称
+	 string uName = 6;						// 玩家名称
+}
+
+// 王战当前大奇迹的占领信息
+message ST_OccupyInfo_PB
+{
+	 uint64 uid = 1; 				// 玩家Uid
+	 uint64 lid = 2;				// 联盟id
+	 uint64 startTime = 3; 			// 开始时间
+	 uint64 needOccupyTime = 4; 	// 需要占领时间
+	 int32 notify = 5; 				// 是否发过公告了
+}
+
+// 官职信息
+message ST_Title_PB
+{
+	 int32 titleID = 1;				// 头衔ID
+	 uint64 cd = 2;					// 更换头衔的CD
+	 uint64 uid = 3;				// 玩家UID
+}
+
+// 王战赏赐礼包信息
+message ST_WarGift_PB
+{
+	 int64 giftId = 1;				// 礼包ID
+	 int32 leftNum = 2;				// 礼包剩余数量
+	repeated uint64 uids = 3;				// 赏赐礼包的玩家uid列表
+}
+
+// 王战全局buff信息
+message ST_MiracleWarBuff_PB
+{
+	 int32 buffID = 1;				// buffID
+	 uint64 buffCD = 2;				// 冷却时间
+	 uint64 expireTime = 3;			// 过期时间
+}
+
+// 王战特权信息
+message ST_MiracleWarRight
+{
+	 int32 rightID = 1;				// 权限ID
+	 uint64 cd = 2;					// 权限使用cd
+}
+
+// 执政官全服公告
+message ST_GlobalNotice
+{
+	 string notice = 1;				// 公告内容
+	 uint64 time = 2;				// 公告时间
+	 uint64 cd = 3;					// 冷却cd
+	 uint64 uid = 4;				// 发布者uid
+}
+
+// 王战全局资产
+message ST_MiracleWar_PB
+{
+	 int32 stage = 1;								// 奇迹当前阶段
+	 uint64 stageEndTime = 2; 						// 当前当前阶段的结束时间
+	 uint64 stageStartTime = 3;						// 当前当前阶段的开始时间
+	 int32 subStage = 4; 							// 子阶段
+	 uint64 subStageStartTime = 5;					// 子阶段开始时间
+	 uint64 subStageEndTime = 6;					// 子阶段结束时间
+	 uint64 noticeTime = 7;							// 上次公告时间
+	 uint64 ownerLeagueID = 8; 						// 王盟id
+	 uint64 ownerUid = 9;							// 国王UId
+	repeated ST_MiracleWarRecord_PB warRecords = 10;		// 战斗记录
+	repeated ST_HistoryArchon_PB historyArchons = 11; 		// 历任指挥官
+	 int32 number = 12;								// 场次
+	 ST_OccupyInfo_PB occupyInfo = 13; 				// 占领信息
+	repeated ST_Title_PB titles = 14;						// 头衔列表
+	repeated ST_MiracleWarBuff_PB buffs = 15;				// 全服buff
+	repeated ST_MiracleWarRight rights = 16; 				// 执政官权限cd
+	repeated ST_MiracleWarRecord_PB giftRecords = 17; 		// 赏赐记录
+	repeated ST_MiracleWarRecord_PB buffRecords = 18; 		// 全服buff记录
+	 ST_GlobalNotice notice = 19;					// 执政官全服公告
+	repeated ST_WarGift_PB gifts = 20;						// 礼物
+	 int32 powerLimit = 21;							// 跨服战力限制
+}
+
+message ST_MiracleWarRecords_PB
+{
+	repeated ST_MiracleWarRecord_PB records = 1;
+}
+
+message ST_MiracleWarHistoryArchons_PB
+{
+	repeated ST_HistoryArchon_PB records = 1;
+}
+
+// 王战个人资产
+message ST_Asset_MiracleWar_PB
+{
+	 int32 titleID = 1;						// 头衔ID
+	 int64 giftID = 2;						// 赏赐礼包id
+	 int32 warNumber = 3;					// 赏赐礼包的王战场次
+	 uint64 lastNoticeTime = 4; 			// 最后一次收到全服公告的时间
+	 ST_GlobalNotice notice = 5;			// 全服公告
+	 int32 stage = 6;						// 王战状态
+	 int32 stage1 = 7;						// 王战状态1
+	 int32 stage2 = 8;						// 王战状态2
+	 int32 stage3 = 9;						// 王战状态3
+	 int32 stage4 = 10;						// 王战状态4
+
+}
+
+message ST_Server_PB
+{
+		uint32					sid							= 1; //服务器ID
+		string					sName						= 2; //服务器名字
+		string					kingLeague					= 3; //王盟
+		string					king						= 4; //国王
+		uint64					serverInitTime				= 5; //保护时间
+		string					sAddr						= 6; //服务器地址（客户端使用）
+		bool					canMoveInto					= 7; //是否可以迁城
+		string					kingServerName				= 8; //王盟设置的服务器名字
+		string					rpcAddr						= 9; //内部rpc地址（服务器直接使用）
+		uint64					starPioneerPower			= 10; //星球先锋战力
+		int32					starPioneerRank				= 11; //星球先锋排名
+		int32					powerLimit					= 12; //战力限制 
+		uint32 					kingSid						= 13; //国王sid
+}
+
+message ST_ServerList_PB
+{
+	repeated	ST_Server_PB		serverList					= 1; //服务器列表
+}
+
+//账户信息
+message ST_Asset_Account_PB
+{
+	 string ggName = 1; //谷歌账号名
+	 string fbName = 2; //FaceBook账号名
+	 string ttName = 3; //Twitter账号名
+	 string gamecenterName = 4; //GameCenter账户名
+}
+
+//联盟独立数据版本信息
+message ST_League_IndependData_Version_PB
+{
+	 uint32 UnreadMessgaeCount 	= 1;//联盟留言板未读条目数
+	 uint32 LeagueHelpCount		= 2;//联盟帮助数量
+	 uint32 LeagueGiftCount		= 3;//可以开启的联盟礼包数量
+	 uint32 LeagueBattleLogCount = 4; //联盟战斗日志的数据
+	 uint64 ReadLeagueBattleLogTime = 5; //读取最新联盟日志的时间
+}
+
+//联盟留言列表数据
+message ST_League_Message_List_PB
+{
+	repeated ST_LeagueMessageEntry_PB messageList = 1;
+}
+
+// 黑市商品Item
+message ST_BlackMarket_Item_PB
+{
+	 bool isLocked = 1; 					//是否锁定
+	 bool exchanged = 2;					//是否已经兑换
+	// int32 goodsId = 3;					//[OLD]商品ID
+	// int32 giftPackID = 4;				//[OLD]礼包Id
+	// bool giftPurchased = 5;				//[OLD]礼包是否已经购买
+	 ST_Vector4Int_PB goodsContent = 6;		// 货物
+	 ST_Vector4Int_PB goodsCost = 7; 		// 兑换消耗
+	 uint32 discount = 8;					// 折扣比 1-10
+	 uint32 slotIdx = 9; 					// 格子IDx
+}
+
+// 个人黑市资产
+message ST_Asset_BlackMarket_PB
+{
+	 uint64 refreshTime = 1;				//刷新时间
+	 bool isClicked = 2;					//是否开启状态
+	repeated ST_BlackMarket_Item_PB items = 3;		//商品列表 
+	// int32 giftPackID = 4;				//[OLD]上次刷新并没有购买的礼包id
+	 uint32 leftReset = 5;					//剩余重置次数
+	 bool needNotice = 6;					//true
+	 bool notOpen = 7;						//未开放功能
+	 uint32 leftOpen = 8;					//开启次数
+}
+
+// 后勤补给资产
+message ST_Asset_Supply_PB
+{
+	 uint32 freeTimes = 1;				//剩余免费次数
+	repeated ST_Vector2Int_PB buyTimes = 2; 	//各资源非免费领取次数
+	repeated ST_Vector2Int_PB totleTimes = 3; 	//各种资源领取总次数
+	 uint64		  lastClearTime = 4;    //上次重置时间
+}
+
+// 后勤补给获取资源信息
+message ST_ResourceObtain_Supply_PB
+{
+	 uint32 multiple = 1;			//暴击倍数
+	 uint64 count	 = 2; 			//资源总量
+	 uint32 cashType = 3; 			//资源类别
+	 ST_Vector4IntList_PB dropList = 4; // 活动掉落
+}
+
+// 联盟宝箱Item
+message ST_LeagueBox_Item_PB
+{
+	 uint64 id = 1;							//宝箱id
+	 int64 typeId = 2;						//宝箱类型id
+	 uint32 posX = 3;						//坐标x
+	 uint32 posY = 4;						//坐标Y
+	 uint64 endTime = 5;					//开启结束时间（0表示没有开启）
+	 bool isHelped = 6;						//是否被帮助过
+	 uint64 uid = 7;						//玩家uid
+	 uint32 actionID = 8;					//localActionID
+	 bool isSendMsg = 9;					//是否发送过联盟消息
+	 string ownerName = 10;					//拥有者名字
+	 string helpName = 11;					//帮助人名字
+	 uint32 commanderLevel = 12;			//刷新时指挥官等级
+}
+
+// 个人联盟宝箱资产
+message ST_Asset_LeagueBox_PB
+{
+	repeated ST_LeagueBox_Item_PB ownerBoxes = 1; 	//自己的宝箱列表
+	repeated ST_LeagueBox_Item_PB helpedBoxes = 2; 	//帮助的宝箱列表
+	 bool refresh = 3;						//
+	 uint64 refreshBoxTime = 4;				//刷新宝箱时间
+	 uint64 maxId = 5;						//
+	 uint64 lastResetTime = 6;				//剩余次数刷新时间
+	 uint32 leftTimes = 7;					//剩余帮助次数
+	
+	 uint32 leftOpenNum = 8; 				//剩余开启次数
+	 uint32 freeRefresh = 9; 				//免费刷新次数(已用)
+	 uint32 costRefresh = 10;				//收费刷新次数(已用)
+	 uint64 freeOpenTime = 11;				//免费开启时间点
+}
+
+// 挑战目标
+message ST_ChallengeTarget_PB
+{
+	 uint32 currentScore = 1;				// 当前积分
+	 int64 targetID = 2;					// 目标id
+	repeated uint32 rewardList =3;					// 可领奖的阶段list（1, 2, 3....）
+}
+
+// 挑战的目标条件
+message ST_ChallengeCondition_PB
+{
+	 uint32 type = 1; 						// 条件类型
+	 uint32 param = 2;						// 条件参数
+	 uint32 targetScore = 3;				// 目标积分
+	 uint32 currentScore = 4;				// 当前积分
+}
+
+// 挑战任务
+message ST_ChallengeTast_PB
+{
+	 int64 taskId = 1; 							// 任务ID
+	 uint32 taskStatus = 2;						// 任务状态
+	repeated ST_ChallengeCondition_PB conditions = 3;	// 目标条件list
+}
+
+// 个人七日挑战资产
+message ST_Asset_Challenge_PB
+{
+	 uint64 challageEndTime = 1;				//挑战结束时间
+	 uint64 taskEndTime = 2;					//任务结束时间
+	 ST_ChallengeTarget_PB challengeTarget = 3;	//挑战目标
+	repeated ST_ChallengeTast_PB tasks = 4;				//任务list
+	 int64 currentTaskId = 5;					//当前正在进行的任务ID
+}
+
+//Airdrop 玩家中奖信息
+message ST_Asset_LuckyDog
+{
+	 string ServerName = 1; 
+	 string LeagueName = 2;
+	 string PlayerName = 3;
+}
+
+//Airdrop 全服信息
+message ST_Asset_AirdropInfo
+{
+	 int64 BonusPool = 1;//奖金池	
+	 int64 ResetTime = 2;//上次重置时间	
+	repeated ST_Asset_LuckyDog LuckyDogs = 3;
+}
+
+//世界争霸活动
+message ST_WorldDomination_PB
+{
+	 uint64 stageStartTime 		= 1;//当前状态开始时间
+	 uint64 stageRemainTime 	= 2;//当前状态持续时间
+	 uint32 stage			= 3;//当前所处状态：ActivityStage
+}
+
+// 副本个人资产
+message ST_Asset_MapList_PB
+{
+	repeated ST_MapList_Info_PB mapLists = 1;		// 副本信息
+	repeated ST_MapList_Info_PB eilteMapLists = 2;	// 精英副本信息
+	 int64 toBeUnlockEilteId = 3;          //待解锁关卡
+	 uint64 rewardRefreshTime = 4;			// 三星奖励刷新时间
+}
+
+// 副本信息
+message ST_MapList_Info_PB
+{
+	 uint32 type = 1; 						// 副本类型（普通， 精英....）
+	repeated ST_Chapter_PB chapters = 2; 			// 章节信息
+	 uint32 currentMapID = 3;				// 当前最新关卡	
+}
+
+// 章节信息
+message ST_Chapter_PB
+{
+	 uint32 chapterId = 1; 					// 章节id
+	 ST_StarBox_PB starBox = 2; 			// 章节宝箱信息
+	repeated ST_MapInfo_PB mapInfos = 3; 			// 关卡信息
+}
+
+// 章节星星宝箱信息
+message ST_StarBox_PB
+{
+	 uint32 startNum = 1; 					// 章节总星数
+	repeated uint32 rewardedBoxIdxs = 2; 			// 已领奖的宝箱下标
+}
+
+// 关卡信息
+message ST_MapInfo_PB
+{
+	 uint32 id = 1; 						// 关卡id
+	 uint32 star = 2;						// 历史星级
+	 uint32 leftChanllangeTimes = 3;		// 剩余可挑战次数(精英关卡有效)
+	 uint32 rewarded = 4; 						// 是否已领宝箱奖励，0否，1是
+	 uint32 todayStar = 5;						// 今天星级
+}
+
+// 扫荡奖励
+message ST_MopUpRewards_PB
+{
+	repeated ST_Vector4IntList_PB rewardItems = 1;				// 每次扫荡的物品奖励
+	 ST_Vector4Int_PB extraReward = 2;					// 额外奖励（经验瓶）
+}
+
+// 活跃度任务
+message ST_ActivityTask_Item
+{
+	 uint32 id = 1;										// 活动id
+	 uint32 currentTimes = 2;							// 当前次数
+	 uint32 targetTimes = 3;							// 目标次数
+	 uint32 param = 4;									// 参数
+	 uint32 type = 5;									// 任务类型
+	 uint32 accNum = 6;									// 累计量
+}
+
+// 活跃度系统资产
+message ST_Asset_ActivityTask_PB
+{
+	 uint64 refreshTime = 1;							// 下次刷新时间
+	repeated ST_ActivityTask_Item tasks = 2;					// 活动
+	 uint32 mainCityLevel = 3;							// 接任务时的主城等级
+	 uint32 totalScore = 4;								// 总积分
+	repeated uint32 rewardedBoxIdxs = 5;						// 已领宝箱下标列表
+}
+
+message ST_MainCitySkinInfo_PB
+{
+	 uint32 id = 1;						// 皮肤id
+	 int64 endTime = 2; 				// -1 是永久
+}
+
+message ST_Asset_MainCitySkin_PB
+{
+	 uint32 currentSkinId = 1; 			// 当前皮肤id
+	repeated ST_MainCitySkinInfo_PB skins = 2;	// 皮肤列表
+}
+
+// 福利资产
+message ST_Asset_BoonCenter_PB
+{
+	 ST_BoonPayFirst_PB payFirst = 1;	// 首充
+	 ST_BoonPaySecond_PB paySecond = 2;	// 二充
+	 ST_BoonDuration_PB durations = 3;	// 月卡类
+	 ST_BoonDaily_PB dalies = 4;		// 日常类
+	repeated ST_BoonFund_PB funds = 5;			// 基金类
+	 ST_GiftActivity GiftActivity	= 6; //活动礼包
+}
+//礼包活动数据
+message ST_GiftActivity
+{
+	repeated ST_GiftActivity_One Activitys = 1;
+}
+message ST_GiftActivity_One
+{
+	//活动id CountNum
+	 uint64		ID							= 1;
+	//循环数 LoopNum
+	 uint32		Number						= 2;
+	 uint64 	TmStart						= 3; //开始时间
+	 uint64		TmEnd 						= 4; //结束时间
+	repeated ST_Vector4Int_PB Sub					= 5; //子活动
+	 uint64		Score 						= 6; //积分
+	repeated ST_Vector4Int_PB ReSward				= 7; //积分奖励
+	 uint64		LoginNum					= 8; //登录天数
+	 uint64		TmLogin						= 9; //登录时间
+	 uint32		DataVer						= 10;
+	//档次
+	 uint32		Cashlv						= 11;
+	//剩余钻石
+	 int64		Cash100 					= 12;
+}
+message ST_BoonPayFirst_PB
+{
+	 int32 statue = 1;	//状态 -1不可用 0可用 1已用
+	 uint32 version = 2;	//版号
+	 uint32 working = 3;		//开启状态0，1
+	 uint32 boonID = 4;	//Center表的对应ID
+}
+
+message ST_BoonPaySecond_PB
+{
+	 int32 statue = 1;  //状态 -1不可用 大于0都是礼包ID
+	 uint32 working = 2;		//开启状态0，1
+	 uint32 boonID = 3;	//Center表的对应ID
+}
+
+message ST_BoonDuration_PB
+{
+	 uint32 boonID = 1;	//Center表的对应ID
+	repeated ST_BoonDurationData_PB datas = 2;
+	 uint32 working = 3;		//开启状态0，1
+}
+
+message ST_BoonDurationData_PB
+{
+	 uint32 id = 1;
+	 uint64 endTime = 2;	//结束时间
+	 uint64 lastGet = 3;	//上次领取时间
+}
+
+message ST_BoonDaily_PB
+{
+	 uint32 onBonus = 1;	//是否已激活额外奖励
+	 uint64 endTime = 2;	//激活的到期时间
+	repeated ST_BoonDailyData_PB datas = 3;
+	 uint32 version = 4;	//版号
+	 uint32 working = 5;	//开启状态0，1
+	 uint32 boonID = 6;		//Center表的对应ID
+}
+
+message ST_BoonDailyData_PB
+{
+	 uint32 id = 1;
+	 int32  statue = 2;	  //-1未买 0未领 1已领
+	 uint64 buyTimes = 3; //购买/获取时间
+}
+
+message ST_BoonFund_PB
+{
+	 uint32 boonID = 1;	//基金ID(Center里面的ID)
+	 uint32 onFund = 2;		//是否已购买基金
+	repeated ST_BoonFundData_PB datas = 3;	//每个项目的状态
+	 uint32 working = 4;		//开启状态0，1
+}
+
+message ST_BoonFundData_PB
+{
+	 uint32 id = 1;
+	 int32 statue = 2;
+}
+
+message ST_BoonRewardData_PB
+{
+	 uint32 dataID = 1;
+	repeated ST_Vector4Int_PB rewards = 2;
+	//免费奖励
+	repeated ST_Vector4Int_PB rewards2 = 3;
+	//领奖条件(充值钻石)
+	 int64 Cumulative = 4;
+
+}
+
+//	一个福利活动的奖励内容
+message ST_BoonRewardConfig_PB
+{
+	 uint32 boonID = 1;
+	 uint32 dataVer = 2;
+	repeated ST_BoonRewardData_PB datas = 3;
+}
+
+message ST_ChapterTask_PB
+{
+	 uint32 taskID = 1;	//任务ID
+	 uint32 reward = 2; //奖励状态 0/2
+	 uint32 progress = 3; //任务进度
+}
+
+message ST_ChapterInfo_PB
+{
+	 uint32 chapterID = 1;	//章节ID
+	 uint32 reward = 2;			//奖励状态 0/1/2
+	repeated ST_ChapterTask_PB tasks = 3;	//任务列表
+}
+
+message ST_Asset_Chapters_PB
+{
+	 uint32 curChapter = 1;				//当前章节
+	repeated ST_ChapterInfo_PB chapters = 2;	//章节列表
+}
+
+// 监狱留言
+message ST_PrisonMessage_PB
+{
+	 uint64 senderUid = 1; 				// 发送者uid
+	 string content = 2;				// 内容
+	 uint64 sendTime = 3;				// 发送时间
+	 uint32 id = 4;						// 消息id
+}
+
+// 监狱留言板资产
+message ST_PrisonMessageBoard_PB
+{
+	repeated ST_PrisonMessage_PB msgList = 1;	// 
+	 uint32 maxId = 2;					// 
+	 uint64 ownerUid = 3;				//
+}
+
+message ST_PrisonMessgeClient_PB
+{
+	 uint64 senderUid = 1; 				// 发送者uid
+	 string content = 2;				// 内容
+	 uint64 sendTime = 3;				// 发送时间
+	 uint32 id = 4;						// 消息id
+	 string senderName = 5;
+	 string lordIcon = 6;				//领主头像
+	 uint32 avatarBoxID = 7;			//玩家头像框ID
+	 string avatar = 8;					//玩家头像
+	 string leagueName = 9;
+	 string leagueShortName = 10;
+}
+
+message ST_PrisonMessageList_PB
+{
+	repeated ST_PrisonMessgeClient_PB messageList = 1;
+	 uint32 versionId = 2;
+}
+
+message ST_CommanderFashionInfo_PB
+{
+	 uint32 id = 1;								// 时装id
+	 int64 endTime = 2;							// 结束时间（-1 表示永久）
+}
+
+message ST_Asset_CommanderFashion_PB
+{
+	repeated ST_CommanderFashionInfo_PB iconSkins = 3;	// 头像列表
+	repeated ST_CommanderFashionInfo_PB modelSkins = 4;	// 模型列表
+	repeated ST_CommanderFashionInfo_PB boxs = 5;	// 头像框列表
+	repeated ST_CommanderFashionInfo_PB bubbles = 6;	// 气泡列表
+}
+
+message ST_SevenDayTask_Item
+{
+	 uint32 id = 1; 			// 任务ID
+	 uint32 score = 2;			// 积分
+	 uint32 rewardStatus = 3;	// 0:未完成， 1：可领奖， 2：领过了
+	 uint64 tm = 4;	//
+
+}
+
+message ST_SeventDayTaskAsset_PB
+{
+	repeated ST_SevenDayTask_Item tasks = 1;  // 任务列表
+	 bool getReward = 2;				// 积分奖励
+	 uint32 score = 3; 					// 任务总积分
+	 uint32 number = 4;					// 
+	 uint32 mainCityLevel = 5; 			// 主城等级
+}
+message ST_NoviceTaskAsset_PB
+{
+	repeated ST_SevenDayTask_Item tasks = 1;  // 任务列表
+	 bool getReward = 2;				// 积分奖励
+	 uint32 score = 3; 					// 任务总积分
+	 uint64 starttime = 4;					//
+}
+
+message ST_KillWildMonster_PB
+{
+	 uint64 dataid = 1; 					//
+	 uint32 number = 2;					//
+	 uint64 time = 3;					   //
+}
+
+
+message ST_AirShipChanllange_PB
+{
+	 ST_UnitAsset_PB armys = 1;
+	repeated uint32 HeroList = 2;
+	 uint32 Formation = 3;
+	 int64 AirShipCfgid = 4;
+}
+
+
+message AirShipPassDetail
+{
+     uint32 CurLevel = 1;
+	 uint32 Star = 2;
+}
+//暂时不做使用
+message ST_UserAirShipChanllange_PB
+{
+	 uint32 CurUnlockMaxLevel = 1; //当前通关最大等级
+	repeated AirShipPassDetail PassedDetail =	2;//通过关卡详情
+}
+message ST_AirShipChanllangeRet_PB
+{
+	 int32 RetCode = 1;
+	 bool IsWin = 2;
+	 ST_BattleInfo_PB Replay = 3;
+	 ST_Vector4IntList_PB Rewards = 4;
+	 uint32 Star = 5;
+	 int64 AirShipCfgid = 6;
+	 ST_Vector4IntList_PB FirstPassRewards = 7;
+}
+
+message ST_DropActivityRankItem_PB
+{
+	 uint64 uid = 1;
+	 uint64 score = 2;
+}
+
+message ST_DropActivityRank_PB
+{
+	 uint32 activityId = 1;		// 活动id
+	 uint32 avtivityNum = 2; 	// 活动number
+	repeated ST_DropActivityRankItem_PB rankItems = 3; //
+	 bool isReward = 4;	// 是否发过奖励了
+}
+
+// 联盟任务
+message ST_LeagueTask_Item
+{
+	 int32 id = 1;										// 任务id
+	 int32 status = 2;									// 任务状态
+	 uint64 finishTimestamp = 3;						// 任务完成时间点
+	 uint32 lactionID 		= 4;						//localAction的ID
+}
+// 联盟任务资产
+message ST_Asset_LeagueTask_PB
+{
+	 bool 				init  = 1;						// 初始化了吗				    
+	repeated ST_LeagueTask_Item tasks = 2;					    // 任务列表
+	 uint64 refreshExpireTimestamp = 3;					// 系统刷新到期时间点
+}
+
+// 最强执政官阶段活动
+message ST_SubTask
+{
+	 uint32 activityID = 1;		// 任务ID （StrongestCommanderActivity.xlsx 表ID字段）
+	 uint32 day = 2;			// 任务天数
+}
+
+// 最强执政官
+message ST_StrongestCommander_PB
+{
+	 uint32 number = 1; 			// 活动number
+	 uint32 stage = 2;				// 当前活动阶段
+	 uint64 stageStartTime = 3; 	// 阶段开始时间
+	 uint64 stageEndTime = 4; 		// 阶段结束时间
+	 uint32 subStage = 5;			// 子阶段
+	 uint64 subStageStartTime = 6;	// 子阶段开始时间
+	 uint64 subStageEndTime = 7;	// 子阶段结束时间
+	repeated ST_SubTask subTasks = 8;		// 阶段活动
+}
+
+// 最强执政官排行榜
+message ST_StrongestCommanderRank_PB
+{
+	 uint32 rankType = 1;							// 排行榜类型
+	repeated ST_DropActivityRankItem_PB suRank = 2; 		// 子榜
+}
+
+// 个人最强执政官资产
+message ST_Asset_StrongestCommander_PB
+{
+	 uint32 number = 1; 			// 活动number
+	 uint32 stage = 2;				// 当前活动阶段
+	 uint64 stageStartTime = 3; 	// 阶段开始时间
+	 uint64 stageEndTime = 4; 		// 阶段结束时间
+	 uint32 subStage = 5;			// 子阶段（下标）
+	repeated uint32 rewardList = 6; 		// 已领取阶段奖励的Idx
+	 uint32 scoreRewardId = 7; 		// 积分奖励目标ID （StrongestCommanderScoreReward.xlsx 表ID字段）
+	 uint32 score = 8; 				// 总积分
+	 uint32 subScore = 9; 			// 子阶段积分
+	 uint64 subStageEndTime = 10; 	// 子阶段结束时间
+	 int32 subIndex = 11; 			// 子阶段目标达成
+
+}
+
+
+// 最强执政官
+message ST_PrepareForWar_PB
+{
+	 uint32 number = 1; 			// 活动number
+	 uint32 stage = 2;				// 当前活动阶段
+	 uint64 stageStartTime = 3; 	// 阶段开始时间
+	 uint64 stageEndTime = 4; 		// 阶段结束时间
+	 uint32 subStage = 5;			// 子阶段
+	 uint64 subStageStartTime = 6;	// 子阶段开始时间
+	 uint64 subStageEndTime = 7;	// 子阶段结束时间
+	repeated ST_SubTask subTasks = 8;		// 阶段活动
+}
+
+// 最强执政官排行榜
+message ST_PrepareForWarRank_PB
+{
+	 uint32 rankType = 1;							// 排行榜类型
+	repeated ST_DropActivityRankItem_PB suRank = 2; 		// 子榜
+}
+
+// 个人最强执政官资产
+message ST_Asset_PrepareForWar_PB
+{
+	 uint32 number = 1; 			// 活动number
+	 uint32 stage = 2;				// 当前活动阶段
+	 uint64 stageStartTime = 3; 	// 阶段开始时间
+	 uint64 stageEndTime = 4; 		// 阶段结束时间
+	 uint32 subStage = 5;			// 子阶段（下标）
+	repeated uint32 rewardList = 6; 		// 已领取阶段奖励的Idx
+	 uint32 scoreRewardId = 7; 		// 积分奖励目标ID （StrongestCommanderScoreReward.xlsx 表ID字段）
+	 uint32 score = 8; 				// 总积分
+	 uint32 subScore = 9; 			// 子阶段积分
+	 uint64 subStageEndTime = 10; 	// 子阶段结束时间
+}
+
+// 远征商店Item
+message ST_ExpeditionShop_Item_PB
+{
+	 uint32 slotIdx 				= 1; 		// 格子IDx
+	 uint32 leftBuyCount 			= 2; 		// 剩余购买次数
+	 int64 csvId 					= 3; 		// csvId
+}
+
+// 个人远征商店资产
+message ST_Asset_ExpeditionShop_PB
+{
+	repeated ST_ExpeditionShop_Item_PB specialItems = 1;	//特殊商品列表
+	repeated ST_ExpeditionShop_Item_PB items = 2;			//普通商品列表
+	 uint64 refreshSpecialItemsTime  = 3;		    //刷新特殊商品时间
+	 uint64 refreshItemsTime   		 = 4;		    //刷新普通商品时间
+	 uint32 refreshItemsCount   	 = 5;		    //当天刷新普通商品已经多少次	
+}
+
+// 全局远征商店
+message ST_ExpeditionShop_PB
+{
+	repeated ST_ExpeditionShop_Item_PB specialItems = 1;	//特殊商品列表
+	 uint64 refreshSpecialItemsTime  = 2;		    //刷新特殊商品时间
+}
+
+// 天下大势条目
+message ST_WorldSituation_Entry_PB
+{
+	 int64 			csvId 			= 1; 		// csvId
+	 uint32 		type 			= 2;		// 大类
+	 uint32 		subType 		= 3;		// 小类
+	 uint64 		serverValue 	= 4;		// 全服统计进度值
+	 ST_Vector4Int_PB 	condition 	= 5;		// 条件
+	 uint64 		startTime  		= 6; 		// 开始时间
+	 uint64 		endTime  		= 7; 		// 强制结束时间
+	 uint32 		status 			= 8;		// 状态
+	 bool 			serverResult 	= 9;		// 全服计数类型结果
+	 uint64 		finishTime 		= 10;		// 结果时间
+	 uint32 		endType 		= 11;		// 结束类型
+	repeated ST_Vector2Int64_PB LeagueValue 	= 12;	// 联盟进度值
+	 uint64 		GmValue 	= 13;			// gm加进度值
+}
+//全局天下大势资产
+message ST_WorldSituation_PB
+{
+	 bool 					    init  	= 1;	//初始化了吗
+	repeated ST_WorldSituation_Entry_PB entries = 2;	//条目列表
+	 uint32 					curIndex = 3;	//当前进行中的entry的index
+}
+
+//全局天下大势排行榜快照资产
+message ST_WorldSituationRankSnapshot_PB
+{
+	repeated ST_WorldSituationRankSnapshot_Entry_PB entries = 1;	//条目列表
+}
+
+// 天下大势排行榜快照条目
+message ST_WorldSituationRankSnapshot_Entry_PB
+{
+	 int64 					csvId 			= 1; 	// csvId
+	 ST_PowerRankingList 	rankSnapshot 	= 2;
+
+}
+
+//天下大势玩家资产
+message ST_Asset_WorldSituation_PB
+{
+	repeated ST_Vector4UInt64_PB 	awards 	= 1;		//奖励信息
+}
+
+//登陆有礼玩家资产
+message ST_Asset_LoginGift_PB
+{
+	 uint32      groupId		= 1;    //组别id
+	 uint32      loginDays 		= 2;    //累计登录天数
+	 int64       rewardDays  	= 3;    //已领奖天次
+	 uint64		refreshTime		= 4;	//刷新时间
+}
+
+// 幸运星商品条目
+message ST_LuckyStarItem_PB
+{
+	 uint32 id = 1;						//ID
+	repeated ST_Vector2Int_PB items = 2;		//商品列表
+	 uint32 canBuyTimes = 3;			//可购买次数
+	 uint32 discount = 4;				//折扣
+	 string productId = 5;				//产品id
+	 uint32 buyTimes = 6;				//已经购买次数
+}
+
+// 幸运星
+message ST_LuckyStar_PB
+{
+	 uint32 id = 1; 					//模板id
+	 uint32 priority = 2;				//优先级
+	 uint64 startTime = 3;				//开始时间
+	 uint64 endTime = 4;				//结束时间
+	 uint64 refreshTime = 5;			//最后更新时间
+	repeated ST_LuckyStarItem_PB items = 6;		//条目list
+	 string name = 7;
+}
+
+// 全局幸运星商店资产
+message ST_LuckyStarShop_PB
+{
+	repeated ST_LuckyStar_PB luckyStars = 1;	// 幸运星活动
+}
+
+// 幸运星商品条目
+message ST_LuckyStarItem_Server_PB
+{
+	 uint32 id = 1;						//ID
+	 uint32 buyTimes = 2;				//已经购买次数
+}
+
+message ST_LuckyStar_Server_PB
+{
+	 uint32 id = 1; 					//模板id
+	 uint64 refreshTime = 2;			//最后更新时间
+	repeated ST_LuckyStarItem_Server_PB items = 3;//条目list
+}
+
+message ST_Asset_LuckyStar_PB
+{
+	repeated ST_LuckyStar_Server_PB luckyStars = 1;	// 幸运星活动
+}
+
+//角色基础信息(存库,用于大地图上的显示)
+message ST_CharSimple_Server_PB
+{
+	 int32 TileId 			 = 1; //瓦块ID
+	 string Avatar 			 = 2; //用户头像URL
+	 uint32 AvatarBoxID		 = 3; //玩家头像框ID
+	 string CharName 		 = 4; //用户角色名
+	 uint64 LeagueID 		 = 5; //联盟ID
+	 string LeagueName 		 = 6; //联盟名
+	 uint32 LanguageID 		 = 7; //玩家语言ID
+	 uint32 MainCityLevel 	 = 8; //玩家主城等级
+	 uint32 VipID 			 = 9; //玩家vipID
+	 uint32 CommanderLevel 	 = 10; //指挥官等级
+	 uint32 CommanderID 	 = 11; //指挥官头像id
+	 string Signature 		 = 12; //玩家签名
+	 string NickName 		 = 13; //昵称
+	 uint64 Power 			 = 14; //玩家战力
+	 uint32 CapacityOfGarrison  = 15; //盟友联盟中心驻军总容量(废弃)
+	 uint32 CurGarrisonValue  = 16; //盟友联盟中心当前驻军数量(废弃)
+	 string LeagueShortName  = 17; //联盟简称
+	 int32  Kingwartitle 	 = 18; //奇迹战头衔
+	 uint32 CommanderModelId  = 19; //指挥官模型id
+	 ST_CommanderFashionInfo_PB boxExt = 20;//当前头像框信息
+	 ST_CommanderFashionInfo_PB bubbleExt = 21;//当前气泡信息
+	 uint32 sid = 22; //归属服务器id
+	 uint32 currentSid = 23; // 当前服务器id
+	 uint64 uid = 24;		// uid
+}
+
+//友盟中心驻军信息
+message ST_CharSimpleGarrison_PB
+{
+	 uint32 CapacityOfGarrison  = 1; //盟友联盟中心驻军总容量
+	 uint32 CurGarrisonValue  = 2; //盟友联盟中心当前驻军数量)
+	 string CharName = 3; //用户角色名
+}
+
+message ST_SyncAsset_Entry
+{
+	 uint32 asyncType = 1;			// 同步类型
+	 bytes data = 2;				// 同步数据
+}
+
+// 用于增量同步资产的资产
+message ST_SyncAsset_PB
+{
+	repeated ST_SyncAsset_Entry entries = 1; // 同步项 
+}
+
+message ST_MailTypeList_Entry
+{
+	 int32 clientType = 1;				// 客户端类型
+	repeated int32 mailTypes = 2;				// 分类list
+}
+
+message ST_MailTypeList
+{
+	 int32 versionId = 1;				// versionId
+	repeated ST_MailTypeList_Entry entries = 2;	// 分类list
+}
+
+// 邮件资产摘要
+message ST_MailAssetSummary_Entry
+{
+	 int32 clientType = 1;				// 客户端类型
+	 int32 unReadCount = 2;
+	 int32 totalCount = 3;
+	repeated uint64 mailIds = 4;	
+}
+
+message ST_MailAssetSummary
+{
+	repeated ST_MailAssetSummary_Entry entries = 1; //
+	 int32 versionId = 2;
+}
+
+message ST_MailDB_PB
+{
+	 uint64  Id               = 1;
+	 uint32  Type             = 2;
+	 uint64  TimeStamp        = 3;
+	 uint64  SenderId         = 4;
+	 uint64  ReceiverId       = 5;
+	 string  SenderName       = 6;
+	 bytes  Title             = 7;
+	 bytes  Content           = 8;
+	 bytes  TitleTips         = 9;
+	 bytes  ContentTips       = 10;
+	 int32   TargetId         = 11;
+	 uint64  OtherId          = 12;
+	 string  OtherName        = 13;
+	 string  OtherAvatar      = 14;
+	 uint64  NPCId            = 15;
+	 bytes  Reward            = 16;
+	 bytes  Detail            = 17;
+	 bytes  Battle            = 18;
+	 bool    Kept             = 19;
+	 bool    Locked           = 20;
+	 bool    Removed          = 21;
+	 uint32  ServerId         = 22;
+	 int32   GiftPackId       = 23;
+	 int32   MailSource       = 24;
+	 bool    IsMiracleWarGift = 25;
+	 int32   TitleID          = 26;
+	 int32   RewardSource 	  = 27;
+}
+
+message ST_ServerRank
+{
+	 ServerRankType rankType = 1;
+	repeated ST_Vector2Int64_PB list = 2;
+}
+
+message ST_GetRoleRst{
+	repeated ST_RoleInfo roles = 1;	//角色列表
+}
+
+
+// 联盟战斗日志玩家信息
+message ST_LeagueBattle_User
+{
+	 uint64 lid = 1;						// 联盟ID
+	 string userName = 2;					// 玩家名称
+	 string avatar = 3;						// 自定义头像
+	 uint32 avatarBoxID = 4;				// 头像框
+	 string avatarID = 5;					// 头像
+	 string leagueShortName = 6;			// 联盟名称
+	 uint64 uid = 7;						// uid
+	 int64 	macMonsterId = 8; 				//怪物攻城的怪物WorldEntryConfig id
+}
+
+// 联盟战斗日志条目
+message ST_LeagueBattle_Log_Entry
+{
+	 ST_LeagueBattle_User attacker = 1;		// 进攻方
+	 ST_LeagueBattle_User defer = 2;		// 防守方
+	 uint64 timestamp = 3;					// 时间戳
+	 int32 times = 4; 						// 次数
+	 bool isWin = 5;						// 胜负
+	 bool isMulti = 6;						// 是否多人
+	 int32 id = 7;							// id
+}
+
+// 联盟战斗日志
+message ST_LeagueBattle_Log
+{
+	repeated ST_LeagueBattle_Log_Entry logs = 1;	// 联盟战斗日志
+}
+
+//怪物攻城
+message ST_MonsterAtkCity
+{
+	 uint64 readyEnd 	 	= 1; //准备阶段结束时间
+	 uint32 curWave  	 	= 2; //第几波
+	 uint64 nextWaveTime 	= 3; //下波刷怪时间
+	 uint32 needPass 	 	= 4; //需要通关的成员数
+	 uint32 passNum  	 	= 5; //已经通关成员数
+	 int32  curState  	 	= 6; //当前的状态 ：1：未开启、2：准备中、3：防守战、4：准备反击、5：反击
+	 int32  tileId 			= 7; //刷怪点
+	 uint64 lid 			= 8; //联盟id
+	 uint32 activityId 		= 9; //活动id
+	 int32  rallyTileId 	= 10; //集结怪坐标
+	 uint64 monsOffTime 	= 11; //集结怪消失时间
+}
+//更新角色信息
+message ST_GS2LS_UpdateRoleReq{
+	 ST_RoleInfo role = 1; //更新角色
+}
+message ST_RoleInfo{
+	 uint64 Uid 		  = 1; //角色id
+	 uint64 AccountId 	  = 2; //账号id
+	 string CmderName 	  = 3; //指挥官名字
+	 uint32 HeaderId 	  = 4; //头像id
+	 string HeaderUrl 	  = 5; //头像url
+	 uint32 AvatarBoxID   = 6; //头像边框
+	 uint32 MainCityLevel = 7; //主城等级
+	 uint32 LastLoginTime = 8; //最近1次登陆时间
+	 uint32 CreateTime	  = 9; //角色创建时间
+	 uint32 Sid 		  = 10;//角色归属服务器sid
+	 uint32 currentSid 				= 27; // 当前服务器id
+}
+message ST_MiracleWarList_PB
+{
+	repeated ST_MiracleWar_PB		list = 1;
+	repeated int32 cid				= 2;
+}
+message ST_Chat_chatroom{
+	 int32 roomid = 1;
+}
+message ST_Chat_info{
+	 string token = 1;
+}
+message ST_Chat_NeteaseRes{
+	 int32 code = 1;
+	 ST_Chat_chatroom chatroom = 2;
+	 ST_Chat_info info = 3;
+	 string tid = 4;
+	 string desc = 5;
+}
+
+// 全局跨服战资产
+message ST_Transfer_Battle_PB
+{
+	 uint32 number = 1; 			// 活动number
+	 uint32 stage = 2;				// 当前活动阶段
+	 uint64 stageStartTime = 3; 	// 阶段开始时间
+	 uint64 stageEndTime = 4; 		// 阶段结束时间
+	 uint32 subStage = 5;			// 子阶段
+	 uint64 subStageStartTime = 6;	// 子阶段开始时间
+	 uint64 subStageEndTime = 7;	// 子阶段结束时间
+	 bool isMaster = 8;				// 
+	 ST_Prepare_Detail prepareDetail = 9; // 备战期数据
+	 ST_Processing_Detail processingDetail = 10; // 决战期数据
+	 ST_Recovering_Detail recoveringDetail = 11; // 恢复期数据
+	 string worldChatChannelId = 12;
+}
+
+// 备战期服务器信息
+message ST_Prepare_Server_Info
+{
+	 uint32 sid = 1;			// sid
+	repeated uint64 subTaskScore = 2;	// 子任务积分
+	 uint64 totalScore 	= 3;	// 备战期总积分
+	 uint32 isWin = 4; 			// 0:未结算， 1：胜利， 2：失败
+	repeated ST_Buff_PB buffs = 5;					// 奇迹战 和 服务器buff
+}
+
+// 备战期数据
+message ST_Prepare_Detail
+{
+	repeated ST_Transfer_Battle_SubTask subTasks = 1;  // 子任务
+	repeated ST_Prepare_Server_Info serverInfos = 2;   // 服务器信息
+}
+
+// 决战期数据
+message ST_Processing_Detail
+{
+	repeated ST_Prepare_Server_Info serverInfos = 1; 	// 服务器信息
+	 uint32 isMiracleWarWin = 2;				// 奇迹战胜负 0:未结算， 1：胜利， 2：失败
+}
+
+// 恢复期数据
+message ST_Recovering_Detail
+{
+	 uint32 isWin = 1;							//  0:未结算， 1：胜利， 2：失败
+}
+
+// 备战期阶段活动
+message ST_Transfer_Battle_SubTask
+{
+	 uint32 activityID = 1;		// 任务ID （TransferBattlePrepareTasks.xlsx 表ID字段）
+	 uint32 day = 2;			// 任务天数
+	 uint32 isWin = 3;			// 0:未结算， 1：胜利， 2：失败
+}
+
+// 备战阶段 玩家信息
+message ST_Prepare_User_Info
+{
+	 uint64 uid = 1;
+	 uint32 sid = 2;						// 服务器id
+	 string userName = 3;					// 玩家名称
+	 string avatar = 4;						// 自定义头像
+	 uint32 avatarBoxID = 5;				// 头像框
+	 string avatarID = 6;					// 头像
+	 string leagueShortName = 7;			// 联盟名称
+	 uint32 score = 8;						// 积分
+	 uint64 totalScore = 9; 				// 总积分
+	 uint32 rank = 10;						// 排名
+	 uint32 totalRank = 11;					// 总排名
+}
+
+// 备战阶段 联盟信息
+message ST_Prepare_League_Info
+{
+	 uint64 lid = 1; 						// 联盟id
+	 ST_LeagueCustomFlag_PB flagId = 2; 	// 联盟旗帜id
+	 uint32 sid = 3;						// 服务器id
+	 string ownerName = 4;					// 盟主名字
+	 string leagueShortName = 5;			// 联盟名称
+	 uint32 score = 6;						// 积分
+	 uint64 totalScore = 7; 				// 总积分
+	 uint32 rank = 8;						// 排名
+	 uint32 totalRank = 9;					// 总排名
+}
+
+// 个人跨服决战资产
+message ST_Asset_TransferBattle_PB
+{
+	 uint32 number = 1; 				// 活动number
+	 uint32 stage = 2;					// 当前活动阶段
+	 uint64 stageStartTime = 3; 		// 阶段开始时间
+	 uint64 stageEndTime = 4; 			// 阶段结束时间
+	 uint32 subStage = 5;				// 子阶段（下标）
+	 uint32 rewardFlag = 6; 			// 已领取阶段奖励标志（高16位是联盟阶段奖励的领取标志，第16位是个人阶段奖励的标识， 用位操作， 从0开始,  15位表示是否发送过决战期邮件）
+	 uint32 scoreRewardId = 7; 			// 积分奖励目标ID （备战期 TransferBattlePrepareScoreReward.xlsx 表ID字段， 决战期TransferBattleProcessingScoreReward.xlsx 表ID字段）
+	 uint64 subStageEndTime = 8; 		// 子阶段结束时间
+	 uint64 score = 9;					// 积分
+	 ST_UnitAsset_PB deathUnits = 10;	// 决战死亡士兵
+	 uint32 cureProgress = 11;			// 士兵恢复进度
+	repeated ST_Vector3Int_PB tasks = 12;		// 恢复期任务，  x: 任务ID， Y: 进度， Z：领奖标识
+	 uint32 freeTimes = 13;				// 决战期跨服次数
+	 uint64 lScore = 14; 				// 联盟积分
+}
+
+// 客户端获取跨服决战信息数据
+message ST_Client_TransferBattle_Info
+{
+	 ST_Prepare_Detail prepareDetail = 1;			// 备战期数据
+	 ST_Prepare_User_Info userInfo = 2;				// 玩家积分排名信息
+	 ST_Prepare_League_Info leagueInfo = 3;			// 联盟积分排名信息
+	 ST_Processing_Detail processingDetail = 4;		// 决战期数据
+}
+
+// 返回玩家排行榜数据
+message ST_Client_TransferBattle_User_Rank
+{
+	repeated ST_Prepare_User_Info infos = 1;
+	 ST_Prepare_User_Info ownerInfo = 2;			// 自己
+}
+
+// 返回联盟排行榜数据
+message ST_Client_TransferBattle_League_Rank
+{
+	repeated ST_Prepare_League_Info infos = 1;
+	 ST_Prepare_League_Info ownerLeague = 2;		// 自己联盟
+}
+
+message ST_CollectResource_Entry
+{
+	 uint32 buildingId = 1;
+	 ST_CashAsset_PB cash =2;
+}
+
+message ST_CollectResources
+{
+	repeated ST_CollectResource_Entry resources = 1;
+}
+message ST_Sort_PB {
+	 uint64 Key = 1;
+	 uint64 Value = 2;
+	 string Name = 3;  //角色名
+}
+message ST_Rank_PB {
+	repeated ST_Sort_PB MapSorter = 1;
+	 uint64 tm = 2;
+}

@@ -1,0 +1,29 @@
+syntax = "proto3";
+package proto_micro;
+option optimize_for = LITE_RUNTIME;
+option cc_generic_services = false;
+
+message ST_UpsertMail_Req_PB
+{
+	 uint64 id = 1;
+	 bool removed = 2;
+	 uint64 timestamp = 3;
+	 bytes data = 4;
+}
+
+message ST_UpsertMail_Respon_PB
+{
+	 int32 result = 1;
+}
+
+message ST_GetMail_Req_PB
+{
+	 uint64 id = 1;
+}
+
+message ST_GetMail_Respon_PB
+{
+	 int32 result = 1;
+	 bytes data = 2;
+}
+

@@ -1,0 +1,2168 @@
+syntax = "proto3";
+package proto_micro;
+
+//只生成lite版本的代码
+//option optimize_for = LITE_RUNTIME;
+//不生成RPC代码
+option cc_generic_services = false;
+
+enum VectorType
+{
+	VT_CASH         	= 0;
+	VT_ITEM         	= 2;
+	VT_BUILDING     	= 3;
+	VT_UNIT         	= 4;
+	VT_WORLD_ENTRY 		= 5;
+	VT_RESEARCH   		= 6;
+	VT_EXP		   		= 7;
+	VT_ACHIEVEMENT		= 8;
+	VT_DROP				= 9;  //掉落
+	VT_TELENT			= 10; //天赋
+	VT_STATUE_MATERIAL	= 11; //雕像材料
+	VT_HERO				= 12;
+	VT_BUFF				= 13; //buff效果,BUFF表
+	VT_RES_BOX			= 14; //资源箱子
+	VT_LEAGUE 			= 15; //联盟状态
+	VT_COMMANDER_ITEM   = 16; //指挥官道具
+	VT_WALL				= 17; //城墙
+	VT_TRAP				= 18; //陷阱
+	VT_BOX 				= 19; //头像框
+	VT_BUBBLE 			= 20; //气泡
+
+	VT_BUILDING_ACTION_COUNT 	= 10000; 	//检查建筑队列 不会出现在CSV中
+	VT_PRODUCTION_ACTION_COUNT 	= 10001; 	//检查生产队列 不会出现在CSV中
+	VT_WORLDMAP_ACTION_COUNT 	= 10002; 	//检查建筑队列 不会出现在CSV中
+	VT_RESEARCH_ACTION_COUNT 	= 10003; 	//检查生产队列 不会出现在CSV中
+	VT_BUILDING_COUNT 			= 10004; 	//检查Airship生产队列 不会出现在CSV中
+};
+
+enum CashType
+{
+	CASH_TYPE_1 = 0;         //金属
+	CASH_TYPE_2 = 2;         //晶体
+	CASH_TYPE_3 = 3;         //瓦斯
+	CASH_TYPE_4 = 4;         //重氢
+	CASH_TYPE_5 = 5;         //可乐
+	CASH_TYPE_6 = 6;         //成像金属
+	
+	CASH_TYPE_STA = 7;		 //stamina
+	CASH_TYPE_ERG = 8;		 //energy
+	CASH_TYPE_100 = 100;     //帝国金币(钻石)
+	CASH_TYPE_EXPEDITION = 9;//远征币
+	//联盟积分
+	CASH_TYPE_105 = 105;
+};
+
+enum ExpType
+{
+	ET_LAIRD		= 0;
+	ET_HERO			= 2;
+	ET_VIP 			= 3;
+};
+
+enum MapStageType
+{
+	MST_MARCH = 0;        //行军
+	MST_WORKING = 2;      //进行中
+	MST_BACK = 3;         //返回
+	MST_WAITMASS = 4;	  //集结等待
+	MST_WAITMARCH = 5;	  //行军等待
+	MST_WAITBATTLE	= 6;  //战斗等待中
+}
+
+enum ActionType
+{
+	//建造行为
+    AT_BUILD_BEGIN  = 0;
+    AT_BUILD_EMPTY  = 1;
+	//建筑升级
+    AT_BUILD_LEVELUP =2;
+	AT_BUILD_ACTIVATE =3;
+    AT_BUILD_END = 100;
+
+	AT_DURABLE = 101;//恢复耐久
+
+    //生产行为
+    AT_PRODUCTION_BEGIN = 200;
+	//训练士兵
+    AT_PRODUCTION_UNIT  = 201;
+	AT_PRODUCTION_CURE = 203;
+	//制造陷阱
+	AT_PRODUCTION_PITFALL = 204;
+	//制造雕像
+	AT_PRODUCTION_STATUE = 205;
+	// 地块解锁
+	AT_PRODUCTION_MAINCITY_EVENT = 206;
+	//联盟宝箱
+	AT_PRODUCTION_LEAGUE_BOX = 207;
+	//兵种升级
+	AT_PRODUCTION_LEVELUP = 208;
+	//派遣任务
+	AT_PRODUCTION_DISPATCH_TASK = 209;
+	//联盟任务
+	AT_PRODUCTION_LEAGUE_TASK = 210;
+    AT_PRODUCTION_END = 300;	
+	
+	//非占用生产行为
+	AT_PRODUCTION_RESOURCE = 350;
+	AT_PRODUCTION_COLLECT_RESOURCE = 351;
+	AT_PRODUCTION_HOSPITAL = 352;
+	AT_PRODUCTION_CITYINFO = 353;
+	AT_PRODUCTION_PRISON = 354;
+	AT_PRODUCTION_RULING = 355;
+	AT_PRODUCTION_RANKLIST = 356;
+	AT_PRODUCTION_BLACK_MARKET = 357;
+
+
+	//大地图行为 占用大地图行军队列
+	AT_WORLDMAP_BEGIN 				= 400;
+	AT_WORLDMAP_BESTATIONED 		= 401;		//野外驻扎
+	AT_WORLDMAP_ATTCK 				= 402;		//攻击							
+	AT_WORLDMAP_COLLECT 			= 403;		//采集
+	AT_WORLDMAP_SPYINTO				= 404;		//侦查
+	AT_WORLDMAP_GARRISON 			= 405;		//盟友驻军
+	AT_WORLDMAP_ENTERCITY 			= 406;		//进入城堡
+	AT_WORLDMAP_MASS				= 407;		//发起集结
+	AT_WORLDMAP_JOINMASS			= 408;		//参与集结
+	AT_WORLDMAP_TRANSPORT			= 409;		//运输资源
+	AT_WORLDMAP_EXPLORE				= 410;		//探索机械入侵
+	AT_WORLDMAP_HERO_HOLD			= 411;		//城市英雄换防
+    //存储资源
+	AT_WORLDMAP_IN					= 413;
+    //取回资源
+	AT_WORLDMAP_OUT					= 414;
+	AT_WORLDMAP_MACATTCK 			= 415;		//怪物攻城	
+
+	AT_WORLDMAP_END   				= 499;
+	
+	//大地图行为 不占用大地图行军队列
+	AT_WORLDMAP_DETAIL = 450;
+	AT_WORLDMAP_MOVEMAINCITY = 452;
+	AT_WORLDMAP_LEAGUEFLAG = 453;
+	AT_WORLDMAP_PICKBOX = 454;//大地图的宝箱拾取
+	AT_WORLDMAP_PLAYERINFO = 455;//大地图玩家信息
+	AT_WORLDMAP_MOVECITY_COMFIRM = 456;//迁城确认
+	AT_WORLDMAP_MOVECITY_CANCEL = 457;//迁城取消
+	AT_WORLDMAP_LEAGUEMANOR = 458;//联盟领地
+	AT_WORLDMAP_ACCELERATION = 459;//大地图行军加速
+	AT_WORLDMAP_BUILDLOCALBUILD_COMFIRE = 460;//联盟建筑确认
+	AT_WORLDMAP_BUILDLOCALBUILD_CANCLE = 461;//联盟建筑取消
+	AT_WORLDMAP_SPY						= 462;//侦查其他玩家的主城信息
+	AT_WORLDMAP_ADDBUF                  = 463;//增益
+	AT_WORLDMAP_CHECK_MY_FORT           = 464;//查看自己的殖民地
+	AT_WORLDMAP_CHECK_MY_MINE           = 465;//查看自己的矿
+	AT_WORLDMAP_LEAGUE_CITY_WAREHOUSE		= 466;//查看联盟城市的仓库
+	AT_WORLDMAP_LEAGUE_CITY_DEFENCE_FORCE	= 467;//查看联盟城市的防御部队
+	AT_WORLDMAP_LEAGUE_CITY_REINFORCE		= 468;//查看联盟城市的增援
+	AT_WORLDMAP_LEAGUE_MOVEMAINCITY = 469;//联盟迁城
+	
+	//王战相关
+	AT_WORLDMAP_KINGWAR_INFO				= 470;		//王战详情
+	AT_WORLDMAP_KINGWAR_ATTCK				= 471;		//王战攻击
+	AT_WORLDMAP_KINGWAR_SPYINTO				= 472;		//王战侦查
+	AT_WORLDMAP_KINGWAR_MANAGER				= 473;		//王战管理
+	AT_WORLDMAP_KINGWAR_FORCEINFO			= 474;		//部队详情
+	
+	
+	//跨服
+	AT_WORLDMAP_MOVE_SERVER = 480;
+	
+	//主城装扮
+	AT_MAINCITY_SKIN = 490;
+	
+	//科技研究行为
+	AT_RESEARCH_BEGIN 		 = 500;
+	//科技研究
+	AT_RESEARCH_START		 = 501;
+	AT_RESEARCH_END			 = 599;
+
+	//装备车间行为
+	AT_EQUIP_FACTORY_BEGIN 		 = 600;
+	AT_EQUIP_FACTORY_MAKE		 = 601;	//制造装备
+	AT_EQUIP_FACTORY_END		 = 699;
+
+    //联盟领地相关行为
+    AT_LEAGUE_TERRITORY_LEAGUE_INFO = 700; //查看联盟信息
+    AT_LEAGUE_TERRITORY_FORTRESS_INFO = 701; //查看联盟堡垒信息
+    AT_LEAGUE_TERRITORY_FORTRESS_GARRISON = 702; //驻守联盟堡垒
+    AT_LEAGUE_TERRITORY_WAREHOUSE_IN = 703; //联盟仓库存入
+    AT_LEAGUE_TERRITORY_WAREHOUSE_OUT = 704; //联盟仓库取出
+    AT_LEAGUE_TERRITORY_MINE_COLLECT = 705; //联盟超级矿开采
+    AT_LEAGUE_TERRITORY_FORTRESS_GARRISON_DIRECT = 706; //驻守联盟堡垒直接进入
+    //MISC行为
+    AT_MISC_BEGIN = 1000;
+    AT_MISC_BUILD_CANCEL = 1001;//取消建造
+    AT_MISC_BUILD_DESTROY = 1002;
+    AT_MISC_SPEEDUP_CASH = 1003;
+    AT_MISC_SPEEDUP_ITEM = 1004;
+	AT_MISC_RECALL = 1005; //召回
+	AT_MISC_PRODUCTION_UNIT_CANCEL = 1006; 	//取消造兵
+	AT_MISC_RESEARCH_RESET		 = 1007;	//重置科技点数
+	AT_MISC_WORLDMAP_BUILD		 = 1008;	//大地图建造建筑
+	//直接花钱建筑
+	AT_MISC_BUILD_EMPTY_CASH	 = 1009;
+	//直接花钱升级建筑
+	AT_MISC_BUILD_LEVELUP_CASH	 = 1010;
+	//请求帮助
+	AT_MISC_REQUEST_HELP		 = 1011;
+	//全部帮助
+	AT_MISC_HELPALL				 = 1012;
+	//取消集结
+	AT_MISC_CANCEL_MASS			 = 1013;
+	//派遣英雄
+	AT_MISC_DISPATCH			 = 1014;
+	//取消派遣英雄
+	AT_MISC_CANCEL_DISPATCH		 = 1015;
+	//英雄事件奖励领取
+	AT_MISC_HEROEVENT			 = 1016;
+	//直接花钱造兵
+	AT_MISC_PRODUCTION_UNIT_CASH = 1017;
+	AT_MISC_USEITEMONHERO		 = 1018;	//给英雄使用物品
+	AT_MISC_SPEEDUP_FREE		 = 1019;	//免费加速
+	AT_MISC_PLAYER_INFO          = 1020;
+	AT_MISC_MINE_INFO            = 1021;	//单人矿信息
+	AT_MISC_FORT_INFO            = 1022;
+	AT_MISC_IGNORERADAR			 = 1023;	//忽略雷达预警
+	AT_MISC_CLEARLEAGUEGIFT		 = 1024;	//清除联盟礼包
+	AT_MISC_CURE_CASH			 = 1025;	//花钱治疗
+	AT_MISC_RESEARCH_CASH		 = 1026;    //花钱科研
+	AT_MISC_MOVEBUILDING		 = 1027;	//移动主城建筑
+	AT_MISC_RECEIVEALLRESOURCE	 = 1028;	//收取所有的盟友运输资源
+	AT_MISC_MULTI_MINE_INFO      = 1029;	//多人矿信息
+	AT_MISC_TALENT_LEVELUP		 = 1030;	//升级天赋
+	AT_MISC_USE_SKILL			 = 1031;	//使用主动技能
+	AT_MISC_RESET_TALENT		 = 1032; 	//重置天赋点数
+	AT_MISC_TALENT_MAX			 = 1033;	//升级天赋到最高等级
+	AT_MISC_DAILY_AWARD			 = 1034;	//日常奖励
+	AT_MISC_RECEIVE_UNITS		 = 1035;	//从建筑里面收取兵种资产，用于造兵，陷阱，治疗
+	AT_MISC_GETSHEREWARD         = 1036;    //行走英雄奖励
+	AT_MISC_ABANDONING_TREATMENT = 1037; //放弃治疗
+	AT_MISC_READRADAR			 = 1038;	//标记雷达消息为已读
+	AT_MISC_HELPSINGLE			 = 1039;	// 单个帮助
+	AT_MISC_ONLINE_AWARD		 = 1040;	// 在线奖励
+	AT_MISC_PALACE_INFO			 = 1041;	//机械入侵信息
+	AT_MISC_SHOWPALACE	     	 = 1042; 	//查看机械入侵个人详情
+	AT_MISC_SUPPLY		     	 = 1043; 	//后勤补给
+	AT_MISC_UPGRADE_UNIT_CASH	 = 1044;	//花钱直接升级兵
+	AT_MISC_AIRDROP				 = 1045;	//空投补给按钮
+	AT_MISC_TRAP_REMOVE 		 = 1046;	//拆除陷阱
+	AT_MISC_PUSH_MAP	 		 = 1047;	//推图系统
+	AT_MISC_STATUE_ENHANCE 		 = 1048;	//雕像增幅
+	AT_MISC_FACTORY_COMPOSE		 = 1049;	//合成材料
+	AT_MISC_FACTORY_DECOMPOSE	 = 1050;	//分解材料
+	AT_MISC_FACTORY_RECEIVE		 = 1051;	//从工厂收取合成好的装备
+	AT_MISC_FACTORY_MAKE_CASH	 = 1052;	//花钱合装备
+	AT_MISC_BUILD_RECYCLING	 	 = 1053;	//建筑回收
+	AT_MISC_BUILD_RECYCLING_LIST = 1054;	//建筑批量回收
+	//英雄驻扎
+	AT_MISC_HERO_DEFENSE 		 = 1055;
+	//建筑批量移动
+	AT_MISC_MOVEBUILDING_LIST    = 1056;
+	//天赋解锁
+	AT_MISC_TALENT_UNLOCK		 = 1057;
+	//修复燃烧值
+	AT_MISC_MAIN_HP		 		= 1058;
+	AT_MISC_CAMP_LEADER		 	= 1059; //指定驻防队长
+	AT_MISC_END = 1100;
+};
+
+enum BuildingType
+{
+	BT_BASE_STATION 	= 0; 	//主基地
+	BT_MILITARY 		= 200;	//兵营
+	BT_MINE				= 201;  //矿
+	BT_TRAINING_FIELD 	= 202; 	//训练场
+	BT_DEFENSE_CENTER 	= 203;	//城防中心
+	BT_RESEACH 			= 204;	//科技中心
+	BT_STOREHOUSE		= 205;  //仓库
+	BT_HOSPITAL			= 206;	//医院
+	BT_PRISON			= 207;	//监狱
+	BT_ALTAR			= 208;	//裁决所
+	BT_COMMAND			= 209;	//前线指挥所
+	BT_MARKET			= 210;  //市场
+	BT_LEAGUECENTER		= 211;	//联盟中心
+	BT_RADAR			= 212;	//雷达
+	BT_DIAMONDMINE		= 213;	//钻石矿
+	BT_AIRSHIP			= 214;	//飞艇
+	BT_STATUE			= 215;	//雕像
+	BT_TAVERN			= 216;	//酒馆
+	BT_EmergencyCenter	= 217;	//急救中心
+	BT_POWER_STATION = 218; //发电站
+	BT_Accessory		= 219; //配件所
+	BT_EQUIP_FACTORY	= 220; //装备车间
+	BT_ROAD				= 221; //道路
+	BT_DECORATION		= 222; //装饰物
+	BT_DRAWCARD 		= 223; //抽卡建筑
+	BT_OTHER            = 299;  //其他
+}
+
+enum MailType
+{
+	MT_COMMANDER		 = 0;  //指挥官邮件
+	MT_SYSTEM	 		 = 2;  //系统邮件	
+	MT_UNION			 = 3;  //联盟邮件	
+	MT_BATTLE	 		 = 4;  //战斗邮件
+	MT_DETECT			 = 5;  //侦查邮件
+	MT_MONSTER 			 = 6;  //怪物邮件
+	MT_COLLECTION 		 = 7;  //采集邮件
+	MT_PERSONAL 		 = 8;  //自定义邮件
+	MT_EARLYWARNING		 = 9;  //预警邮件
+    MT_LEAGUE_TRANSPORT  = 10; //联盟运输
+    MT_EVERYONE          = 11; //全局邮件
+    MT_LEAGUE_INVITATION = 12; //联盟邀请
+	MT_LEAGUE_GROUP		 = 13; // 联盟群邮件	
+	MT_MONSTER_EX 		 = 14; //小怪物邮件
+	MT_ACTIVITY        	 = 15;  //--活动消息
+	MT_MONSTER_ATK_CITY  = 16; //怪物攻城
+	MT_PRIVATE_CHAT      = 100; //--点对点聊天(聊天系统插入)
+}
+
+//世界地图条目类型
+enum WorldEntryType
+{
+	WET_MAINCITY 				= 0; //玩家主城
+	WET_MINE_START	 			= 200; //矿产类型开始
+	WET_MINE_METAL				= 201; //金属
+	WET_MINE_CRYSTAL			= 202; //晶体
+	WET_MINE_GAS				= 203; //高能瓦斯
+	WET_MINE_DEUTERIUM			= 204; //重氢
+	WET_MINE_COKE				= 205; //可乐
+	WET_MINE_GEM				= 206; //钻石矿
+	WET_MINE_END				= 299; //矿产类型结束
+	WET_WILDMONSTER     		= 300; //BOSS野怪	
+	WET_MUTIWILDMONSTER			= 301; //多人野怪
+	WET_WILDMONSTEREX 			= 302; //小野怪
+	WET_SUMMON_MUTIWILDMONSTER	= 303; //多人召唤野怪	
+	WET_FORT        			= 400; //城市废墟
+	
+	WET_CITY					= 401;//城市
+	WET_CAPITAL_CITY			= 402;//首都城市
+	WET_SMALL_MIRACLE 			= 403;//小奇迹
+	WET_BIG_MIRACLE 			= 404;//大奇迹
+
+	//联盟堡垒
+	WET_LEAGUE_Center				= 500;
+	//联盟仓库
+	WET_LEAGUE_Cashhouse			= 501;
+	//联盟超级矿
+	WET_LEAGUE_MultiCash			= 502;
+
+
+	WET_BESTATIONED				= 600; //驻扎
+	WET_WMTROOP                 = 601; //大地图行军部队
+	
+	//机械入侵
+	WET_UNDERGROUNDPALACE		= 701;//机械入侵
+	
+	
+	WET_SUPPLEBOX 				= 900;
+}
+
+enum UnitType
+{
+	UT_SPECIAL_WALL		 		= 0;   //城墙
+	UT_SPECIAL_HERO		 		= 99;   //英雄
+	UT_NORMAL_BEGIN 			= 100;  //普通兵种
+	UT_NORMAL_TANK 				= 110; 	//坦克
+	UT_NORMAL_BUBING 			= 120; 	//步兵
+	UT_NORMAL_JIJIA 			= 130; 	//机甲(火炮)
+	UT_NORMAL_FEIJI 			= 140; 	//飞机
+	UT_NORMAL_END 				= 199; 
+	UT_PITFALL_BEGIN			= 200;	//陷阱
+	UT_PITFALL_DILEI			= 210;	//高能地雷
+	UT_PITFALL_BAOLEI			= 220;	//机枪堡垒
+	UT_PITFALL_XIANQUAN			= 230;	//磁暴线圈
+	UT_PITFALL_DAODAN			= 240;	//毒刺导弹
+	UT_PITFALL_END 				= 299;
+	UT_WILD_MONSTER				= 300;	//野怪
+}
+
+//战斗单位在战斗时的类型，对应配置表UnitConfig中的UnitPosType字段
+//技能和效果的作用对象也是这个值
+enum UnitBattleType
+{
+	//定义的战斗单位类型，也可作为技能和效果的作用对象
+	UBT_NOMAL_NONE          = 0; 	
+	UBT_NOMAL_TANK		 	= 1;   	//坦克
+	UBT_NOMAL_BUBING	 	= 2;   	//步兵
+	UBT_NOMAL_HUOPAO	 	= 3;   	//火炮
+	UBT_NOMAL_FEIJI		 	= 4;   	//飞机
+	UBT_NOMAL_TRAP1		 	= 5;   	//陷阱1(反坦克炮)
+	UBT_NOMAL_TRAP2		 	= 6;   	//陷阱2(机枪碉堡)
+	UBT_NOMAL_TRAP3		 	= 7;   	//陷阱3(磁暴线圈)
+	UBT_NOMAL_TRAP4		 	= 8;   	//陷阱4(防空导弹)		
+	UBT_NOMAL_HERO			= 9;	//英雄(随机一个)
+	UBT_NOMAL_WALL		 	= 10;  	//城墙
+
+
+	//仅仅作为技能和效果的作用对象
+	UBT_SPECIAL_BEGIN 		= 20;	//效果作用对象开始
+	UBT_SPECIAL_ALL_UNIT 	= 21;	//所有兵种
+	UBT_SPECIAL_ALL_HERO 	= 22;	//所有英雄
+	UBT_SPECIAL_ALL_TRAP 	= 23;	//所有陷阱(效果不会单独作用于某一个陷阱)
+	UBT_SPECIAL_ALL_OBJECT 	= 24;	//所有对象(包含陷阱、英雄、军团)
+	UBT_SPECIAL_RANDON_UNIT = 25;	//随机兵种
+	UBT_SPECIAL_RANDON_TWO_UNIT = 26; //随机两个兵种
+	UBT_SPECIAL_RANDON_THREE_UNIT = 27; //随机三个兵种
+	UBT_SPECIAL_RANDON_TWO_HERO = 28; //随机两个英雄
+	UBT_SPECIAL_HERO_SELF = 29; // 英雄自己
+}
+
+//action返回类型
+enum RetActionType
+{
+	RAT_SUCCESS        				= 0;
+	RAT_INTERNAL_ERROR 				= 2;
+	RAT_TIME_ERROR     				= 3;
+	RAT_CON_BUILDING_ERROR 			= 4;
+	RAT_CON_RESOURCE_ERROR 			= 5;
+	RAT_CON_ITEM_ERROR 				= 6;
+	RAT_INPUT_ERROR    				= 7;
+	RAT_COUNT_MAX					= 8;
+	RAT_LEVEL_MAX					= 9;
+	RAT_QUEUE_MAX					= 10;
+	RAT_WARCITY_LEVEL				= 11;  //城市等级不够
+	RAT_WARCITY_LID_NO				= 12;	//没有联盟
+	RAT_WARCITY_LID_NUM				= 13;	//联盟人数小于2
+	RAT_ADD_EXP_FAILED_HEROSTAR_LIMIT = 14;	//加经验失败，由于英雄星级
+	RAT_ADD_EXP_FAILED_COMMANDER_LIMIT = 15; //加经验失败，由于指挥官等级限制
+	RAT_DISPATCH_HEROS_OVERFLOW = 16; //派出英雄数量超过上限
+	RAT_PITFALL_NUM =17;			//有陷阱
+	RAT_HEROS_WORKING = 18; 		//英雄不能使用
+	RAT_UNIT_NUM = 19; 		//士兵数量超限
+	RAT_HIT_NUM = 20; 		//连续猎杀数量为0
+	RAT_STA_NUM = 21; 		//体力不够
+	RAT_ATT_MOM_LV = 22; 	//科技等级不够
+	RAT_NEW_BOOTCAP = 23; 	//有新手护盾
+	RAT_Keep_Mail_FAILED = 24; 	//收藏邮件失败
+	RAT_BUILD_TIME = 25; 		//建筑时间不够
+	RAT_LEAGUE_PERMISSION_DENIED = 26; //联盟权限不够
+};
+
+// 聊天的返回类型
+enum RetChatType
+{
+	RCT_UNKNOW						= 0;
+	RCT_SUCCESS						= 1;
+	RCT_MY_CHAT_TOTAL_MAX			= 2; // 超过我的话题上限
+	RCT_DAY_CHAT_MAX				= 3; // 超当天发话题上限
+	RCT_CHAT_TIME_INTERVAL			= 4; // 发送话题的时间间隔
+	RCT_HAVE_FOLLOWED				= 5; // 已经关注了
+	RCT_FOLLOW_CHAT_TOTAL_MAX		= 6; // 超过关注上限
+	RCT_CHAT_EXPIRED_OR_NO_EXIST	= 7; // 消息已过期或者不存在
+	RCT_HAVE_PRAISED				= 8; // 已经点赞过
+	RCT_NOT_FOLLOWED				= 9; // 没有关注
+	RCT_PRIVATE_CHAT_MAX			= 10; // 点对点聊天上限，请先删除部分聊天
+	RCT_TARGET_PRIVATE_CHAT_MAX		= 11; // 对方点对点聊天上限，请先删除部分聊天
+	RCT_MAIN_CITY_LIMIT				= 12; // 主城等级不够
+	RCT_FORBID						= 13; // 被禁言
+	RCT_CONTENT_TOO_LONG			= 14; // 输入超长
+	
+}
+
+// 聊天消息类型
+enum ChatContentType
+{
+	CCT_BEGIN						= 0;
+	
+	CCT_CONTEXT						= 1; // 文本
+	CCT_BATTLE_REPORT				= 2; // 战报
+	CCT_POSITIN						= 3; // 分享坐标
+	CCT_MASS						= 4; // 集结
+	CCT_VOICE						= 5; // 语音
+	CCT_BIG_EMOJI					= 6; // 大表情
+	CCT_SYSTEM						= 7; // 系统消息
+	CCT_PURCHASE					= 8; // 补货消息
+	CCT_TIME_LINE_GAP				= 9; // 联盟消息时间间隔
+	CCT_SINGLE_CHAT					= 10; //邮件私聊
+	CCT_END							= 11; 
+}
+
+enum ForbiddenChatType
+{
+	FCT_WORLD_CHAT					= 0; // 禁言世界聊天
+	FCT_ALL_CHAT					= 1; // 禁言所有聊天
+	FCT_LEAGUE_CHAT					= 2; // 经验联盟聊天
+}
+
+enum TipType
+{
+	TT_NORMAL = 0; 	//普通
+	
+}
+//联盟权限
+enum LeagueMemberLevel
+{
+	LeagueMemberLevel0 = 0;
+	LeagueMemberLevel1 = 1;
+	LeagueMemberLevel2 = 2;
+	LeagueMemberLevel3 = 3;
+	LeagueMemberLevel4 = 4;
+	LeagueMemberLevel5 = 5;
+	LeagueMemberLevelMax = 6;
+}
+
+enum LeaguePermissionOperator
+{
+	PromissionUp = 0;
+	KickOut = 2;
+	Abdicate = 3;
+	RecallLeagueOnwer = 4; 		//罢免
+}
+
+enum LeagueResult
+{
+	LeagueSuccess = 0; //创建成功
+	LeagueNameExisted = 1;  //名字重复
+	LeagueShortNameExisted = 2; //缩写重复
+	LeaqueIsFull = 3;	//成员已经满了
+	LeagueJoined = 4; //已经加入了联盟，不能再加入
+	LeagueIsNotExist = 5; //联盟不存在
+	LeaguePermissionDeny = 6; //没用相关权限
+	LeagueParamsError = 7; //参数不正确
+	LeaguePermissionMax = 8; //权限以及最高了
+	LeagueIsNotMember = 9;
+	LeagueIsWarCity = 10;  //城市争霸不能退
+	LeagueLevelFull = 11; // 成员等级数量满
+	LeagueTransferBattle = 12; // 跨服决战期间
+}
+
+enum ChatChannelType
+{
+	CT_BEGIN			= 0;
+	
+	CT_WORLD			= 1;//世界频道
+	CT_ALLIANCE			= 2;//联盟频道
+	CT_USER				= 3;//玩家点对点聊天
+	CT_MULTI_MAIL		= 4;//群组邮件
+	CT_WORLD_WX			= 5;//世界频道微信
+	CT_END				= 6;
+}
+
+//世界聊天频道内的子频道
+enum WorldChannelType
+{
+	WCT_BEGIN		= 0;
+	
+	WCT_NEWEST 		= 1;//最新话题
+	WCT_HOT			= 2;//热门话题
+	WCT_FOLLOW		= 3;//我关注的话题
+	WCT_MY_TOPICS	= 4;//我的话题
+	
+	WCT_END			= 5;
+}
+
+enum HeroStatus
+{
+	HS_BEGINE	= 0;
+	
+	HS_NORMAL		= 1;//英雄状态，普通状态
+	HS_IMPRISONED	= 2;//英雄被关押状态
+	HS_DEATH		= 3;//英雄死亡状态
+	HS_MARCH		= 4;//英雄在外行军
+	HS_DEFENSE 	= 5;//英雄在主城驻守
+	HS_END			= 6;
+}
+
+//属性加成种类
+enum AtttibuteType
+{
+	PSCash1				= 0; //金属生产速率
+	PSCash2				= 2; //晶体生产速率
+	PSCash3				= 3; //瓦斯生产速率
+	PSCash4				= 4; //重氢生产速率
+	PSCash5				= 5; //可乐生产速率
+	CSCash1				= 6; //金属采集速率
+	CSCash2				= 7; //晶体采集速率
+	CSCash3				= 8; //瓦斯采集速率
+	CSCash4				= 9; //重氢采集速率
+	CSCash5				= 10; //可乐采集速率
+	PTSource			= 11; //提高仓库保护资源
+	Weight				= 12; //提高部队负重
+	MonMarchTime		= 13; //提高打怪行军速度
+	MarchTime			= 14; //行军速度
+	KillWounded			= 15; //敌方战损增加
+	Power				= 16; //体力恢复速度
+	BuildSpeed			= 17; //建筑建造速度
+	WoundedCount		= 18; //伤兵上限
+	CureSpeed			= 19; //伤兵治疗速度
+	UnitCount			= 20; //造兵上限
+	DefenderAttack		= 21; //守军攻击力
+	DefenderDefense		= 22; //守军防御力
+	ToWounded			= 23; //伤兵转化比例
+	UnitSpeed			= 24; //造兵速度加成
+	AttackTank			= 25; //坦克攻击力加成
+	AttackBubing		= 26; //步兵攻击力加成
+	AttackFeiji			= 27; //飞机攻击力加成
+	AttackJijia			= 28; //机甲攻击力加成
+	DefenseTank			= 29; //坦克防御加成
+	DefenseBubing		= 30; //步兵防御加成
+	DefenseFeiji		= 31; //飞机防御加成
+	DefenseJijia		= 32; //机甲防御加成
+	HPTank				= 33; //坦克生命加成
+	HPBubing			= 34; //步兵生命加成
+	HPFeiji				= 35; //飞机生命加成
+	HPJijia				= 36; //机甲生命加成
+	ArmyCount			= 37; //单支部队出征上限
+	RideCount			= 38; //出征队列数量上限
+	TankSpeed           = 39; //坦克生产速度
+	FeijiSpeed          = 40;//飞机生产速度
+	JijiaSpeed          = 41;//机甲生产速度
+	BubingSpeed         = 42;//步兵生产速度
+	TrapSpeed           = 43;//陷阱生产速度
+	ShieldDurable       = 44;//增加城防值
+	AttackTrap          = 45;//陷阱攻击力
+	TrapNumber          = 46;//陷阱容量
+	AggregationSpeed    = 47;//集结部队行军速度
+	TransactionTax      = 50;//运输资源的税率    
+	ArmyCount2			= 51; //单支部队出征上限(固定人数)
+    ResSpeed            = 52; //研发速度
+	SiegeAttack         = 53; //攻城加成
+	ResourcePS          = 54; //资源生产速度
+	ResourceCS          = 55; //资源采集速度
+	TrapHP              = 56; //陷阱耐久
+	PowerLimit          = 57; //行动力上限
+	GroupHP             = 58; //军团生命力
+	GroupDefense        = 59; //军团防御力
+	GroupAttack         = 60; //军团攻击力
+	DefenderHP          = 61; //守城生命力
+	AttackATK           = 62; //攻城部队攻击力
+	AttackDEF           = 63; //攻城部队防御力
+	AttackHP            = 64; //攻城部队生命力
+	AttackcityATK       = 65; //占领战（城市、资源点）部队攻击力
+	AttackcityDEF       = 66; //占领战（城市、资源点）部队防御力
+	AttackcityHP        = 67; //占领战（城市、资源点）部队生命力
+	BuildResourceReduce = 68; //建造资源消耗减少
+	ResearchResourceReduce = 69; //科研资源消耗减少
+	CureResourceReduce  = 70; //治疗资源消耗减少
+	TrapResourceReduce  = 71; //陷阱制作资源消耗减少
+	CtrapResourceReduce = 72; //陷阱治疗资源消耗减少
+	GemGetProbability   = 73; //宝石获得几率
+	BubingTrainReduce   = 74; //步兵招募资源消耗减少
+	TankTrainReduce     = 75; //坦克招募资源消耗减少
+	JijiaTrainReduce    = 76; //机甲招募资源消耗减少
+	FeijiTrainReduce    = 77; //飞机招募资源消耗减少
+	CollectionMarchTime = 78; //采集行军速度
+	MonAttack           = 79; //打怪攻击力
+	WoundedCount2		= 80; //伤兵上限(百分比）
+	PowerReduce		= 81; //体力消耗降低
+	FangkongT2Reduce	= 82; //二阶防空导弹成本降低
+	CibaoT2Reduce		= 83; //二阶磁暴线圈成本降低
+	FanTankT2Reduce		= 84; //二阶反坦克炮成本降低
+	DiaobaoT2Reduce		= 85; //二阶机枪碉堡成本降低
+	FangkongT3Reduce	= 86; //三阶防空导弹成本降低
+	CibaoT3Reduce		= 87; //三阶磁暴线圈成本降低
+	FanTankT3Reduce		= 88; //三阶反坦克炮成本降低
+	DiaobaoT3Reduce		= 89; //三阶机枪碉堡成本降低
+	FangkongT4Reduce	= 90; //四阶防空导弹成本降低
+	CibaoT4Reduce		= 91; //四阶磁暴线圈成本降低
+	FanTankT4Reduce		= 92; //四阶反坦克炮成本降低
+	DiaobaoT4Reduce		= 93; //四阶机枪碉堡成本降低
+	BubingT2Reduce		= 94; //二阶步兵成本降低
+	TankT2Reduce		= 95; //二阶坦克成本降低
+	JijiaT2Reduce		= 96; //二阶火炮成本降低
+	FeijiT2Reduce		= 97; //二阶战机成本降低
+	BubingT3Reduce		= 98; //三阶步兵成本降低
+	TankT3Reduce		= 99; //三阶坦克成本降低
+	JijiaT3Reduce		= 100; //三阶火炮成本降低
+	FeijiT3Reduce		= 101; //三阶战机成本降低
+	BubingT4Reduce		= 102; //四阶步兵成本降低
+	TankT4Reduce		= 103; //四阶坦克成本降低
+	JijiaT4Reduce		= 104; //四阶火炮成本降低
+	FeijiT4Reduce		= 105; //四阶战机成本降低
+	HeroAttack			= 106; //英雄攻击力
+	HeroSpeed			= 107; //英雄速度
+	EquipMakeSpeed 		= 108; //装备制造速度
+	CommanderExpAdd		= 109; //指挥官经验加成
+	MilitaryDamage      = 110; //军事伤害加成，针对玩家
+	HuntDamge 			= 111; //狩猎伤害加成，针对NPC
+	WallDef  			= 112; //城墙防御	
+	
+	AbsHitLevelBubing		= 113; //步兵命中等级加成(绝对值)
+   	AbsHitLevelTank			= 114; //坦克命中等级加成(绝对值)
+   	AbsHitLevelFeiji		= 115; //飞机命中等级加成(绝对值)
+   	AbsHitLevelHuoPao		= 116; //火炮命中等级加成(绝对值)
+   	AbsDodgeLevelBubing		= 117; //步兵闪避等级加成(绝对值)
+   	AbsDodgeLevelTank		= 118; //坦克闪避等级加成(绝对值)
+   	AbsDodgeLevelFeiji		= 119; //飞机闪避等级加成(绝对值)
+   	AbsDodgeLevelHuoPao		= 120; //火炮闪避等级加成(绝对值)
+   	AbsBaoJiLevelBubing		= 121; //步兵暴击等级加成(绝对值)
+   	AbsBaoJiLevelTank		= 122; //坦克暴击等级加成(绝对值)
+   	AbsBaoJiLevelFeiji		= 123; //飞机暴击等级加成(绝对值)
+   	AbsBaoJiLevelHuoPao		= 124; //火炮暴击等级加成(绝对值)
+   	AbsKangBaoLevelBubing	= 125; //步兵抗暴等级加成(绝对值)
+   	AbsKangBaoLevelTank		= 126; //坦克抗暴等级加成(绝对值)
+   	AbsKangBaoLevelFeiji	= 127; //飞机抗暴等级加成(绝对值)
+   	AbsKangBaoLevelHuoPao	= 128; //火炮抗暴等级加成(绝对值)
+   	AbsHitLevelGroup        = 129; //军团命中等级加成(绝对值)
+   	AbsDodgeLevelGroup     	= 130; //军团闪避等级加成(绝对值)
+   	AbsBaoJiLevelGroup      = 131; //军团暴击等级加成(绝对值)
+   	AbsKangBaoLevelGroup    = 132; //军团抗暴等级加成(绝对值)
+   	PerHitLevelBubing		= 133; //步兵命中等级加成(百分比)
+   	PerHitLevelTank			= 134; //坦克命中等级加成(百分比)
+   	PerHitLevelFeiji		= 135; //飞机命中等级加成(百分比)
+   	PerHitLevelHuoPao		= 136; //火炮命中等级加成(百分比)
+   	PerDodgeLevelBubing		= 137; //步兵闪避等级加成(百分比)
+   	PerDodgeLevelTank		= 138; //坦克闪避等级加成(百分比)
+   	PerDodgeLevelFeiji		= 139; //飞机闪避等级加成(百分比)
+   	PerDodgeLevelHuoPao		= 140; //火炮闪避等级加成(百分比)
+   	PerBaoJiLevelBubing		= 141; //步兵暴击等级加成(百分比)
+   	PerBaoJiLevelTank		= 142; //坦克暴击等级加成(百分比)
+   	PerBaoJiLevelFeiji		= 143; //飞机暴击等级加成(百分比)
+   	PerBaoJiLevelHuoPao		= 144; //火炮暴击等级加成(百分比)
+   	PerKangBaoLevelBubing	= 145; //步兵抗暴等级加成(百分比)
+   	PerKangBaoLevelTank		= 146; //坦克抗暴等级加成(百分比)
+   	PerKangBaoLevelFeiji	= 147; //飞机抗暴等级加成(百分比)
+   	PerKangBaoLevelHuoPao	= 148; //火炮抗暴等级加成(百分比)
+   	PerHitLevelGroup        = 149; //军团命中等级加成(百分比)
+   	PerDodgeLevelGroup      = 150; //军团闪避等级加成(百分比)
+   	PerBaoJiLevelGroup      = 151; //军团暴击等级加成(百分比)
+   	PerKangBaoLevelGroup    = 152; //军团抗暴等级加成(百分比)
+   	HitRateBubing			= 153; //步兵命中率加成
+   	HitRateTank				= 154; //坦克命中率加成
+   	HitRateFeiji			= 155; //飞机命中率加成
+   	HitRateHuoPao			= 156; //火炮命中率加成   	
+   	BaoJiRateBubing			= 157; //步兵暴击率加成
+   	BaoJiRateTank			= 158; //坦克暴击率加成
+   	BaoJiRateFeiji			= 159; //飞机暴击率加成
+   	BaoJiRateHuoPao			= 160; //火炮暴击率加成   	
+   	HitRateGroup         	= 161; //军团命中率加成
+   	BaoJiRateGroup     	  	= 162; //军团暴击率加成	
+	HunterMonsDef			= 163; //单人boss野怪战斗防御加成(百分比)
+	HunterMonsLife			= 164; //单人boss野怪战斗防御加成野怪战斗生命加成(百分比)
+	HunterMonsAtk			= 165; //单人boss野怪战斗攻击加成(百分比)
+	HunterMonsDemage		= 166; //单人boss野怪战斗伤害加成(百分比)
+	GroupHP2      	        = 167; //军团生命力(万分比)
+	GroupHP3        	    = 168; //军团生命力(万分比)
+	GroupDefense2       	= 169; //军团防御力(万分比)
+	GroupDefense3           = 170; //军团防御力(万分比)
+	GroupAttack2            = 171; //军团攻击力(万分比)
+	GroupAttack3            = 172; //军团攻击力(万分比)
+	ArmyCount3              = 173; //队伍扩编,(万分比)(道具)
+	ArmyCount4              = 174; //队伍扩编,(万分比)(道具)
+	BossRed					= 175; //野外BOSS战斗中，己方所有部队受到伤害降低(百分比)
+	MonAtt					= 176; //野外小怪战斗中，军团攻击增加(百分比)
+	MonDef					= 177; //野外小怪战斗中，军团防御增加(百分比)
+	MonHp					= 178; //野外小怪战斗中，军团生命增加(百分比)
+	MonDam					= 179; //野外小怪战斗中，伤害加成(百分比)
+	MonRed					= 180; //野外小怪战斗中，己方所有部队受到伤害降低
+	DemageRise				= 181; //所有战斗中己方部队伤害加成（百分比）
+	HurtRed					= 182; //战斗中己方部队受到伤害降低（百分比）
+	BubingT5Reduce		= 183; //五阶步兵成本降低
+	TankT5Reduce		= 184; //五阶坦克成本降低
+	JijiaT5Reduce		= 185; //五阶火炮成本降低
+	FeijiT5Reduce		= 186; //五阶战机成本降低
+
+	UnionMember         = 1001;//联盟人数上限
+    UnionHelp           = 1002;//联盟帮助次数
+    MaxAggregation      = 1003;//联盟集结上限（百分比）
+	DiamondMine			= 1004;//宝石矿
+	Reinforcement       = 1005;//联盟援军上限（百分比）
+	CityCapacity        = 1006;//城市仓库容量上限（百分比）
+	CityDurability      = 1007;//城市耐久度上限（百分比）
+	CityMonster         = 1008;//城市守卫数量上限（百分比）
+	CityReinforcement   = 1009;//城市增援部队上限（百分比）
+	UnionHelpTime       = 1010;//联盟帮助额外时间（固定值：秒）
+	GetTheResources     = 2001;//立即获得xx小时当前资源矿产量的资源
+	Recall              = 2002;//立即召回城外部队
+	ArmyLimit           = 2003;//出征部队上限提升xx，持续xx小时
+	Repair              = 2004;//立即修复城防耐久
+	PowerObtain         = 2005;//立即获得xx点体力
+	GatherIncrease      = 2006;//提高采集速度xx，持续xx小时
+	MMReward 			= 2007;//多人野怪额外奖励次数
+	FreeTime      		= 5000;//免费时间
+	Talent1             = 100001;//建筑升级消耗永久降低5%
+	Talent2             = 100002;//攻击其他玩家时敌方10%伤兵直接死亡（英雄所在部队生效，集结无效）
+	Talent3             = 100003;//守城部队攻击力提升30%（英雄作为领主时生效）
+	Talent4             = 100004;//英雄所在部队采集速度提升30%（英雄所在部队生效）
+	Talent5             = 100005;//所在部队规模上限提升15%
+	Talent6             = 100006;//联盟帮助时间额外增加2分钟
+	Talent7             = 100007;//行军时间超过15分钟，所在部队攻击力增加20%（英雄所在部队生效）
+	Talent8             = 100008;//英雄所在部队可乐采集速度提升50%（英雄所在部队生效）
+	Talent9             = 100009;//该英雄不会被捕
+	Talent10            = 100010;//攻击己方基地的部队行军速度降低50%,英雄作为领主时生效
+	Talent11            = 100011;//攻击其他玩家基地时伤兵转化率提升5%（英雄所在部队生效）
+	Talent12            = 100012;//行军速度增加50%（英雄所在部队生效，集结无效）
+	Talent13            = 100013;//守城战抓捕敌方英雄概率提升20%（作为领主时生效）
+	Talent14            = 100014;//英雄所在部队打怪攻击力提升10%
+	Talent15            = 100015;//科研升级消耗永久降低5%
+	Talent16            = 100016;//免费时间增加3分钟
+	//以上效果中部队相关效果均为英雄所在部队生效，集结无效
+    BuBingT2            = 10022;//步兵T2开启
+    BuBingT3            = 10023;//步兵T3开启
+	BuBingT4			= 10024;//步兵T4开启
+	BuBingT5			= 10025;//步兵T5开启
+	TankT2              = 10012;//坦克T2开启
+    TankT3              = 10013;//坦克T3开启
+	TankT4			    = 10014;//坦克T4开启
+	TankT5			    = 10015;//坦克T5开启
+	JiJiaT2             = 10032;//机甲T2开启
+    JiJiaT3             = 10033;//机甲T3开启
+	JiJiaT4			    = 10034;//机甲T4开启
+	JiJiaT5			    = 10035;//机甲T5开启
+	FeiJiT5			    = 10041;//飞机T5开启
+	FeiJiT2             = 10042;//飞机T2开启
+    FeiJiT3             = 10043;//飞机T3开启
+	FeiJiT4			    = 10044;//飞机T4开启
+    FangkongT2          = 10045;//防空导弹T2开启
+    FangkongT3          = 10046;//防空导弹T3开启
+	FangkongT4			= 10047;//防空导弹T4开启
+	CibaoT2             = 10048;//磁暴线圈T2开启
+    CibaoT3             = 10049;//磁暴线圈T3开启
+	CibaoT4			    = 10050;//磁暴线圈T4开启
+	FanTankT2           = 10051;//反坦克炮T2开启
+    FanTankT3           = 10052;//反坦克炮T3开启
+	FanTankT4			= 10053;//反坦克炮T4开启
+	DiaobaoT2           = 10054;//机枪碉堡T2开启
+    DiaobaoT3           = 10055;//机枪碉堡T3开启
+	DiaobaoT4			= 10056;//机枪碉堡T4开启
+	AttMonsLevel		= 10057;//猎杀怪物等级
+	AttMonsCount		= 10058;//猎杀怪物连击次数
+	ResSpeedReduce     	= 5001;
+	BuildSpeedReduce	= 5002;
+	MarchTimeReduce		= 5003;
+	ResourcePSReduce	= 5004;
+	UnitSpeedReduce		= 5005;
+	PSCash2Reduce		= 5006;
+	GroupAttackReduce	= 5007;
+	GroupDefenseReduce	= 5008;
+	GroupHPReduce		= 5009;
+
+}   
+//属性加成来源
+enum AttributeSource
+{
+	Research      = 0; //科技
+	Hero          = 2; //英雄全局属性
+	Item          = 3; //使用物品
+	League        = 4; //联盟科技
+	Talent        = 5; //天赋
+	HeroTalent    = 6; //英雄天赋属性
+	City          = 7; //城市属性加成
+	Statue        = 8; //雕像
+	PowerStation  = 9; //电厂
+	VIP           = 10;//VIP
+	Title         = 11;//头衔
+	ServerBuff    = 12;//全服buff
+	CityNormal    = 13;//占领城市后，对所有联盟成员添加buff
+	CommanderEquip= 14;//指挥官装备加成
+	Activity 	  = 15;//活动加成
+	CommanderImprison = 16; //囚禁指挥官
+	KillCommander = 17; // 处决指挥官
+	MainCitySkin = 18; // 主城皮肤
+	SubscribeGift = 19;//订阅
+	LeagueCenter = 20;//联盟堡垒
+	WarHappening = 21;//战争狂热
+	LeagueTitle = 22;//联盟官职
+	TBServerBuff = 23; // 跨服战全服buff
+	TBMiracleWarBuff = 24; // 跨服战奇迹buff
+	ASBuffTitle 		 = 25; // 头衔
+}
+
+//物品大类型
+enum ItemMainType
+{
+    IMT_RESOURCE        = 0;
+    IMT_BATTLE          = 2;
+    IMT_BUFF            = 3;
+    IMT_HERO_FRAGMENT   = 4;
+    IMT_MAINCITY        = 5;
+	IMT_LEAGUEGIFT		= 6;
+	IMT_SPECIALGIFT		= 7;
+	IMT_OTHER			= 8;
+	IMT_DROPPACK		= 12; //打开是随机掉落的礼包
+	IMT_SUPPLY			= 15; //后勤补给箱
+	IMT_HERO_EQUIPMENT 	= 16; //英雄装备
+	IMT_COMMANDER_EQUIP	= 17; //指挥官装备
+	IMT_COMMANDER_MATERIAL	= 18; //指挥官装备材料
+	IMT_HERO			= 19; // 英雄卡
+
+}
+
+//物品小类型
+enum ItemSubType
+{
+    IST_RESOURCE            	= 0; //资源包
+    IST_RESOURCE_RANDOM 		= 102;//随机资源类宝箱
+    IST_RESOURCE_CHOOSE_RES 	= 103;//自选资源类宝箱
+    IST_RESOURCE_CHOOSE_ITEM 	= 104;//自选道具类宝箱
+
+	IST_BATTLE_MOVECITY_RANDOM      = 201;//随机迁城
+    IST_BATTLE_MOVECITY_ADVANCE     = 202;//高级迁城
+    IST_BATTLE_MOVECITY_ALLIANCE    = 203;//联盟迁城
+    IST_BATTLE_SHIELD               = 204; //和平守护
+    IST_BATTLE_FOG_OF_WAR           = 205; //战争迷雾 
+    IST_BATTLE_SPEEDUP_MARCH        = 206; //行军加速
+    IST_BATTLE_TROOP_ENLARGE        = 207; //队伍扩编
+    IST_BATTLE_RETREAT_MASS         = 208; //集结撤军
+    IST_BATTLE_RETREAT_MARCH        = 209; //行军召回
+    IST_BATTLE_ADD_ATTACK           = 210; //攻击加成
+    IST_BATTLE_ADD_DEFEND           = 211; //防御加成
+    IST_BATTLE_ADD_LIFE             = 212; //生命加成    
+	IST_BATTLE_SPEEDUP_MASS         = 213; //集结加速
+
+    IST_BUFF_RESOURCE               = 301;  //资源增益
+    IST_BUFF_BUILD_QUEUE            = 302;  //额外建造队列
+    IST_BUFF_VIP                    = 303;  //VIP
+    IST_BUFF_SPEEDUP_GATHER         = 304;  //采集加成
+	
+	IST_BUFF_RESOURCE_COKE          = 305;  //可乐增益
+	IST_BUFF_RESOURCE_GAS          	= 306;  //瓦斯增益
+	IST_BUFF_RESOURCE_DEUTERIUM     = 307;  //重氰增益
+	IST_BUFF_RESOURCE_METAL         = 308;  //金属增益
+	IST_BUFF_RESOURCE_CRYSTAL       = 309;  //晶体增益
+
+    IST_EQUIP_JACKET				= 401;	//上装
+    IST_EQUIP_TROUSER				= 402;	//下装
+    IST_EQUIP_HEAD					= 403;	//头部
+    IST_EQUIP_BELT					= 404;	//腰带
+    IST_EQUIP_SHOES					= 405;	//鞋子
+    IST_EQUIP_ACCESSORY				= 406;	//饰品
+    IST_EQUIP_MATERIAL				= 410;	//装备材料
+    IST_HDEADER_BOX 				= 411;  //头像框
+
+    IST_MAINCITY_SPEEDUP_COMMON        = 501; //通用加速
+    IST_MAINCITY_SPEEDUP_BUILD         = 502; //建筑加速
+    IST_MAINCITY_SPEEDUP_PRODUCT_UNIT  = 503; //造兵加速
+    IST_MAINCITY_SPEEDUP_TECH          = 504; //科技加速
+    IST_MAINCITY_SPEEDUP_HOSPITAL      = 505; //医疗加速
+    IST_MAINCITY_LEAGUE_BUILD_RECOVER  = 506; //联盟建筑恢复
+    IST_MAINCITY_SKILL_RESET           = 507; //领主技能重置
+    IST_MAINCITY_CHANGE_NAME           = 508; //领主改名
+    IST_MAINCITY_CHANGE_ICON           = 509; //更换头像
+    IST_MAINCITY_ADD_MAINCITY_DEFEND   = 510; //城防加固
+    IST_MAINCITY_TRUMPET_LITTLE        = 511; //小喇叭
+    IST_MAINCITY_HERO_ADDEXP           = 512; //增加英雄经验
+    IST_MAINCITY_HERO_RESPAWN          = 513; //英雄复活
+    IST_MAINCITY_REPAIRDURABLE		   = 514; //修复城墙
+    IST_MAINCITY_COMMANDER_ADDEXP	   = 515; //增加指挥官经验
+    IST_MAINCITY_HERO_DISPATCH	   	   = 516; //重置英雄派遣
+    IST_MAINCITY_HERO_REFECTION        = 517; //恢复体力
+    IST_MAINCITY_ALTER_NICK_NAME       = 518; //修改昵称
+	IST_MAINCITY_ADD_ENERGY		       = 519; //增加精力
+	IST_MAINCITY_CHANGE_MAINCITY_SKIN  = 520; // 主城换装
+	IST_MAINCITY_SPEEDUP_FACOTRY       = 521; //指挥官装备制造加速
+	IST_MAINCITY_ADD_UNIT				= 522; //道具送兵
+	IST_MAINCITY_COMMANDER_HEAD			= 523; // 指挥官头像
+	IST_MAINCTTY_COMMANDER_MODEL		= 524; // 指挥官模型
+	IST_MAINCTTY_ADD_REWARD             = 525; //多人怪奖励
+	IST_MAINCTTY_LEAGUE_TASK_RESET      = 526; //联盟任务重置
+	IST_MAINCTTY_SUMMON_MONSTER			= 527; //召唤怪物
+	IST_MAINCITY_UNIT_CAPABILITY		= 528; //造兵容量（绝对值）
+	
+	IST_HERO_FRAGMENT		       				= 601; //英雄装备碎片
+	IST_HERO_BLUE_PRINT		       				= 602; //英雄装备蓝图
+	IST_HERO_BLUE_PRINT_FRAGMENT		       	= 603; //英雄装备蓝图的碎片
+	//第二建筑队列时间
+	IST_MAINCTTY_BUILD_SN						= 604;
+	//耐久恢复
+	IST_MAINCITY_SPEEDUP_Durable        		= 605;
+}
+enum SpyType
+{
+	ST_INITIATIVE_RESOURCE				= 0;  //侦查敌方城内具体资源和未收取数量
+	ST_INITIATIVE_VAGUE_TOTAL_UNIT		= 2;  //侦查敌方防守部队总模糊数量
+	ST_INITIATIVE_VAGUE_PITFALL			= 3;  //侦查敌方陷阱总模糊数量
+	ST_INITIATIVE_VAGUE_UNIT			= 4;  //侦查敌方防守部队类型和模糊数量
+	ST_INITIATIVE_VAGUE_TOTAL_GARRISON	= 5;  //侦查敌方援军模糊数量
+	ST_INITIATIVE_GARRISON_COMMANDER	= 6;  //侦查敌方援军的指挥官名称和主城等级
+	ST_INITIATIVE_SHIELD				= 7;  //侦查敌方护盾耐久和当前耐久
+	ST_INITIATIVE_LORDSINFO				= 8;  //侦查敌方领主是否在城内、领主品质与等级
+	ST_INITIATIVE_VAGUE_GARRISON		= 9;  //侦查敌方援军部队类型和模糊数量
+	ST_INITIATIVE_UNIT					= 10; //侦查敌方防守部队类型和准确数量
+	ST_INITIATIVE_PITFALL				= 11; //侦查敌方陷阱准确数量
+	ST_INITIATIVE_GARRISON				= 12; //侦查敌方援军部队类型和准确数量
+	ST_INITIATIVE_TECH					= 13; //侦查敌军科技等级
+	ST_INITIATIVE_EQUIP					= 14; //侦查敌军指挥官装备和天赋
+	ST_PASSIVE_COMMANDER				= 15; //预警行军部队所属的指挥官名称
+	ST_PASSIVE_ATTACK_TYPE				= 16; //预警行军部队目的（侦查或进攻或集结）
+	ST_PASSIVE_ARRIVE_TIME				= 17; //预警行军部队到达时间
+	ST_PASSIVE_START_TILE				= 18; //预警敌方部队发起坐标
+	ST_PASSIVE_VAGUE_TOTAL_UNIT			= 19; //预警行军部队模糊数量
+	ST_PASSIVE_MAINCITY_LEVEL			= 20; //预警敌方部队的主城等级
+	ST_PASSIVE_VAGUE_UNIT				= 21; //预警敌方部队类型和模糊数量
+	ST_PASSIVE_UNIT						= 22; //预警敌方部队类型和准确数量
+	ST_PASSIVE_HEROINFO					= 23; //预警敌方部队英雄军阶、等级
+	ST_PASSIVE_TECH						= 24; //预警敌军部队科技等级
+	ST_PASSIVE_EQUIP					= 25; //预警敌军指挥官装备和天赋
+	ST_PASSIVE_TAGETINFO				= 26; //预警敌军目的地类型和坐标
+	ST_INITIATIVE_STATUE				= 27; //侦查敌方雕像加成信息
+	ST_PASSIVE_STATUE					= 28; //预警敌方雕像加成信息
+	ST_INITIATIVE_VAGUE_TOTAL_PITFALL	= 29; //侦查敌方陷阱模糊数量
+	ST_PASSIVE_TOTAL_UNIT				= 30; //预警行军部队总数量
+}
+
+//--------------指挥官装备相关--------------//
+//部位
+enum EquipPosType
+{
+	EPT_JACKET				= 0; //上装
+    EPT_TROUSER				= 2; //下装
+    EPT_HEAD				= 3; //头部
+    EPT_BELT				= 4; //腰带
+    EPT_SHOES				= 5; //鞋子
+    EPT_ACCESSORY_FIRST		= 6; //饰品1
+    EPT_ACCESSORY_SECOND	= 7; //饰品2
+    EPT_ACCESSORY_THIRD		= 8; //饰品3
+}
+//品质
+enum EquipQualityType
+{
+	EQT_WHITE				= 0; //白
+	EQT_GREEN				= 2; //绿
+	EQT_BULE				= 3; //蓝
+	EQT_PURPLE				= 4; //紫
+	EQT_GOLD				= 5; //金
+}
+
+//指挥官装备状态
+enum CommanderEquipState
+{
+	CES_WAER	 	= 0;//穿
+	CES_TAKEOFF 	= 2;//脱
+}
+
+//--------------指挥官装备相关--------------//
+
+//联盟状态类型
+enum LeagueStausType
+{
+	LST_PLAYER_JOIN 			= 0;//成员加入联盟
+	LST_PLAYER_QUIT				= 2;//成员退出联盟
+	LST_PLAYER_LEVEL_CHANGED 	= 3;//成员等级变化
+	LST_CREATE_LEAGUE			= 4;//创建联盟
+	LST_PLAYER_KICK_OUT			= 5;//踢出玩家
+	LST_OWNER_RECALL			= 6;//盟主罢免
+	LST_BUFF_TITLE 				= 7;//buff头衔
+
+}
+
+//任务状态
+enum DispatchTaskStatus
+{
+	DTS_NOT_RECEIVED 	= 0;//未领取任务
+	DTS_WORKING 	 	= 2;//任务进行中
+	DTS_CAN_REWARD 		= 3;//任务已完成，未领取奖励
+	DTS_FINISHED 		= 4;//任务已完成，已领取奖励
+}
+
+//雕像状态
+enum StatueStatus
+{
+	SS_BUILD_BUILDING	= 0; //建造中
+	SS_BUILD_FINISHED	= 2; //建造完成
+	SS_BUILD_PLACED		= 3; //已放置
+}
+
+//雕像操作
+enum StatueOp
+{
+	SO_CALLBACK = 0;//回收
+	SO_MOVE		= 3;//移动
+	SO_CONVERT	= 4;//碎片兑换
+	SO_OPEN		= 5;//打开
+	SO_ENHANCE	= 6;//增幅
+	SO_DECOMPOSE = 7;//分解
+}
+
+//礼包子类型
+enum GiftSubType
+{
+	GST_NOMAL	= 0;//普通礼包
+	GST_MONTH 	= 2;//月卡礼包
+	GST_BMARKET	= 3;//黑市礼包		
+	GST_RANDOM	= 4;//随机礼包
+	GST_BOON 	= 5;//福利系统的礼包(跳转福利系统)
+	GST_KICKFACE= 6;//拍脸
+	GST_INGOT 	= 7;//钻石
+	GST_BOON_V  = 8;//特殊(跳转福利系统)同时显示在礼包界面
+	GST_SUBSCRIBE = 9;//订阅礼包
+	GST_VIP		= 10;//VIP礼包
+	//活动礼包
+	GST_Activity = 11;
+	GST_PayUnlock = 12;//愚人节活动支付解锁高级功能
+}
+
+//触发的礼包条件类型
+enum GiftConditionType
+{
+	GCT_KEEP_PAY		= 0;//连续付费天数
+	GCT_KEEP_NO_PAY		= 2;//连续不付费天数
+	GCT_VIP_LEVEL		= 3;//军衔等级	
+	GCT_COMMANDER_LEVEL	= 4;//指挥官等级
+	GCT_MAINCITY_LEVEL	= 5;//主城等级
+	GCT_OPEN_SERVER_TIME= 6;//开服时间
+	GCT_OPEN_ACTIVITY	= 7;//开启活动
+	GCT_LOOP_MONTH_DAY	= 8;//日期循环_几号	
+	GCT_LOOP_WEEK_DAY	= 9;//日期循环_星期几	
+	GCT_LOSS_COUNT 		= 10;//一次性兵力损失数量
+	GCT_OFFLINE_TIME 	= 11;//玩家单次离线时间(秒)
+	GCT_FIR_GET_HERO 	= 12;//第一次获取指定的英雄
+	GCT_UPTO_STARLV		= 13;//英雄达到几星时
+	GCT_POWER_LOSE 		= 14;//战力损失达到某值
+	GCT_EQUIP_QUALITY 	= 15;//获得指定品质的装备
+	GCT_TXDS_STAGE_END  = 16;//天下大事某阶段结束
+	GCT_LABEL  			= 17;//用户标签
+	GCT_LoginDay  		= 18;//用户登录天数
+
+}
+
+//活动映射类型
+enum ActivityMapingType 
+{	
+	//////没定义ID的活动//////
+	AMT_MIRACLE_WAR = 0;//奇迹争夺战
+
+	//////已自身定义了ID的活动//////
+	AMT_KILL_EVEN = 100004;	//全球纷争(杀敌活动)
+}
+
+//客户端请求服务器翻译类型
+enum TranslateType
+{
+	TT_CHAT_TITLE = 0;//聊天条目
+	TT_CHAT_ENTRY = 2;//聊天条目回复
+	TT_YOUMI_MESSAGE = 3;//联盟频道SDK语音
+}
+
+// 系统聊天类型
+enum SystemChatType
+{
+	SCT_PERMISSION_UP 		= 0; // 升职
+	SCT_PERMISSION_DOWN		= 2; // 降职
+	SCT_OCCUPY_LEAGUE_CITY 	= 3; // 占领联盟城市
+	SCT_OPEN_LEAGUE_GIFT 	= 4; // 礼包
+	SCT_EXIT_LEAGUE 		= 5; // 离开联盟
+	SCT_JION_LEAGUE 		= 6; // 加入联盟
+	SCT_POWER				= 7; // 战力
+    SCT_TEXT                = 8; //　纯文本
+	SCT_CREATE_LEAGUE		= 9; //创建联盟
+
+}
+
+// 修改角色名称
+enum SetCharNameReturnValue 
+{
+	SCNRV_SUCCEEDED = 0; //成功
+	SCNRV_INPUT_ERROR = 2; //输入错误
+	SCNRV_LENGTH_ERROR = 3; //长度错误
+	SCNRV_INPUT_NOT_VALID = 4; //无效输入
+	SCNRV_EXISTS_ERROR = 5; //角色名存在错误
+	SCNRV_CONDITION_ERROR = 6; //条件不满足
+}
+
+enum WorldDataStatus
+{
+	WDS_Normal						= 0;	//正常状态
+	WDS_Work						= 1;	//工作状态
+	WDS_Bootcap						= 2;	//护盾开启状态
+	WDS_Burning						= 4;	//燃烧状态
+	WDS_Battle						= 8;	//战斗状态
+	WDS_Delete						= 16;	//等待删除状态
+	WDS_Blackout					= 32;	//黑障
+	WDS_DelHp						= 64;	//扣血状态
+}
+
+enum StrollHeroType
+{
+    SHT_Nothing                     = 0;    //没有功能
+    SHT_LeagueAmbassador            = 2;    //联盟大使
+}
+
+enum StrollHeroResult
+{
+    SHR_Succeeded                   = 0;    //成功
+    SHR_DoNothing                   = 2;    //无效
+    SHR_InvalidParameter            = 3;    //无效参数
+    SHR_InternalServerError         = 4;    //服务器内部出错
+}
+
+//联盟旗帜类型
+enum LeagueFlagType
+{
+	LFT_FLAG_COLOR 		= 0;//旗帜颜色
+	LFT_FLAG_BACKGROUND = 2;//旗帜背景
+	LFT_FLAG_ICON 		= 3;//旗帜图标
+}
+
+//用户名存在性检查
+enum UserNameExistsResult
+{
+    INVALID_ARGUMENTS       = 0;//参数错误
+    INTERNAL_SERVER_ERROR   = 2;//内部服务出错
+    EXISTS                  = 3;//存在
+    NOT_EXISTS              = 4;//不存在
+}
+
+// 推送消息类型
+enum PushMsgType
+{
+	PMT_UserBuildingFinish	= 0; // 建筑完成
+	PMT_UserStatuaFinish	= 2; // 雕像完成
+	PMT_UserTrapFinish		= 3; // 陷阱完成
+	PMT_UserUnitFinish		= 4; // 兵种完成生产
+	PMT_UserBeSpied			= 5; // 个人被侦查
+	PMT_UserBeAttacted		= 6; // 个人遭受攻击
+	PMT_UserBeMassed 		= 7; // 个人被集结
+	PMT_blackoutInvalid		= 8; // 黑障失效
+	PMT_UserShieldExpire	= 9; // 盾失效
+	PMT_LeagueMass			= 10; // 联盟发起集结
+	PMT_LeagueBeMass		= 11; // 盟友被集结
+	PMT_CityBeSpied			= 12; // 城市被侦查
+	PMT_CityBeAttacked		= 13; // 城市被攻击
+	PMT_CityBeMass			= 14; // 城市被集结
+	PMT_CollectUnitBack		= 15; // 采集部队返回
+	PMT_TransportUnitBack	= 16; // 运输部队返回
+	PMT_MassUnitBack		= 17; // 集结部队返回
+	PMT_GarrisonUnitBack	= 18; // 增援部队返回
+	PMT_BestationedBack		= 19; // 驻扎部队返回
+	PMT_HeroImprison		= 20; // 英雄被监禁
+	PMT_HeroKilled			= 21; // 英雄被杀
+	PMT_HeroRelease			= 22; // 英雄被释放
+	PMT_HeroSave			= 23; // 英雄被拯救
+	PMT_CommanderMsg		= 24; // 指挥官消息
+	PMT_ActivityOpen		= 25; // 活动开启
+	PMT_PowerMax			= 26; // 体力满
+	PMT_BlackMarket			= 27; // 黑市刷新
+	PMT_MiracleWarStart 	= 28; // 王战开始
+}
+
+// 登陆类型
+enum LoginType
+{
+	LT_Visitor				= 0; // 游客登录
+	LT_Google				= 2; // google登录
+	LT_FaceBook				= 3; // faceBook登录
+	LT_Twitter				= 4; // twitter登录
+	LT_GameCenter			= 5; // gamecenter登录
+}
+
+enum LoginReCode
+{
+	LRC_Ok					= 0;
+	LRC_Token_Verify_Failed	= 2;
+	LRC_Unknow				= 3;
+	LRC_FORBID				= 4;//账号被封停
+	LRC_Server_Upgrading	= 5; //服务器维护中
+	LRC_Server_Offline 		= 6; // 服务器宕机中
+}
+
+enum EveryoneMailConditionType
+{
+	EMCT_VipLevel = 0;			// VIP等级
+	EMCT_Channel = 2;			// 渠道
+	EMCT_MainCityLevel = 3;		// 主城等级
+	EMCT_CreateTime = 4;		// 角色创建时间
+	EMCT_LeagueId = 5;			// 联盟ID
+	EMCT_ServerID = 6;			// 服务器ID
+	EMCT_ExpireTime = 7;		// 有效期
+	EMCT_Uid = 8;				// Uid
+	EMCT_RegionId = 9;			// 区域Id
+}
+
+enum EveryoneMailType
+{
+	EMT_All = 0;
+	EMT_Person = 2;
+}
+
+enum ChangeServerRetCode
+{
+	CSRC_OK = 0;
+	CSRC_In_Protect = 2;
+	CSRC_Sid_Err = 3;
+	CSRC_Unknow = 4;
+	CSRC_Uid_Err = 5;
+	CSRC_Has_League = 6;
+	CSRC_Bestationed = 7;	// 驻扎
+	CSRC_Attack = 8;		// 进攻
+	CSRC_SpyInto = 9;		// 侦查
+	CSRC_Garrison = 10;		// 增援
+	CSRC_Mass = 11;			// 集结
+	CSRC_Transport = 12;	// 运输
+	CSRC_Collect = 13;		// 采集
+	CSRC_HasPrisoner = 14;	// 囚徒
+	CSRC_HeroImprison = 15; // 领主被囚禁
+	CSRC_Position_Err = 16; // 目标点不能迁城
+	CSRC_UserName_Exist = 17; //重名错误
+	CSRC_Item_Count = 18;// 道具数量不足
+	CSRC_Server_Power_Limit= 19; // 战力限制
+	CSRC_Star_Pioneer_Power_Limit = 20; // 星球先锋战力限制
+	CSRC_Role_Count = 21; // 每个服务器最多两个角色
+	CSRC_Resouce_Limit = 22; // 资源上限
+	CSRC_Local_Server_TimeStatue = 23; // 本地服务器不在建设期
+	CSRC_Des_Server_TimeStatue = 24;   // 目的服务器不在建设器
+	CSRC_In_cd = 25;			// 跨服cd中
+	CSRC_MainCity_Level = 26;	// 主城等级限制
+	CSRC_Server_Not_Open = 27;	// 目标星球未完全开放
+	CSRC_Global_Action = 28; // 行军线
+	CSRC_Transfer_Battle_Stage =29; // 跨服决战活动阶段错误
+	CSRC_WarHappening = 30; // 处于狂热状态
+}
+
+enum ActivityType
+{
+	Individual = 0; 	// 单人活动
+	Hell = 2;			// 地狱活动
+	Day = 3;			// 全日活动
+	LeagueCity = 4;		// 联盟城市活动
+	Slaughter = 7;		// 杀敌活动
+	Buff_1	= 8;		// Buff活动1
+	Buff_2 	= 9; 		// Buff活动2
+	SpawnMine = 10;		// 刷矿活动
+	SpwanUnit = 11; 	// 刷怪活动
+	LeagueCup = 12;		// 联盟杯
+	SevenDayTask = 13;	// 七日活动
+	CityWarAward = 14;	//城市争霸奖励活动
+	Drop = 16;			// 掉落活动
+	Exchange = 17;		// 兑换活动
+}
+
+enum ActivityStage {
+	AS_NoticeStage = 0; // 预告阶段
+	AS_PrepareStage = 1; // 准备阶段
+	AS_ProcessingStage = 2; // 进行阶段
+	AS_RewerdStage = 3; // 奖励阶段
+	AS_StopStaget = 4; // 结束等待
+	AS_JionStage = 5; // 加入阶段
+	AS_InitStage = 99; // 等待开启阶段
+	AS_OffStage = 6; // 关闭阶段
+}
+
+enum ServerStatus
+{
+	SST_Normal = 0;
+	SST_Upgrading = 2;
+	SST_Offline = 3;
+}
+
+// 王战阶段类型
+enum MiracleWarStage
+{
+	MWS_UnOpenStage = 0;			// 未开启阶段
+	MWS_PrepareStage = 2;			// 准备阶段
+	MWS_ProtectStage = 3; 			// 保护阶段
+	MWS_FightStage = 4;				// 争夺阶段
+	MWS_WaitStage = 5;				// 争夺后等待阶段
+
+}
+
+// 城市争霸阶段类型
+enum CityWarStage
+{
+	CWS_UnOpenStage = 0;			// 未开启阶段
+	CWS_FightStage = 2;				// 争夺阶段
+	CWS_ProtectStage = 3; 			// 保护阶段
+	// 等待保护阶段
+	CWS_ProtectStage0 = 4;
+	CWS_EndStage = 5; 				// 结束阶段
+}
+
+
+// 王战头衔权限
+enum MiracleWarTitleRight
+{
+	AppointTitle = 0; 			// 任命官员
+	Gift = 2;					// 赏赐礼物
+	Buff = 3;					// 全服增益
+	ReleaseAll = 4;				// 大赦
+	Notice = 5;					// 全局公告
+}
+
+enum MiracleTitle
+{
+	Title1 = 0;			// 执政官
+	Title2 = 90000002;			// 国务卿
+	Title3 = 90000003;			// 元帅
+	Title4 = 90000004;			// 执政官
+	Title5 = 90000005;			// 参谋	
+	Title6 = 90000006;			// 司法部长
+	Title7 = 90000007;			// 院士
+	Title8 = 90000008;			// 内政部长
+	Title9 = 90000009;			// 执政官
+	Title10 = 90000010;			// 执政官
+	Title11 = 90000011;			// 执政官
+	Title12 = 90000012;			// 执政官
+	Title13 = 90000013;			// 执政官
+	Title14 = 90000014;			// 执政官
+	Title15 = 90000015;			// 执政官
+	Title16 = 90000016;			// 执政官
+	Title17 = 90000017;			// 执政官
+	Title18 = 90000018;			// 执政官
+	Title19 = 90000019;			// 执政官
+}
+
+//账号绑定结果
+enum AccountBindResult
+{
+	BindResultOK          = 0; //成功
+	BindResultTokenError  = 2; //Token验证失败
+	BindResultBindedError = 3; //账号已绑定
+	BindResultLogicError  = 4; //逻辑错误
+}
+
+//账户绑定查询结果
+enum AccountBindQueryResult
+{
+	QueryResultNotBound      = 0; //未绑定
+	QueryResultBound         = 1; //已绑定
+	QueryResultInternalError = 2; //内部错误
+	QueryResultBoundWithSelf = 3; //绑定的自己的账号
+}
+
+//账户切换结果
+enum AccountSwitchResult
+{
+	SwitchResultFailed        = 0; //失败
+	SwitchResultSucceed       = 1; //成功
+	SwitchResultInternalError = 2; //内部出错
+}
+
+// 邮件来源类型
+enum MailSourceType
+{
+	MST_Default				= 0; // 默认
+	MST_GM					= 1; // GM后台
+	MST_IBS					= 2; // 工作室
+	MST_League				= 3; // 联盟相关
+	MST_Hero				= 4; // 英雄相关
+	MST_GiftPack			= 5; // 礼包到货通知
+	MST_Other				= 6; // 其他
+	MST_ActivityReward		= 7; // 活动奖励邮件
+	MST_LeagueDevoteDayRank	= 8; // 联盟科技捐献日排行邮件
+	MST_TitleNofity 	  	= 9; // 任命头衔邮件
+	MST_LeagueDevoteWeekRank= 10; // 联盟科技捐献周排行邮件
+	MST_LeagueTechLv		= 11; // 联盟科技升级
+}
+
+//首次引导类型
+enum FirstTutorialType
+{
+	FTT_ARM_CURE = 0; //伤兵引导
+	FTT_LEAGUE_JOIN = 101; //联盟加入引导
+	FTT_USER_RENAME = 102; //改名次数
+	FTT_JOIN_LEAGUE = 103; //加入联盟次数
+	FTT_CREATE_LEAGUE = 104; //创建联盟次数
+	FTT_TUTORIAL_COMPLETION = 105; //强制引导完成次数
+	FTT_SEVEN_DAY_CHALLENGE = 106; //七日挑战引导
+	FTT_CHANGE_NAME = 107; //修改名字	
+
+	FTT_TECH = 108; //首次打开科技界面	
+	FTT_TALENT = 109; //首次打开天赋界面
+	FTT_BIG_MAP = 110; //首次进入大地图
+	FTT_LEAGUE_BOX = 111; //首次获得联盟宝箱
+	FTT_WELCOME_REWARD = 112; // 欢迎邮件	
+}
+
+enum ChallengeConditionType
+{
+	CCT_CostCash = 0;			// 消耗资源
+	CCT_CostItem = 2;			// 消耗道具
+	CCT_MainCityLevel = 3;		// 主城升级
+	CCT_CollectResorce = 4;		// 采集资源
+	CCT_ReceiveUnit = 5;		// 收取士兵
+	CCT_DispatchTask = 6;		// 派遣任务
+	CCT_OnlieGiftPack = 7;		// 在线礼包
+	CCT_CommenderLevel = 8;		// 指挥官等级
+	CCT_BuildingPower = 9;		// 建筑战力
+	CCT_ResearchPower = 10;		// 科研战力
+	CCT_KillMonster = 11;		// 杀野怪
+	CCT_BlackMarket = 12;		// 黑市兑换次数
+	CCT_Supply = 13;			// 后勤补给
+	CCT_Statue = 14;			// 雕像建造
+}
+
+enum ChallengeTaskStatus
+{
+	CTS_UnStart = 0;			// 未开始
+	CTS_Start = 2;				// 开始
+	CTS_Finish = 3;				// 完成
+	CTS_GetReward = 4;			// 已领奖
+}
+
+enum CityStage
+{
+	CS_Normal		= 0; //正常状态
+	CS_Attack		= 1; //开始攻击状态
+	CS_Capture		= 2; //持续占领状态
+}
+
+enum ActivityDataType
+{
+	ADT_Create = 0;		// 开新活动
+	ADT_Update = 1;		// 数据更新		// base
+	ADT_Detail = 2;		// 详细数据更新	// detail
+	ADT_Full   = 3;		// 整体数据更新
+	ADT_ScUser = 4;		// 玩家积分更新
+	ADT_BeginJion = 5;		// 联盟杯加入
+	ADT_Join   = 6;		// 联盟杯加入返回
+}
+
+enum ActivityFlags
+{
+	AF_Refresh = 0; 	   // 自动刷新排行榜
+	AF_Broadcast = 2;	   // 活动期间每十分钟广播一次
+	AF_OneTopList = 4;	   // 排行榜不分阶段
+	AF_LevelNoReward = 8;  // 积分阶段不发奖
+}
+
+enum ActivityLogicType
+{
+	ALT_None   = 0;		// 不是活动
+	ALT_Normal = 1;		// 常规活动
+	ALT_Buff   = 2;		// BUFF活动
+	ALT_Spawn  = 3;		// 刷新事物的活动
+	ALT_League = 4;		// 联盟活动
+	ALT_Drop = 5; 		// 掉落活动
+	ALT_Exchange = 6;	// 兑换活动
+	ALT_UserTaskRank = 10;		//个人排行
+	ALT_LeagueTaskRank = 11;	//联盟排行
+	ALT_DailyTask 	   = 12;   //日常任务
+}
+
+enum ActivityOpenType
+{
+	AOT_Auto = 0;	//自动开启
+	AOT_Date = 1;	//时间开启
+	AOT_GM 	 = 2;	//GM开启
+	AOT_Stop = 3;	//关闭活动
+}
+
+enum ActivityTaskType
+{
+	ATT_ProductBuBing = 0; 			// 兵营训练
+	ATT_ProductTank = 2;			// 坦克训练
+	ATT_ProductFeiji = 3;			// 战机训练
+	ATT_ProductJijia = 4;			// 火炮训练
+	ATT_ProductPitfall = 5; 		// 部署陷阱
+	ATT_LeagueHelp = 6;				// 联盟帮助
+	ATT_LeagueTech = 7;				// 联盟科技
+	ATT_Research = 8;				// 研发科技
+	ATT_BuildingUpgrade = 9;		// 建筑升级
+	ATT_KillMonster = 10;			// 杀野怪
+	ATT_CollectMetal = 11;			// 采集金属
+	ATT_CollectGas = 12;			// 采集瓦斯
+	ATT_CollectCoke	= 13;			// 采集可乐
+	ATT_CollectCrystal = 14;		// 采集晶体
+	ATT_CollectDeuterium = 15;		// 采集重氢
+	ATT_BlackMarket = 16;			// 黑市购买
+	ATT_Supply = 17;				// 后勤补给
+	ATT_MapList = 18;				// 飞艇任务
+	ATT_DispatchTask = 19;			// 派遣任务
+	ATT_UseHeroExpItem = 20;		// 英雄培养
+	ATT_CureUnit = 21;				// 治疗伤兵
+	ATT_AttackMonster = 22;			// 攻打野怪
+	ATT_LeagueTask = 23;			// 联盟任务
+}
+
+enum OfflineEventType
+{
+	OET_Bootcap = 0;				// 量子盾
+	OET_Burnring = 2;				// 燃烧状态
+	OET_Blackout = 3;				// 黑罩
+	OET_MainCitySkin = 4;			// 主城皮肤
+	OET_Prison = 5;					// 监狱
+	OET_LocalAction = 6;			// 建筑，科研等location处理
+}
+
+enum RefreshCondType
+{
+	RCT_Activity = 0;			//刷新条件：活动-----------值字段为活动ID
+	RCT_TransferBattle = 2; 	//跨服决战
+}
+
+enum UnitSpecialLogic
+{
+	USL_Normal = 0;		//无
+	USL_Probe  = 1;		//侦查后消失，并且得到掉落
+}
+
+enum BoonLogicType
+{
+	BLT_PayFirst = 0;		// 首充
+	BLT_PaySecond = 2;		// 二充
+	BLT_TimeDuration = 3;	// 周卡月卡
+	BLT_DailyBoon = 4;		// 日常福利
+	BLT_Funding = 5;		// 基金
+	BLT_SignIn = 6;			// 签到
+	BLT_Online = 7;			// 在线时长
+	BLT_LevelUp = 8;		// 等级提升
+	//礼包活动开始
+	BLT_Activity_Start = 10;
+	BLT_CumulativeGiftback = 11;
+	//礼包活动结束
+	BLT_Activity_End = 100;
+
+}
+
+enum BoonFundType
+{
+	BFT_CityLevel = 0;		// 主城等级
+}
+
+enum BoonDailyType
+{
+	BDT_Free = 0;		// 日常免费
+	BDT_Buy = 1; 		// 日常购买
+	BDT_Buff = 2;		// 日常额外奖励锁
+}
+
+// 四段参数
+enum ChapterTaskType
+{
+	CTT_Building = 0;			// 建造任务 建筑ID 等级 无 (第三位 不为0)// 建造任务 建筑ID 无 数量 (第三位 为0)
+	CTT_FightMonster = 2; 		// 大地图杀集结怪 无 无 次数
+	CTT_Airship = 3;			// 飞艇推图 建筑ID 章 节
+	CTT_HeroLevel = 4;			// 英雄等级 无 等级 无
+	CTT_Tech = 5;				// 研发 无 无 次数 
+	CTT_TrainUnits = 6;			// 造兵 单位ID 阶 数量
+	CTT_UnLockLand = 7;			// 解锁地块 地块ID X Y
+	CTT_SendTask = 8;			// 派遣任务 无 无 次数
+	CTT_HeroTalent = 9;			// 天赋 无 无 次数
+	CTT_JoinLeague = 10;		// 加入联盟 无 无 无
+	CTT_HelpLeague = 11;		// 联盟帮助 无 无 次数
+	CTT_DonateLeague = 12;		// 联盟捐献 无 无 次数
+	CTT_LeagueBox = 13;			// 联盟秘宝 无 无 次数
+	CTT_AttackMonster = 14; 	// 攻击xx怪 无 等级 次数
+	CTT_HERORecruit = 15; 		// 招募英雄 英雄ID 无 次数
+	CTT_HEROSTAR = 16;			// 英雄升星 无 无 星级
+	CTT_HERORANK = 17;			// 英雄升阶 无 无 阶
+	CTT_PRODUCEEQUIP = 18;		// 生产装备 无 无 数量
+	CTT_HEROSKILL = 19;     	// 英雄技能 无 无 等级
+	CTT_CommanderLevel = 20;	// 指挥官等级 无 无 等级
+	CTT_ChangeName = 21;		// 改名 无 无 次数
+	CTT_PushmapReward = 22; 	// 推图奖励 无 无 次数
+	CTT_HERONum = 23;       	// 英雄数量 无 无 数量
+	CTT_ResCollect = 24;		// 资源采集 资源类型 无 数量
+	CTT_UseResItem = 25;    	// 使用资源道具 无 无 次数
+	CTT_AttackPlayer = 26;  	// 攻打玩家 无 无 次数
+	CTT_KillSmallMonster = 27; 	// 击杀小野怪 无 等级 次数
+	CTT_ResProduction = 28;		// 资源产量 资源类型 无 数量
+	CTT_ResBuildingNum = 29; 	// 资源建筑种类数量 无 无 数量
+	CTT_KillSmallMonsterNum = 30;// 累计击杀小野怪 无 无 数量
+	CTT_LeagueTaskNum = 31;		// 累计完成联盟任务 无 无 次数
+}
+
+//预警类型
+enum EarlyWarningType
+{
+    EWT_NONE 	= 0;	//无新预警
+	EWT_RED 	= 1;	//敌方行为预警
+	EWT_GREEN 	= 2;	//己方行为提醒
+}
+
+////////新英雄系统////////
+
+//英雄属性类别
+enum HeroBranchType
+{
+    HBT_ATTACK 	= 0;	//攻击	
+	HBT_DEFENCE = 1;	//防御
+	HBT_HP		= 2;	//生命
+	HBT_ARMY 	= 3;	//带兵量
+}
+////////新英雄系统////////
+
+
+////////新战斗系统////////
+//战斗BUFF加成属性
+enum FightBuffAttibute
+{
+	NomalDamage 		= 0; //普通伤害，根据英雄攻击来定
+	EnemyHDefDamage		= 2; //敌方防御越高，伤害越高
+	EnemyHHpDamage		= 3; //对敌方造成伤害,敌方兵团（所有部队）生命越高，伤害越高
+	SelfLHpDamage		= 4; //对敌方造成伤害,己方兵团（所有部队）生命越低，伤害越高
+	RecoveryCurHp		= 5; //恢复己方xx部队战伊始时的生命的m%血量
+	ReduceHpRound		= 6; //对敌方持续伤害，每回合损失施法英雄输出的m%生命
+	ReduceDef			= 7; //减少敌方单位m%的防御力
+	ReduceAtt			= 8; //减少敌方xx单位m%的攻击力（包括英雄）
+	IncreaseFightAtt	= 9; //增加己方xx单位m%攻击力（包括英雄）
+	IncreaseFightDef	= 10; //增加己方xx单位m%防御力
+	Dizzy				= 11; //使敌方xx单位眩晕（包括英雄和陷阱）
+	ClearDebuff			= 12; //驱散己方xx单位的减益buff（包括英雄）
+	Clearbuff			= 13; //驱散敌方xx单位的增益buff（包括英雄）
+	IncreaseDamge		= 14; //提升己方xx单位造成的伤害m%（包括英雄）
+	ReduceDamge			= 15; //降低敌方xx单位造成的伤害m%（包括英雄）
+	AttConversion		= 16; //每m%的xx兵种xx属性额外提高n%xx兵种xx属性 (属性|目标属性|转换率)
+	AttRear				= 17; //xx单位有m%几率攻击敌方后排单位 (概率)
+	IgnoreDef			= 18; //xx单位攻击时，忽视目标x%的防御 （固定值）
+	EneNum				= 19; //当目标部队是唯一部队时,所率领的部队对目标额外造成m%的伤害 (固定值)
+	UnitnumDamage		= 20; //当xx部队占所在部队a%以上时,xx部队伤害提高m%. (占比|提高比)
+	SummonTroops		= 21; //召唤已有xx单位m%的影子参与战斗，持续y回合 (作用对象|回合|固定值)
+	NumDamage			= 22; //给敌方加buff， 敌方兵种越少，造成的伤害越高/敌方兵种越多，造成的伤害越高 (作用对象|回合|固定值) 
+	DamageShield		= 23; //为己方xx单位附加1个能吸收伤害的护盾,持续y回合 (作用对象|回合|固定值)
+	ExtraDamage			= 24; //使我方xx单位在造成伤害时，有x%的几率对目标额外造成m%的伤害 (概率|m)
+	NumCompare 			= 25; //敌方xx单位数量比我方xx单位数量每多m%，伤害提高n%，最多提高到x% (目标部队类型|m|n|x)
+	Dotdamage 			= 26; //持续伤害
+	HotTreatment 		= 27; //持续恢复
+}
+
+//战斗BUFF类型
+enum FightBuffType
+{
+	Good 	= 0;//增益
+	Bad 	= 2;//负面
+	Damge 	= 3;//伤害
+	Dot 	= 4;//持续伤害
+	Special = 5;//特殊buff,主要是在特殊被动技能中使用，不能被清除
+}
+
+//技能主类型
+enum SkillMainType
+{
+    ST_ACTIVE_FIGHT 		= 0;	//主动战斗技能(战斗时生效，对应英雄释放实时计算)
+	ST_PASSIVE				= 2; 	//被动技能
+}
+
+//被动技能子类型
+enum SkillSubType
+{
+    ST_PASSIVE_FIGHT		= 0;	//被动战斗技能(光环类战斗时全程有效，对应英雄战斗前需计算好)
+	ST_PASSIVE_MARCH		= 3; 	//被动普通技能(对应英雄光环类出征时全程有效)
+	ST_PASSIVE_GLOBAL		= 4; 	//全局技能(光环类一直有效)
+	ST_PASSIVE_BUFF 		= 5; 	//被动特殊buff技能
+	ST_PASSIVE_AFTERFIGHT	= 6; 	//结算时生效的被动技能
+}
+
+//技能逻辑类型
+enum SkillLogicType
+{
+	SLT_ALL 		= 0;	
+    SLT_ATTACK 		= 1;	//普通攻击
+    SLT_TALENT		= 2;	//天赋技能
+	SLT_REGULAR		= 3; 	//固定技能
+}
+
+//战斗回合阶段（暂定）
+enum FightStageType
+{
+    FST_PREPARE			= 0;	//准备
+    FST_START			= 2;	//开始
+	FST_ATTACT_HERO		= 3;	//英雄攻击
+	FST_ATTACT_TRAP		= 4;	//陷阱攻击
+	FST_ATTACT_UNIT		= 5;	//军团攻击
+	FST_END				= 6;	//结束
+}
+
+//对象攻击阶段（暂定）
+enum AttckStageType
+{
+    AST_PREPARE			= 0;	//数据准备
+    AST_USE_SKILL		= 2;	//释放技能
+	AST_PROC_BUFF		= 3;	//BUFF处理		
+	AST_CAL_DAMAGE		= 4;	//伤害结算	
+}
+
+//军团位置
+enum CorpsPos
+{
+    CP_FRONT 		= 0;	//前
+    CP_MIDDLE		= 2;	//中
+	CP_Behind		= 3; 	//后
+	CP_SKY			= 4; 	//天上
+}
+////////新战斗系统////////
+
+
+// 卡池商店类型
+enum CardPoolShopType
+{
+	CPST_Normal = 0;			// 普通
+	CPST_High = 2;				// 高级
+}
+
+// 抽卡类型
+enum CardPoolTakeType
+{
+	CPTT_One = 0;				// 单抽
+	CPPTT_Ten = 2;				// 十连抽
+}
+
+// 黑市触发枚举
+enum MarketCondType
+{
+	MCT_SpeedItem = 0;  // 加速道具 0  加速时间 0
+	MCT_StartTech = 2;  // 开始研究 0  0       0
+	MCT_FinishTech = 3; // 完成研究 0  0       0
+	MCT_TrainUnit = 4;  // 训练士兵 0  兵种等级 0
+	MCT_AttackWild = 5; // 攻打野怪 0  0       0
+	MCT_DefeatWild = 6;	// 击杀野怪 0  0       0
+}
+
+// 联盟杯任务类型
+enum LeagueTaskType
+{
+	LTT_PowerUp = 0;	// 战力提升
+	LTT_UserAction = 2; // 玩家行为
+	LTT_UserGather = 3;	// 玩家采集
+	LTT_UserCost = 4; 	// 玩家消耗
+	LTT_UserPVP = 5; 	// 玩家PVP
+}
+
+// 任务类型(战力提升)
+enum PowerUpType
+{
+	PUT_Tech = 0;	//科研 1 0 0 数值
+	PUT_Train = 2;	//训练 2 0 0 数值
+	PUT_Build = 3;  //建筑 3 0 0 数值
+	PUT_Task = 4;	//任务 4 0 0 数值
+	PUT_Any = 5;	//任意 5 0 0 数值
+}
+
+//任务类型(玩家行为)
+enum UserActionType
+{
+	UAT_TaskFinish = 0;		// 1 任务类型 0 次数
+	UAT_Activity = 2;		// 2 活动类型 3 次数
+	UAT_Dungeon = 3;		// 3 0 0 次数
+	UAT_Monster = 4;		// 4 0 0 次数
+	UAT_Train = 5;			// 5 0 0 次数
+	UAT_Tech = 6;			// 6 0 是否完成 次数
+	UAT_Build = 7;			// 7 0 0 次数
+	UAT_Craft = 8;			// 8 0 0 次数
+	UAT_Market = 9;			// 9 0 0 次数
+	UAT_Purchase = 10;		// 10 0 0 次数
+	UAT_LeagueBox = 11;		// 11 开启1/帮助2 0 次数
+	UAT_CardDraw = 12;		// 12 0 0 次数
+	UAT_LeagueHelp = 13;	// 13 0 0 次数
+	UAT_PlaceStatue = 14;	// 14 lv 0 次数
+	UAT_AttackMonster = 15;	// 15 0 0 次数
+}
+
+//任务类型(采集) 使用采集标准的四元组配置法	vec类型 货币类型 0 数量
+
+//任务类型(消耗)
+enum UserCostType
+{
+	//VectorType 到16，从50开始(必须不能和enum VecType重合)
+
+	UCT_SpeedItem = 0;		// 50 0 0 时长  // 第二参数：enum ItemSubType 的几个加速类型
+	UCT_LeagueCoin = 51;	// 51 0 0 数量
+	UCT_ArmyRank = 52;		// 52 0 0 点数	//军衔
+	UCT_Experience = 53;	// 53 领主1/英雄2 0 数量
+	UCT_GemCost = 54;		// 54 等级 宝石1/精化2 数量
+}
+
+//任务类型(PVP)
+enum UserPvpType
+{
+	UPT_Capture = 0;    // 1 0 0 数量
+	UPT_KillUnit = 2;	// 2 等级 0 数量
+}
+
+//活动上分类型
+enum ActivityScoreType
+{
+	AST_Train = 0;		// 训练
+	AST_Gather = 2;		// 采集
+	AST_Building = 3;	// 建造
+	AST_Research = 4;	// 研究
+	AST_Monster = 5;	// 怪物
+	//AST_KillUnit = 6;	// [OLD]
+	AST_Capture = 7;	// 占领
+	AST_KillUnit = 8;	// 杀敌
+	AST_TaskFinish = 9;	// 任务
+	AST_WarCity = 10;	// 城市争霸
+	AST_AttackMon = 11;	// 攻打野怪
+	AST_UpdateUnin = 13;// 升级士兵
+	AST_ItemUnin = 14;	// 道具获得士兵
+	AST_SpeedUP = 15;	// 加速
+	AST_Cash100 = 16;	// 消耗钻石
+}
+
+//游戏任务类型
+enum GameTaskType
+{
+	GTT_Dispatch = 0;	//派遣任务
+	GTT_LeagueCup = 2;	//联盟杯任务
+	GTT_Chapter = 3;	//剧情任务
+	GTT_ActPoint = 4;	//活跃度任务
+	GTT_Achievement = 5;//发展任务
+	GTT_LeagueTask = 6; //联盟任务
+}
+
+
+// 七日活动类型
+enum SevenTaskType
+{
+	// 建筑战力提升
+	STT_BuildingPower = 0;
+	// 科研战力提升
+	STT_TechPower = 2;
+	// 通过关卡次数
+	STT_MapList = 4;
+	// 击杀野怪
+	STT_Monster = 5;
+	// 完成活力任务
+	STT_ActivityTask = 6;
+	// 联盟帮助次数
+	STT_LeagueHelp = 7;
+	// 在线奖励
+	STT_OnlieGiftPack = 8;
+	// 黑市兑换
+	STT_BlackMarket = 9;
+	// 联盟宝箱开启
+	STT_LeagueBoxOpen = 10;
+	// 联盟宝箱帮助
+	STT_LeagueBoxHelp = 11;
+	// 派遣任务
+	STT_DispatchTask = 12;
+	// 锻造装备
+	STT_ProductEquip = 13;
+	// 多人野怪
+	STT_MuliMonster = 14;
+	// 后勤补给
+	STT_Supply = 15;
+	// 抽卡
+	STT_TakeCard = 16;
+	// 采集 （第二个参数 1：金属， 2：晶体， 3：瓦斯， 4：重氢， 5:可乐，）
+	STT_Gather = 17;
+	// 训练士兵
+	STT_Train = 18;
+	// 击杀士兵
+	STT_KillUnit = 19;
+	// 消耗资源 （第二个参数 1：金属， 2：晶体， 3：瓦斯， 4：重氢， 5:可乐， 100:钻石）
+	STT_CostCash = 20;
+	// 加速时间 ( 第二参数 1：总加速时长， 2：建造加速时长，3：科研加速时长， 4：训练加速，5：医疗加速 )
+	STT_SpeedTime = 21;
+	// 英雄 （第二个参数 1： 数量， 2: 等级数量， 3: 星级数量， 4:品质数量）
+	STT_Hore = 22;
+	// 建筑等级 （第二个参数， 建筑类型 MG_GameDefine.proto 文件中定义 BuildingType）
+	STT_BuildingLevel = 23;
+	// 科研次数
+	STT_TechCount = 24;
+	// 建筑次数
+	STT_BuildingCount = 25;
+	// 攻打野怪
+	STT_AttackMonster = 26;
+	// 攻打多人怪
+	STT_AttackMultiMon = 27;
+	// 联盟任务
+	STT_LeagueTask = 28;
+	// 击杀小野怪
+	STT_WILDMONSTEREX = 29;
+	// 科研
+	STT_Tech = 30;
+	// 训练增加战力
+	STT_Train_Power = 31;
+}
+
+enum DailyTaskType
+{
+	STT_GatherAnyRes		= 0;//不区分采集资源类型(任意资源均可完成)
+	STT_GatherSpecifyRes	= 2;//区分采集资源类型(指定资源完成)
+	STT_TrainAnyUnit 		= 3;//训练任意类型士兵(不区分，可配置数量 包含升级士兵)
+	STT_TrainTUnit			= 4;//训练士兵(数量 T级 包含升级士兵)
+	STT_TrainSpecifyTUnit	= 5;//训练T级士兵(区分士兵，可配置士兵类型，数量，T级(大于等于T级均可） 包含升级士兵)
+	STT_UpPowerByTrain 		= 6;//训练战力提升(通过造兵提高战斗力 包含升级士兵)
+	STT_UseSpeedForTrain 	= 7;//使用加速(在造兵上使用加速)
+	STT_UseSpeedForBuilding = 8;//使用加速(在建造上使用多少加速)
+	STT_UseSpeedForResearch = 9;//使用加速(在科研上使用多少加速)
+	STT_KillAlphaTms 		= 10;//alpha：击杀alpha次数
+	STT_KillMachineMonster  = 11;//机械兽：击杀100
+	STT_HitMachineMonster  	= 12;//机械兽：击中次数
+	STT_ConsumeTL			= 13;//消耗体力 
+	STT_DarkMarketBuy 		= 14;//黑市：购买次数
+	STT_UpPowerByBuilding 	= 15;//建筑战力提升(通过提升建筑战力)
+	STT_UpPowerByResearch 	= 16;//科研战力提升(通过提升科研战力)
+	STT_UseGem 				= 17;//使用多少钻石
+	STT_OpenLeagueBox		= 18;//联盟秘宝开启多少次
+	STT_HelpLeagueBox 		= 19;//联盟秘宝帮助多少次
+	STT_HelpLeague 			= 20;//联盟帮助多少次
+	STT_GetLeagueGift	 	= 21;//联盟礼物领取多少次
+	STT_KillMachineCenter	= 22;//击杀机械中枢
+	STT_UseAnySpeed			= 23;//使用任意加速道具
+	STT_FightPowerUp 		= 24;//提升总战力
+
+}
+
+
+//城市争霸目标类型
+enum CityWarTargetType
+{
+	GWTT_City = 0;		//中心城市
+	GWTT_Inside = 2;	//内圈地块
+	GWTT_Outside = 3;	//外圈地块
+}
+
+// 掉落活动类型
+enum DropActivityType
+{
+	DAT_KillMonster = 0; 		// 击杀单人野怪
+	DAT_AttackMonster = 2; 		// 击中单人野怪
+	DAT_KillMuliMonster = 3; 	// 击杀多人野怪
+	DAT_AttackMainCity = 4; 	// 打玩家主城胜利
+	DAT_Gather = 5; 			// 采集
+	DAT_MapList = 6; 			// 推图
+	DAT_Supply = 7; 			// 后勤补给
+	DAT_OnlineReward = 8; 		// 在线奖励
+	DAT_Collect = 9; 			// 主城收集资源
+}
+
+//联盟任务状态
+enum LeagueTaskStatus
+{
+	LTS_PROCESSING 		= 0;//进行中
+	LTS_CAN_GET_AWARD 	= 2;//可领取
+	LTS_CAN_START 		= 3;//可开始
+	LTS_NOT_START 		= 4;//不可开始
+}
+
+// 最强执政官活动类型
+enum StrongestCommanderType
+{
+	SCT_Collection = 0;			// 采集 （1 资源类型 分母 分子）
+	SCT_Tech = 2;				// 科研 （2 0 分母 分子）
+	SCT_Building = 3;			// 建筑 （3 0 分母 分子）
+	SCT_Train = 4;				// 造兵 （4 T级 分母 分子）
+	SCT_UpgradeUnit = 5;		// 兵种升级 （5 T级 分母 分子）
+	SCT_KillUnit = 6; 			// 杀敌 (6 T级 分母 分子)
+	SCT_KillMonsterEx = 7; 		// 击杀alpha（7 等级 分母 分子）
+	SCT_Power = 8;				// 战力 （8 0 分母 分子)
+	SCT_AttackMonster = 9; 		// 击中机械兽（9 等级 分母 分子）
+	SCT_KillMonster = 10; 		// 击杀机械兽（10 等级 分母 分子）
+	SCT_KillMultiMonster = 11; 	// 击杀机械中枢（11 等级 分母 分子）
+	SCT_TrainUnitType = 12;		// 造兵 （12 类型 分母 分子）
+	SCT_BeKilledUnit = 13;		// 被杀兵种（13 类型 分子 分母)
+	SCT_OccupyMiracle = 14;		// 占领奇迹 (14 类型<1大，2小> 分子 分母)
+}
+
+//远征商店道具类型
+enum ExpeditionShopItemType
+{
+	ESIT_SPECIAL 		= 0;//特殊
+	ESIT_NORMAL 		= 2;//普通
+	ESIT_FIXED1			= 3;// 固定1
+	ESIT_FIXED2			= 4;// 固定2
+}
+
+//天下大势条目类型
+enum WorldSituationEntryType
+{
+	WSET_SERVER 		= 0;//全服
+	WSET_RANK 		    = 2;//排行榜
+	WSET_LEAGUE 		= 3;//联盟
+}
+
+//天下大势条目子类型
+enum WorldSituationEntrySubType
+{
+	WSEST_SERVER_KILL_WILDMONSTEREX 		= 0;//全服击杀xx个xx等级以上的单人野怪（配置数量、等级）
+	WSEST_SERVER_KILL_WILDMONSTER 		    = 2;//全服击杀xx个xx等级以上的单人BOSS（配置数量、等级）
+	WSEST_SERVER_KILL_MUTIWILDMONSTER 		= 3;//全服击杀xx个xx等级以上的机械中枢（配置数量、等级）
+	WSEST_SERVER_COLLECT_RESOURCE 			= 4;//全服采集资源数量达到xxx（配置数量）
+	WSEST_SERVER_MAINCITY_LEVEL 			= 5;//全服行政要塞高于xx级的执政官达到xx个（配置等级、数量）
+	WSEST_SERVER_LEAGUE 					= 6;//全服超过xx人的联盟达到xx个（配置数量、等级）
+	WSEST_RANK_USER_POWER 					= 7;//个人战斗力排行
+	WSEST_RANK_LEAGUE_POWER 				= 8;//联盟战斗力排行
+	WSEST_LEAGUE_CONQUER_CITY 				= 9;//占领xx级城市数量xx个
+	WSEST_LEAGUE_KILL_MUTIWILDMONSTER 		= 10;//总共击杀xx个xx级以上机械中枢
+	WSEST_LEAGUE_KILL_WILDMONSTER 			= 11;//总共击杀xx个xx级以上的单人BOSS
+	WSEST_LEAGUE_CONQUER_MIRACLE 			= 12;//占领大奇迹
+}
+
+//天下大势条目状态
+enum WorldSituationEntryStatus
+{
+	WSES_NOT_START 		= 0;//未开始
+	WSES_PROCESS 		= 2;//进行中
+	WSES_FINISH 		= 3;//完成了
+}
+
+//天下大势条目结束类型
+enum WorldSituationEntryEndType
+{
+	WSEET_TIME 			= 0;//时间结束
+	WSEET_REACH_TASK 	= 2;//达到目标结束
+}
+
+
+//天下大势解锁类型
+enum WorldSituationUnlockType
+{
+	WSUT_CITY			= 0;//城市
+	WSUT_WILDMONSTER 	= 2;//单人BOSS
+	WSUT_MUTIWILDMONSTER 	= 3;//机械中枢
+	WSUT_MIRACLE 			= 4;//奇迹战
+}
+
+enum SyncType
+{
+	Achivement		= 0; 	// 同步成就系统资产 ST_AchievementAsset_PB
+	Building		= 2; 	// 同步建筑资产 ST_Building_PB
+	BuildingAttr 	= 3; 	// 同步建筑属性 ST_AttributeList_PB
+	DelBuilding		= 4; 	// 删除建筑
+	Chapter			= 5; 	// 章节任务 ST_Asset_Chapters_PB
+	ItemPackage		= 6; 	// 背包道具
+	LeagueTech		= 7; 	// 同步联盟科技 ST_LeagueTechnology_PB
+	LeagueRecommendTech = 8; // 同步推荐科技列表 ST_Uint32List_PB
+	LeagueScore		= 9;	// 同步联盟积分 ST_League_Simple_Info 的 score 字段
+	LeaugeMemberCapacity = 10; // 同步联盟容量 ST_League_Simple_Info 的 memberCapacity 字段
+	LeagueMemberPower = 11; // 同步联盟成员战力 ST_League_Member_Info 的 power
+	LeaguePower = 12; 		// 同步联盟战力 ST_League_Simple_Info 的 battle
+	AddLocalAction = 13;	// 新增localAction ST_LocalActionEntry_PB
+	DelLocalAction = 14;	// 删除localaction 
+	SetLocalActionStartTime = 15; // 重置localAction  Starttime
+	SetLocalActionHelp = 16; // 设置 ST_LocalActionEntry_PB 的IsHelped 字段
+	SetLocalActionRemainTime = 17; // 设置 ST_LocalActionEntry_PB 的 remaintime 字段
+	SetLocalActionSecondTime = 18; // 第二建造队列时间，ST_LocalActionAsset_PB 的 SecondTime 字段
+	SyncActivity = 19; // 同步活动资产 ST_Asset_Activity_Item_PB
+	
+	LeagueMemberKillNum = 20; // 同步联盟成员杀敌数 ST_League_Member_Info 的 KillNum
+	LeagueShopItem = 21;	  // 同步联盟商店道具 ST_League_Detail_Info 的 Shop 字段 ST_ItemEntry_PB
+	LeagueMemberTitle = 22;	  // 同步联盟阶级名称 ST_League_Detail_Info 的 MemberTitleList 字段 ST_LeagueMemberTitleName_PB
+	LeagueMemberOnlineTime = 23; // 同步联盟成员在线时间 ST_League_Member_Info 的 LastRefreshTimestamp 字段
+	LeagueFlag = 24;			// 同步联盟旗帜 ST_League_Simple_Info 的 Flag 字段 ST_LeagueCustomFlag_PB
+	LeagueMemLevel = 25; 		// 同步联盟成员等级 ST_League_Member_Info 的 Level 字段
+	LeagueOwnCity = 26;  		// 增加联盟城市列表 ST_League_Simple_Info 的 OwnCitys 字段 ST_Uint32List_PB
+	AddLeagueMember = 27; 		// 新增联盟成员 ST_League_Member_Info
+	DelLeagueMember = 28; 		// 删除联盟成员 ST_League_Member_Info 根据 id字段
+	SetLeagueBattle = 29;		// 同步联盟战争 ST_League_Detail_Info 的 LeagueBattleList 字段 ST_LeagueBattle_PB（根据 TargetWorldDataID 和 AttLeagueID 来匹配）
+	DelLeagueBattle = 30;		// 删除联盟战争 ST_League_Detail_Info 的 LeagueBattleList 字段 ST_LeagueBattle_PB（根据 TargetWorldDataID 和 AttLeagueID 来匹配）
+	SetLeagueBattleNotJoin = 31;// 同步联盟战争 ST_League_Detail_Info 的 LeagueBattleNotJoinList 字段 ST_LeagueBattleNOTJoin_PB （根据 AttackActionID 字段来匹配）
+	DelLeagueBattleNotJoin = 32; // 删除联盟战争 ST_League_Detail_Info 的 LeagueBattleNotJoinList 字段 ST_LeagueBattleNOTJoin_PB （根据 AttackActionID 字段来匹配）
+	
+	LeagueBuilding = 33;		// 同步联盟建筑 ST_League_Simple_Info 的 Building 字段，直接替换
+	LeagueSpecialGift = 34;		// 同步联盟礼物 ST_League_Detail_Info 的 GiftSpecial 字段 ST_LeagueGiftSpecial_PB，直接替换
+	AddLeagueRequestJoinList = 35; // 新增联盟申请 ST_League_Detail_Info 的 RequestJionList 使用 ST_Uint64List_PB 
+	ChangeCampLeader = 36; 		// 同步联盟堡垒的队长 ST_League_Detail_Info 的 CampInfo 字段 ST_LeagueCampLeader_PB （根据 ST_LeagueCampLeader_PB 的 CampId查询）
+	RemoveCampLeader = 37;		// 删除联盟堡垒的队长 ST_League_Detail_Info 的 CampInfo 字段 ST_LeagueCampLeader_PB （根据 ST_LeagueCampLeader_PB 的 CampId查询）
+	DeleteAllRequestJoin = 38; 	// 删除所有联盟申请 ST_League_Detail_Info 的 RequestJionList
+	DeleteRequestJoin = 39;		// 删除联盟申请 ST_League_Detail_Info 的 RequestJionList 使用 ST_Uint64List_PB
+	SetLeagueSlogan = 40;		// 设置联盟公告 ST_League_Simple_Info 的 Slogan 
+	SetLeagueOwnerName = 41; 	// 修改联盟领主名称 ST_League_Simple_Info 的 OwnerName
+	SetLeagueOwnerId = 42; 		// 修改联盟领主名称 ST_League_Simple_Info 的 OwnerID
+	SetLeague = 43;				// 修改联盟的 ST_League_Simple_Info 的 Name， OutSlogan， ShortName， LeagueLanguage，NeedReview， MainCityLevel， MinPower 字段
+	LeagueMemberCount = 44;		// 同步联盟成员数量 ST_League_Simple_Info 的 MemberCount 字段
+	OfferGift = 45;				// 同步折扣礼包资产 ST_Asset_OfferGift
+	LeagueMemTitle = 46;     // 同步联盟成员官职 ST_League_Member_Info 的 title
+	SyncSevenDayTask = 47;			// 同步七日活动 ST_SevenDayTask_Item
+	LeagueChannelId = 48;			// 联盟聊天id   ST_League_Simple_Info 的 ChannelId
+	SetLeagueDevote = 49;		//同步玩家当日联盟捐献点数ST_LeagueDonationRankEntry_PB的tech_devote
+	BuffTitle 		= 50;	 	//同步玩家头衔
+}
+
+enum ServerTimeStatus{
+	STS_Building = 0;	//建筑中
+	STS_Protecting = 2; 
+	STS_Opening =3;
+}
+
+enum ServerRankType{
+	SRT_UserPowerRank = 0;
+	SRT_UserKilledRank = 2;
+	SRT_UserLevelRank = 3;
+	SRT_UserMaincityLevelRank = 4;
+	SRT_AipShipStarRank = 5;
+	SRT_HeroKilledRank = 6;
+	SRT_GatherRank = 7;
+}
+
+enum MonsterAtkCityStage{
+	Init 			= 0;//未开启
+	Preparing 		= 2;//准备中
+	DefOngoing		= 3;//防守战
+	ReadyFightBack  = 4;//准备反击
+	FightBack 		= 5;//反击
+	End 			= 6;//结束
+}

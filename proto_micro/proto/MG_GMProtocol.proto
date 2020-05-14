@@ -1,0 +1,843 @@
+syntax = "proto3";
+package proto_micro;
+
+//只生成lite版本的代码
+option optimize_for = LITE_RUNTIME;
+//不生成RPC代码
+option cc_generic_services = false;
+
+import "MG_GameProtocol.proto";
+
+message ST_GM_CharBasic_PB
+{
+	 string 			Name 		= 1;
+	 uint64 			Uid 		= 2;
+	 uint32 			VipLevel 	= 3;
+	 uint64 			LeagueID 	= 4;
+	 string 			LeagueName 	= 5;
+	 ST_CashAsset_PB 	Resource 	= 6;
+	 uint64 			Power 		= 7;
+	 uint32				OnlineStatus = 8;
+	 uint32				ForbiddenStatus = 9;
+	 uint64				ForbiddenTime = 10;
+	 uint32				CommanderLevel = 11;
+	 uint32 			BaseLevel = 12;
+	 uint64				CreateTime = 13;
+	 uint32				Language = 14;
+	 uint32 			Channel = 15;
+	 int32				LeagueLevel = 16;
+	 uint64				KillNum = 17;
+	 int32				Location = 18;
+	 uint64				Sid = 19;
+	 uint32				TotalPay = 20;
+	 uint64				CurLabel = 21;
+	 string				IP = 22;
+	 uint64				LastLogin = 23;
+}
+
+message ST_GM_Buildings_PB
+{
+	repeated ST_GM_Building_PB buildings = 1;
+}
+
+message ST_GM_Building_PB
+{
+	 uint32 				        buildingID			= 1;  //建筑ID
+	 uint32					        x					= 3;  //位置X
+	 uint32 				        y					= 4;  //位置Y
+	 uint32 				        buildingtype 		= 5;  //建筑类型
+	 uint32 				        buildinglevel 		= 6;  //建筑等级
+	 uint32							status 				= 7;  // 状态 1 升级中
+}
+
+message ST_GM_Power_PB
+{
+	 uint64 TotalPower = 1;
+	 uint64 HeroPower = 2;
+	 uint64 UnitPower = 3;
+	 uint64 BuildingPower = 4;
+	 uint64 TechPower = 5;
+	 uint64 LorderPower = 6;
+	 uint64 TelentPower = 7;
+}
+
+message ST_AccountInfo_PB
+{
+	 uint32 uid = 1;
+	 string name = 2;
+}
+
+message ST_AccountInfos_PB
+{
+	repeated ST_AccountInfo_PB infos = 1;
+}
+
+message ST_GM_Forbidden_PB
+{
+	repeated ST_ForbiddenChat_PB forbiddenChat = 1;
+	 uint64 forbiddenLoginStart = 2;
+	 uint64 forbiddenLoginDur = 3;
+	 string forbiddenLoginMsg = 4;
+}
+
+message ST_GM_Resource_PB
+{
+	 uint64 Uid = 1;
+	 string Name = 2;
+	 uint32 RegionID = 3;
+	 uint64 CreateTime = 4;
+	 ST_CashAsset_PB Resource = 5;
+}
+
+message ST_GM_ServerStatus_PB
+{
+	 uint32 ServerID = 1;
+	 string ServerName = 2;
+	 uint32 OnlineCount = 3;
+	 uint32 MaxLimit = 4;
+	 string GameVersion = 5;
+	 uint32 ServerStatus = 6;
+}
+
+// gameserver -> centerserver
+enum GS2CS_PROTOCOL_ID
+{
+	GS2CS_ILLEGAL = 0;
+	GS2CS_PING = 1;							// gs -> cs ping
+	GS2CS_REGISTER = 2;						// gs-> cs Register 信息
+	GS2CS_GM_COMMAND_RESULT = 3;			// GM命令结果
+	GS2CS_PAY_RESULT = 4;					// 支付结果
+	GS2CS_CHANGE_SERVER_REQUEST = 5;		// 请求跨服
+	GS2CS_CHANGE_SERVER_RESPONSE = 6;		// 请求跨服结果
+	GS2CS_SERVER_INIFO = 7;					// 上报服务器状态
+	GS2CS_VIEW_SERVER_REQUEST = 8;			// 跨服浏览请求
+	GS2CS_VIEW_SERVER_RESPONSE = 9;			// 跨服浏览结果
+	GS2CS_SYNC_ACCOUNT_DETAILS = 10;        // 同步账户详情
+	GS2CS_UPDATE_ACCOUNT_DETAILS = 11;      // 请求更新账号信息
+	GS2CS_QUERY_ACCOUNT_BOUND = 12;         // 查询账号绑定信息
+	GS2CS_SWITCH_ACCOUNT = 13;              // 查询账号绑定信息
+	
+	GS2CS_MAX = 255;						// 不能超255
+};
+
+// centerserver -> gameserver
+enum CS2GS_PROTOCOL_ID
+{
+	CS2GS_ILLEGAL = 0;
+	CS2GS_GM_COMMAND = 1;					// 执行GM指令
+	CS2GS_PAY = 2;							// 支付
+	CS2GS_CHANGE_SERVER_REQUEST = 3;		// 请求跨服
+	CS2GS_CHANGE_SERVER_RESPONSE = 4;		// 请求跨服结果
+	CS2GS_SYNC_SERVER_LIST = 5;				// 同步服务器列表状态
+	CS2GS_VIEW_SERVER_REQUEST = 6;			// 跨服浏览请求
+	CS2GS_VIEW_SERVER_RESPONSE = 7;			// 跨服浏览结果
+	CS2GS_SYNC_ACCOUNT_DETAILS = 8;         // 同步账户详情
+    CS2GS_UPDATE_ACCOUNT_DETAILS = 9;       // 请求更新账号信息
+    CS2GS_QUERY_ACCOUNT_BOUND = 10;         // 查询账号绑定信息
+    CS2GS_SWITCH_ACCOUNT = 11;              // 查询账号绑定信息
+	
+	CS2GS_MAX = 255;						// 不能超255
+};
+
+
+// LoginServer -> CenterServer
+enum LS2CS_PROTOCOL_ID
+{
+	LS2CS_ILLEGAL = 0;
+	LS2CS_PING = 1;							// ls -> cs ping
+	LS2CS_ADD_LIST = 2;						// 添加白/黑名单返回
+	LS2CS_REMOVE_LIST = 3;					// 删除白/黑名单返回
+	LS2CS_GET_LIST_STATUS = 4;				// 获取黑白名单状态
+	LS2CS_OPEN_LIST = 5;					// 开关黑白名单
+	LS2CS_ALLOC_SERVER = 6;					// 分配服务器
+	LS2CS_SYNC_ACCOUNT_DETAILS = 7;         // 同步账户详情
+	LS2CS_UPDATE_ACCOUNT_DETAILS = 8;       // 请求更新账号信息
+	LS2CS_QUERY_ACCOUNT_BOUND = 9;          // 查询账号绑定信息
+	LS2CS_SWITCH_ACCOUNT = 10;              // 查询账号绑定信息
+	
+	LS2CS_MAX = 255;						// 不能超255
+};
+
+
+
+// CenterServer -> LoginServer
+enum CS2LS_PROTOCOL_ID
+{
+	CS2LS_ILLEGAL = 0;
+	CS2LS_ADD_LIST = 1;						// 添加白/黑名
+	CS2LS_REMOVE_LIST = 2;					// 删除白/黑名
+	CS2LS_GET_LIST_STATUS = 3;				// 获取黑白名单状态
+	CS2LS_OPEN_LIST = 4;					// 开关黑白名单
+	CS2LS_Alloc_Server = 5;					// 分配服务器
+	CS2LS_SYNC_ACCOUNT_DETAILS = 6;         // 同步账户详情
+	CS2LS_UPDATE_ACCOUNT_DETAILS = 7;       // 请求更新账号信息
+	CS2LS_QUERY_ACCOUNT_BOUND = 8;          // 查询账号绑定信息
+	CS2LS_SWITCH_ACCOUNT = 9;               // 查询账号绑定信息
+
+	CS2LS_MAX = 255;						// 不能超255
+};
+
+message ST_Get_List_Status
+{
+	 ListType type = 1;
+	 int64 operatorId = 2;
+}
+
+message ST_Get_List_Status_Result
+{
+	 int32 result = 1;
+	 int64 operatorId = 2;
+}
+
+message ST_Open_List
+{
+	 ListType type = 1;
+	 string operate = 2;
+	 int64 operatorId = 3;
+}
+
+message ST_Open_List_Result
+{
+	 int64 operatorId = 2;
+}
+
+enum ListType
+{
+	LT_BLACK = 0;
+	LT_WHITE = 2;
+}
+
+message ST_CS2LS_Add_List
+{
+	 ListType type = 1;
+	 string value = 2;
+	 int64 operatorId = 3;
+	 string id = 4;
+}
+
+message ST_LS2CS_Add_List_Result
+{
+	 int64 operatorId = 1;
+	 int32 result = 2;
+}
+
+message ST_CS2LS_Remove_List
+{
+	 ListType type = 1;
+	 string list = 2;
+	 int64 operatorId = 3;
+}
+
+message ST_LS2CS_Remove_List_Result
+{
+	 int64 operatorId = 1;
+	 int32 result = 2;
+}
+
+message ST_LS2CS_Alloc_Server
+{
+	 int64 operatorId = 1;
+	 uint64 uid = 2;
+	 string userName = 3;
+	 string remoteIP = 4;
+}
+
+message ST_CS2LS_Alloc_Server
+{
+	 int64 operatorId = 1;
+	 uint64 uid = 2;
+	 int32 serverStatus = 3;	// 服务器状态 (正常，维护中)
+	 int32 whiteList = 4;		// 是否开了白名单
+	 int32 result = 5;
+	 int64 sid = 6;
+	 string ip = 7;
+	 string port = 8;
+	 string userName = 9;
+	 string remoteIP = 10;
+}
+
+message ST_GS2CS_Register
+{
+	 int64 sid = 1;
+	 string ip = 2;
+	 string port = 3;
+	 string sname = 4;
+}
+
+message ST_Ping
+{
+	 uint64 pingTime = 1;
+	 int64  sid      = 2;
+}
+
+message ST_CS2GS_GMCommand
+{
+	 int64 operatorId = 1;
+	 string command = 2;
+	 string params = 3;
+}
+
+message ST_GS2CS_GMCommand_Result
+{
+	 int64 operatorId = 1;
+	 string result = 2;
+	 int32 status = 3;
+	 string msg = 4;
+}
+
+message ST_CS2GS_Pay
+{
+	 uint64 uid = 1;
+	 string productId = 2;		// 产品id
+	 int64 giftPackageId = 3;   // 礼包id， 模板id
+	 int64 operatorId = 4;		
+	 string orderId = 5;		// 订单号
+	 double curPay = 6;			// 
+	 uint64 endTimeStamp = 7;	//订阅的结束时间
+	 uint32 payType = 8; 		// 1：购买礼包， 2：购买幸运星
+	 uint32 luckyStarItemId = 9; // 幸运星礼包id
+}
+
+message ST_GS2CS_Pay
+{
+	 int64 operatorId = 1;
+	 string msg = 2;
+}
+
+message ST_EveryOneMail
+{
+	 ST_EveryoneMailContent content = 1;
+	 string reward = 2;
+}
+
+message ST_ViewServer_Request
+{
+	 int64 sid = 1;
+	 int64 fromSid = 2;
+	 uint64 uid = 3;
+	 uint64 power = 4;
+}
+
+message ST_ViewServer_Response
+{
+	 int64 sid = 1;
+	 int64 fromSid = 2;
+	 uint64 uid = 3;
+	 int32 result = 4;
+	 string skey = 5;
+	 string ip = 6;
+	 string port = 7;
+	 uint32 rank = 8;
+}
+
+message ST_ChangeServer_Request
+{
+	 int64 sid = 1;
+	 uint64 uid = 2;
+	 bytes charData = 3;
+	 int64 fromSid = 4;
+	 int32 type = 5;
+	 uint32 itemID = 6;
+	 uint32 itemCount = 7;
+	repeated ST_ServerRank ranks = 8;
+}
+
+message ST_ChangeServer_Response
+{
+	 int32 result = 1;
+	 uint64 uid = 2;
+	 int64 sid = 3;
+	 string ip = 4;
+	 string port = 5;
+	 string skey = 6;
+	 int64 fromSid = 7;
+	 int32 type = 8;
+}
+
+message ST_GS2CS_ServerInfo
+{
+	 ST_Server_PB serverInfo = 1;
+}
+
+message ST_GS2CS_GetGiftPackConfigs_Request
+{
+	 int64 sid = 1;
+}
+
+message ST_CS2GS_GetGiftPackConfigs_Response
+{
+	 int32 result = 1;
+	repeated ST_GiftPackConfig configs = 2;
+}
+message ST_GS2CS_GetOfferGift_Request
+{
+	 int64 sid = 1;
+}
+
+message ST_CS2GS_GetOfferGift_Response
+{
+	 int32 result = 1;
+	repeated ST_OfferGiftPack configs = 2;
+}
+message ST_GS2CS_GetLuckyStar_Request
+{
+	 int64 sid = 1;
+}
+
+message ST_CS2GS_GetLuckyStar_Response
+{
+	 int32 result = 1;
+	repeated ST_LuckyStar_PB luckyStars = 2;	// 幸运星活动
+}
+
+message ST_GiftPackConfig
+{
+	 int32 id = 1;							// 配置id （GM后台唯一id）
+	 int64 giftId = 2;						// 礼包id
+	 uint64 runTime = 3;					// 生效时间
+	 uint64 closeTime = 4; 					// 关闭时间
+	repeated ST_GiftPackCondition conditions = 5;	// 条件
+	 uint32 count = 6;						// 限购次数
+	 int32 opType = 7;						// 此次更新操作类型 1更新 2删除 3重置 4添加
+	 uint32	resetCd = 8; 					// 重置CD
+	 uint32 resetTms = 9;					// 最大重置次数
+}
+
+
+
+
+message ST_GiftPackCondition
+{
+	 uint32 conditionType = 1; 		// 条件类型
+	 string value = 2;				// 条件值
+	 string min = 3;				// 最小值
+	 string max = 4;				// 最大值
+}
+
+message ST_CS2GS_Sync_ServerList
+{
+	repeated ST_Server_PB infos = 1;
+}
+
+message ST_MailDocData_PB
+{
+	 uint64 id = 1;
+	 uint32 type = 2;
+	 uint64 timestamp = 3;
+	 string SenderName = 4;
+	 string title = 5;
+	 string content = 6;
+	 string titleTips = 7;
+	 int32 targetId = 8;
+	 uint64 otherId = 9;
+	 string otherName = 10;
+	 string otherAvatar = 11;
+	 uint64 npcId = 12;
+	 string reward = 13;
+	 string detail = 14;
+	 string battle = 15;
+	 bool read = 16;
+	 bool kept = 17;
+	 bool removed = 18;
+}
+
+
+//更新账户详情类型
+enum UpdateAccountDetailsType
+{
+	UADT_GGNAME = 0;
+	UADT_FBNAME = 2;
+	UADT_TTNAME = 3;
+	UADT_GCNAME = 4;
+}
+
+//同步账户信息请求
+message ST_SyncAccountDetailsRequest
+{
+	 uint64 uid         = 1;
+	 int64 		    sid		= 2;
+}
+
+//账户类型信息对
+message ST_AccountInfoPair
+{
+	 int32  type        = 1;
+	 string id          = 2;
+}
+
+//同步账户信息响应
+message ST_SyncAccountDetailsResponse
+{
+	 uint64             uid   = 1;
+	 int32              code  = 2;
+	repeated ST_AccountInfoPair infos = 3;
+	 int64 		    sid   = 4;
+}
+
+//更新账户详情请求
+message ST_UpdateAccountDetailsRequest
+{
+	 uint32 type        = 1;
+	 uint64 uid         = 2;
+	 string idToken     = 3;
+	 string Secret      = 4;
+	 int64 		    sid		= 5;
+	 string puk 		= 6;
+	 string accountName = 7;
+}
+
+//更新账户详情响应
+message ST_UpdateAccountDetailsResponse
+{
+	 uint32 type        = 1; 
+	 uint64 uid         = 2;
+	 string accountName = 3;
+	 uint32 error       = 4;
+	 int64 		    sid		= 5;
+}
+
+//查询账户绑定请求
+message ST_QueryAccountBoundRequest
+{
+	 uint32 type        = 1;
+	 uint64 uid         = 2;
+	 string idToken     = 3;
+	 string Secret      = 4;
+	 int64 		    sid		= 5;
+	 string puk 		= 6;
+	 string accountName = 7;
+}
+
+//查询账户绑定响应
+message ST_QueryAccountBoundResponse
+{
+	 uint32 type        = 1;
+	 uint64 uid         = 2;
+	 uint32 result      = 3;//0没绑定，1绑定，2错误，3绑定且是用户自己
+	 string uuid        = 4;
+	 int64 		    sid		= 5;
+}
+
+//切换账号请求
+message ST_SwitchAccountRequest
+{
+	 uint32 type       = 1;
+	 uint64 uid        = 2;
+	 string idToken    = 3;
+	 string Secret     = 4;
+	 int64 	sid	 	   = 5;
+	 string puk 		= 6;
+	 string accountName = 7;
+}
+
+//切换账号响应
+message ST_SwitchAccountResponse
+{
+	 uint32 type      = 1;
+	 uint64 uid       = 2;
+	 uint32 result    = 3;
+	 string uuid      = 4;
+	 int64 	sid	  	  = 5;
+}
+
+message GM_StartNewActivity_PB
+{
+	 uint32 activityID = 1;
+}
+
+message ST_GM2AS_ActivityView
+{
+	 uint32 type = 1;		// 查询方法 1:查活动ID 2:查服务器ID
+	repeated uint32 value = 2;		// 要查询的ID
+}
+
+message GM_ActivityInfo_PB
+{
+	 uint32 serverID = 1;
+
+	 uint32 activityID = 2;
+	 uint32 activityType = 3;
+	 uint32 activityStage = 4;
+	repeated uint64 timeNodes = 5;
+	 string time = 6;
+}
+
+message ST_AS2GM_ResultList
+{
+	repeated GM_ActivityInfo_PB activities = 1;	// 活动具体信息
+}
+
+message ST_GM2AS_ActivityReserve
+{
+	 uint32 OpType = 1;		// 1:开启 2:关闭
+	 uint32 activityID = 2;	// 活动ID
+	 uint64 timeStamp = 3;	// 执行时间
+	repeated uint32 serverIDs = 4;	// 服务器ID列表
+	 string Time = 5;
+	 uint32 groupId = 6; //跨服排行榜分组id
+}
+
+message ST_AS2GM_ReserveResult
+{
+	 bool result = 1;	// 预约操作活动的结果	成功/失败
+	 string error = 2;	// 错误消息(如果失败)
+}
+
+message ST_ModifyArchonNotice_Request
+{
+	 uint32 operType = 1;
+	 string content = 2;
+}
+
+message ST_GM_ArchonNoticeInfo
+{
+	 uint64 uid = 1;
+	 string userName = 2;
+	 uint64 sendTime = 3;
+	 string content = 4;
+}
+
+message ST_GM_BoonRewardInfo
+{
+	 uint32 rewardId = 1;
+	 string itemList = 2;
+	 string FreeReward = 3;
+}
+
+message ST_GM_BoonActivityOper
+{
+	 uint32 boonId = 1;
+	 uint64 startTime = 2;
+	 uint64 duration = 3;
+	repeated ST_GM_BoonRewardInfo rewards = 4;
+	 uint64 Number = 5;
+}
+
+message ST_GM_BoonActivities
+{
+	repeated ST_GM_BoonActivityOper activities = 1;
+}
+
+enum LuckyStarProductID
+{
+	globalwar_gift_package_01 = 0;
+	globalwar_gift_package_11 = 149;
+	globalwar_gift_package_07 = 199;
+	globalwar_gift_package_08 = 299;
+	globalwar_gift_package_02 = 499;
+	globalwar_gift_package_03 = 999;
+	globalwar_gift_package_12 = 1499;
+	globalwar_gift_package_04 = 1999;
+	globalwar_gift_package_09 = 2999;
+	globalwar_gift_package_05 = 4999;
+	globalwar_gift_package_06 = 9999;
+}
+
+
+
+//获取角色信息
+message ST_GS2LS_GetRoleReq{
+	 uint64 AccountId = 1; //账号id
+	 uint64 Uid 	  = 2; //UserId
+}
+
+
+
+message ST_GS2LS_UpdateRoleRst{
+}
+
+//创建角色
+message ST_GS2LS_CreateRoleReq{
+	 uint64 Uid 		  = 1; //当前登陆的角色id
+	 uint64 AccountId 	  = 2; //账号id
+	 uint32 Sid 		  = 3; //区id
+	 uint32 MaxRole 	  = 4; //角色上限
+}
+
+//创建角色
+enum EDuplRoleCode{
+	 OK 			= 0; //成功
+	 CRTROLE_FULL 	= 1;//当前区角色达到上限
+	 Upgrading 		= 2;//维护中
+	 OTHERS_ERROR 	= 3;//其它错误
+}
+
+message ST_GS2LS_CreateRoleRst{
+	 EDuplRoleCode code  = 1; //创建角色是否成功
+}
+
+//向LoginServer上报在线人数
+message ST_GS2LS_ReportOnlineReq{
+	 uint32 sid 	= 1;//区服id
+	 uint32 number  = 2;//人数
+}
+
+message ST_GS2LS_ReportOnlineRst{
+}
+
+//请求服务器列表
+message ST_GS2LS_ServerListReq{
+	 uint64 Uid = 1;		//角色id
+	 string UerName = 2; 	//角色名
+	 string RoleIp = 3; 	//角色Ip
+}
+
+message ST_ServerListInfo{
+	 uint32 sid 		= 1;//区id
+	 uint32 online 		= 2;//在线人数
+	 uint32 openingTime = 3;//开服时间
+	 bool isRecommand 	= 4;//true推荐服, false非推荐服
+	 bool isUpgrading  = 5;//是否在维护中
+}
+
+message ST_ServerList{
+	repeated ST_ServerListInfo lsts = 1;//服务器列表
+}
+
+//切换角色
+message ST_SwitchRoleRst{
+	 EDuplRoleCode code = 1;
+}
+
+message ST_UserSid{
+	 uint64 uid = 1;
+	 uint32 sid = 2;
+	 uint32 currentSid = 3;
+}
+
+message ST_TransferBattle_Group_Entry
+{
+	 uint64 timeStamp = 1;
+	 uint32 sid1 = 2;
+	 uint32 sid2 = 3;
+	 uint32 num = 4;
+	 bool isOpen = 5;
+	 uint32 id = 6;
+	 uint32 stage = 7;
+}
+
+message ST_TransferBattle_Group
+{
+	repeated ST_TransferBattle_Group_Entry infos = 1;
+}
+
+message ST_GS2CS_GetTransferBattleInfo_PB
+{
+	 uint32 sid= 1;
+}
+
+message ST_CS2GS_GetTransferBattleInfo_Response
+{
+	 ST_TransferBattle_Group_Entry info = 1;
+	 uint32 result = 2;
+}
+
+message ST_GetTransferBattlePrepareInfo
+{
+	
+}
+
+message ST_TransferBattlePrepare_Response
+{
+	 ST_Prepare_Detail prepareInfo = 1;
+	 ST_Processing_Detail processingInfo = 2;
+}
+
+message ST_GS2CS_SyncTransferBattleScore_PB
+{
+	 uint32 stage = 1;
+	 uint32 subStage = 2;
+	 uint32 serverSubScore = 3;
+	 uint64 serverTotalScore = 4;
+	 ST_Prepare_User_Info userInfo = 5;
+	 ST_Prepare_League_Info lInfo = 6;
+	 uint32 sid = 7;
+}
+
+message ST_AddTransferBattleScore_Request
+{
+	 uint32 stage = 1;
+	 ST_Prepare_User_Info userInfo = 2;
+	 ST_Prepare_League_Info lInfo = 3;
+	 uint64 score = 4;
+}
+
+message ST_AddTransferBattleScore_Response
+{
+	 uint32 stage = 1;
+	 ST_Prepare_User_Info userInfo = 2;
+	 ST_Prepare_League_Info lInfo = 3;
+	 uint64 serverTotalScore = 4;
+}
+
+
+message ST_TBTransferServer_Request
+{
+	 uint32 sid = 1;
+	 uint64 uid = 2;
+	 bytes charData = 3;
+	 uint32 fromSid = 4;
+	 uint32 type = 5;
+	 bytes lData = 6;
+	repeated ST_CharSimple_Server_PB memInfos = 7;
+	 int32 tileId = 8;
+	 string worldChatChannelId = 9;
+}
+
+message ST_TBTransferServer_Response
+{
+	 uint32 result = 1;
+	 uint64 uid = 2;
+	 uint32 sid = 3;
+	 uint32 fromSid = 4;
+	 uint32 type = 5;
+}
+
+message ST_SyncTBMiracleWar_Request
+{
+	 uint64 lid = 1;
+	 uint32 cid = 2;
+	 uint32 sid = 3;
+	 uint32 fromSid = 4;
+}
+
+message ST_SyncTBMiracleWar_Response
+{
+	 uint32 result = 1;
+}
+
+message ST_GS2CS_SyncTBStage_PB
+{
+	 uint32 num = 1;
+	 uint32 sid = 2;
+	 uint32 stage = 3;
+}
+
+message ST_StrongestCommander_Entry
+{
+	 uint64 timeStamp = 1;
+	 uint32 sid = 2;
+	 uint32 num = 3;
+	 bool isOpen = 4;
+	 uint32 stage = 5;
+	 uint32 subStage = 6;
+}
+
+message ST_GS2CS_GetStrongestCommanderInfo_PB
+{
+	 uint32 sid = 1;
+}
+
+message ST_CS2GS_GetStrongestCommanderInfo_Response
+{
+	 uint32 result = 1;
+	 ST_StrongestCommander_Entry info = 2;
+}
+
+message ST_GS2CS_SyncSCStage_PB
+{
+	 uint32 num = 1;
+	 uint32 sid = 2;
+	 uint32 stage = 3;
+	 uint32 subStage = 4;
+}

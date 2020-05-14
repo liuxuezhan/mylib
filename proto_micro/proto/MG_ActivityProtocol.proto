@@ -1,0 +1,105 @@
+syntax = "proto3";
+package proto_micro;
+
+//只生成lite版本的代码
+option optimize_for = LITE_RUNTIME;
+//不生成RPC代码
+option cc_generic_services = false;
+
+import "MG_GameProtocol.proto";
+//游戏服务器申请连接需要带上自身的连接信息
+message ST_GS2AS_Connect {
+     uint32 serverID = 1;
+
+     string serverHost = 2;
+     uint32 serverPort = 3;
+}
+
+message ST_AS2GS_ActivityUpdate {
+     uint32 tp = 1;
+     uint32 activityID = 2;
+     ST_ActivityInfo_PB fuData = 3;
+     uint64 nextFresh = 4;
+     uint64 dataVer = 5;
+     string Time = 6;
+}
+
+message ST_GS2AS_ActivityScore {
+     uint32 actiID = 1;
+     uint32 serverID = 2;
+     uint32 contentID = 3;
+     ST_ActivityScore_User scData = 4;
+     uint64 luid = 6;	//公会ID
+     uint32 addScore = 7;   //增加的积分
+
+}
+
+message ST_MemberJoin_Info {
+     uint64 uid = 1;
+     string name = 2;
+}
+
+message ST_GS2AS_LeagueJoin {
+     uint32 actiID = 1;
+     uint32 serverID = 2;
+     uint32 curClass = 3;
+     bool   isJoin = 4;
+     ST_LeagueInfo_Base baLeague = 5;
+    repeated ST_MemberJoin_Info actorList = 7;
+}
+
+message ST_ActivityInfo_PB {
+     ST_Activity_PB baData = 1;
+    repeated ST_ActivityContent_PB deData = 2;
+    repeated ST_ActivityScore_User scUser = 3;
+     uint64 luid = 5;   //特殊需求
+     bool isJoin = 6;   //是否加入(报名时需要)
+}
+
+message ST_AS2GS_Activity_InfoList {
+    repeated ST_ActivityInfo_PB fuDatas = 1;
+     int32 success = 2;
+     uint64 dataVer = 3;
+}
+
+message ST_GS2AS_ActivityStart {
+     uint32 serverID = 1;
+     uint32 activityID = 2;
+}
+
+message ST_GS2AS_TickTock {
+     uint32 serverID = 1;
+
+     string serverHost = 2;
+     uint32 serverPort = 3;
+}
+
+message ST_GS2AS_UpdataStage {
+     uint32 serverID = 1;
+     uint32 activityID = 2;
+}
+
+message ST_GS2AS_ActivityEnd {
+     uint32 serverID = 1;
+     uint32 activityID = 2;
+}
+
+message ST_AS2GS_ActivityRank {
+     uint32 actiID = 1;
+     ST_ActivityRank_PB rankData = 2;
+     bool reward = 3;
+}
+message ST_AS2GS_Activity_ScoreLevel {
+     uint32 ActiID = 1;
+     uint64 userID = 2;
+     uint32 old = 3;
+     uint32 new = 4;
+}
+
+message ST_GS2RC_Activity_List {
+    repeated ST_GlobalBuff_PB list = 1;
+}
+
+message ST_GS2AS_GM{
+     string cmd = 1;
+}

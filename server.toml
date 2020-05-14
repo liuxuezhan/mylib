@@ -1,0 +1,19 @@
+[loginserver]
+ip = "172.20.17.18"
+sid = 1001
+port = "18085"
+[loginserver.mongodbinfo]
+connection_string = "mongodb://127.0.0.1"
+db_name = "login"
+table = ["users", "black_list","white_list","server_weight","uid_sid","gs_session","server_list"]
+[log]
+loglevel = 3
+tostd = true
+[google]
+topic = "go.micro.learning.topic.log"
+GoogleClientID   = "1088218652561-nsep9abpgrl1mti1meioa1fg6q7aadil.apps.googleusercontent.com"
+XTeaKey          = "slorufjyepvufifu"
+FBAppID          = "391102284641302"
+FBAppSecret      = "7f536637ad6b545776ec5e778b2beb53"
+TTConsumerKey    = "mplqnLxaXE61P6dgQ3es9Obst"
+TTConsumerSecret = "zSPcq2HObykelRj2LhzPzvgZyebjgbUOLg659cZgtkhes55080"

@@ -1,0 +1,186 @@
+syntax = "proto3";
+package proto_micro;
+
+//只生成lite版本的代码
+option optimize_for = LITE_RUNTIME;
+//不生成RPC代码
+option cc_generic_services = false;
+
+import "MG_GameProtocol.proto";
+// Dbc ==> Gs
+enum DBC2GS_PROTOCOL_ID
+{
+	DBC2GS_ILLEGAL = 0;
+
+	DBC2GS_PONG = 1;							// DBC->Gs Pong, GS2DBC_PING的应答
+	DBC2GS_REGISTER = 2;						// DBC->Gs Register 信息
+	DBC2GS_REQUIRE_GSID = 3;					// DBC收到不明GS消息时，要求GS发GS2DBC_GSID标识自己
+	DBC2GS_PING = 4;							// DBC->Gs Ping, 用于监测GS速度，并且在GS重启时会触发Dbc的注册
+
+	DBC2GS_FWD_MSG_BEGIN = 5;					// ----------- logic begin ------------
+	DBC2GS_RET_CREATE_CHAR = 7;					// DBC->Gs 创建角色返回
+	DBC2GS_RET_PULL_CHAR_ASSET = 8;				// DBC->Gs 保存角色资产数据返回
+	DBC2GS_RET_PULL_CHAR_ALL_ASSETS = 9;		// DBC->Gs 保存角色所有资产数据返回
+	DBC2GS_RET_PULL_WORLDDATA_ASSETS = 10;      // DBC->GS 请求地图资产数据返回
+	DBC2GS_RET_PULL_GLOBALACTION_ASSETS = 11;   // DBC->GS 请求全局action资产数据返回
+	DBC2GS_RET_PULL_GLOBALACTION_FINISH = 12;   // DBC->GS 请求全局action资产数据返回
+	DBC2GS_RET_PULL_WORLDDATA_FINISH = 13;   	// DBC->GS 请求地图资产数据返回
+	DBC2GS_RET_PULL_MAIL_INFO = 14;				// DBC->GS 请求邮件数据返回
+	DBC2GS_RET_PULL_LEAGUE_INFO = 15;			// DBC->GS 请求全服的联盟信息
+	DBC2GS_RET_PULL_LEAGUE_FINISH = 16;         // DBC->GS 请求全服的联盟完成
+	
+
+	DBC2GS_FWD_MSG_END = 150;					// ----------- logic end ------------
+
+	DBCGS_MAX = 255;							// 不能超255
+};
+
+// Gs ==> Dbc
+enum GS2DBC_PROTOCOL_ID
+{
+	GS2DBC_ILLEGAL = 0;
+
+	GS2DBC_PING = 1;							// GS->DBC Ping，应答DBC2GS_PONG
+	GS2DBC_GSID = 2;							// GS标识自己的ID，初始连接及DBC要求时发送
+	GS2DBC_PONG = 3;							// GS->DBC, 应答DBC2GS_PING
+	
+
+	GS2DBC_REQ_PULL_CHAR_LIST = 4;				// GS->DBC 请求获取某个账户在某个GS上的角色列表
+	GS2DBC_REQ_CREATE_CHAR = 5;					// GS->DBC 请求创建一个新的角色
+	GS2DBC_REQ_SAVE_CHAR_ALL_ASSETS = 6;		// GS->DBC 请求保存某个角色的所有资产
+	GS2DBC_REQ_PULL_CHAR_ALL_ASSETS = 7;		// GS->DBC 请求拉取某个角色的所有资产
+	GS2DBC_REQ_PULL_WORLDDATA_ASSETS = 8;       // GS->DBC 请求获取地图资产
+	GS2DBC_REQ_SAVE_WORLDDATA_ASSETS = 9;       // GS->DBC 请求保存地图资产
+	GS2DBC_REQ_DELETE_WORLDDATA_ASSETS = 10;    // GS->DBC 请求删除地图资产
+	GS2DBC_REQ_PULL_GLOBALACTION_ASSETS = 11;   // GS->DBC 请求获取全局action资产
+	GS2DBC_REQ_SAVE_GLOBALACTION_ASSETS = 12;   // GS->DBC 请求保存全局action资产
+	GS2DBC_REQ_DELETE_GLOBALACTION_ASSETS = 13; // GS->DBC 请求删除全局action资产
+	GS2DBC_REQ_PULL_MAIL_DATA = 14;				// GS->DBC 请求获取邮件数据
+	GS2DBC_REQ_SAVE_MAIL_DATA = 15;				// GS->DBC 请求保存邮件数据
+	GS2DBC_REQ_CREATE_LEAGUE_INFO = 16;			// GS->DBC 请求创建联盟
+	GS2DBC_REQ_UPDATE_LEAGUE_INFO = 17;         // GS->DBC 请求更新一个联盟的数据
+	GS2DBC_REQ_DELETE_LEAGUE_INFO = 18;         // GS->DBC 请求删除一个联盟的数据
+	GS2DBC_REQ_PULL_ALL_LEAGUE_LIST = 19;       // GS->DBC 请求所有联盟数据
+
+	GS2DBC_FWD_MSG_END = 100;					// ----------- logic end ------------
+
+	GS2DBC_MAX = 255;							// 不能超255
+};
+
+enum CHAR_RET_CODE
+{
+	CREATE_CHAR_SUCCESS = 0;	// 创建角色成功
+	CHAR_NAME_EXIST = 2;		// 名字已经存在
+	CHAR_DATA_NOTEXIST = 3;		// 角色不存在
+	CHAR_DATA_SUCESS	= 4;	//获取角色数据成功
+};
+
+// DBC -> GS -> DBC ping & pong 
+message MG_DBC_PING_GS_PONG
+{
+	 fixed64 qwPingNs = 1;	// DBC 发送epoch ns时戳，Gs需原样返回
+}
+
+
+// GS -> DBC -> GS ping & pong
+message MG_GS_PING_DBC_PONG
+{
+	 float fCurTime = 1;   // Gs 发送 ping DBC 需原样返回
+}
+
+// GS -> DBC 创建一个新角色
+message MG_GS2DBC_REQ_CREATE_NEW_CHAR
+{
+	 int32 dwGsId = 1;			// GsId 逻辑 GsId
+	 int64 dwUserId = 2;		//用户ID
+}
+
+// GS -> DBC 请求获取某个角色的数据
+message MG_GS2DBC_REQ_PULL_CHAR_ASSETS_DATA
+{
+	 int64 dwUserId = 1;	// 账户id
+	 int64 nSessionId = 2;	// 谁来拉取
+	 int32 nLogicGsId = 3;	// LogicGsId
+}
+
+// GS <-> DBC 角色数据保存和拉取返回
+message MG_DBC2GS_PUSH_PULL_CHAR_ASSETS_DATA
+{
+	 int64  dwResultCode = 1;//返回结果
+	 int64  dwUserId = 2;	// 角色GUID
+	 string charinfo = 3;  // 角色数据
+}
+//GS->DBC 请求获取地图资产
+message MG_GS2DBC_REQ_PULL_WORLDDATA_ASSETS_DATA
+{
+	 int32 nLogicGsId = 1; //服务器ID
+}
+//GS<->DBC 地图资产的保存和拉取返回
+message MG_DBC2GS_PUSH_PULL_WORLDDATA_ASSETS_DATA
+{
+	 int32 nLogicGsId    = 1; //服务器ID
+	repeated ST_WorldDataEntry_PB datas = 2; //地图数据
+}
+
+//GS<->DBC 全局action的保存和拉取返回
+message MG_DBC2GS_PUSH_PULL_ACTION_DATA
+{
+	 uint64 actionid    		= 1; //ID
+	 ST_GlobalActionEntry_PB 	action = 2; //
+}
+
+message MG_DBC2GS_PUSH_PULL_ACTION_ASSETS_DATA
+{
+	 int32 nLogicGsId    = 1; //服务器ID
+	repeated MG_DBC2GS_PUSH_PULL_ACTION_DATA actionlist = 2;
+}
+//GS->DBC 请求获取action资产
+message MG_GS2DBC_REQ_PULL_ACTION_ASSETS_DATA
+{
+	 int32 nLogicGsId = 1; //服务器ID
+}
+//GS->DBC 请求邮件数据返回
+message MG_GS2DBC_REQ_MAIL_INFO
+{
+	 int32 nLogicGsId = 1; //服务器ID
+	 int64 mailId	  = 2; //邮件ID列表
+}
+//DBC->GS 邮件数据返回
+message MG_DBC2GS_PUSH_MAIL_INFO
+{
+	 int64  mailId   = 1;	// 邮件ID
+	 string mailInfo = 2;  // 邮件数据
+}
+
+//请求保存邮件资产
+message MG_GS2DBC_REQ_SAVE_MAIL
+{
+	 int32 nLogicGsId = 1; //服务器ID
+	 string data	  = 2; //邮件内容
+}
+message MG_LEAGUE_LIST
+{
+	 int32 dwGsId = 1;			// GsId 逻辑 GsId
+	repeated ST_League_Detail_Info leagueList = 2;//联盟信息表
+}
+
+message MG_GS2DBC_PULL_ALL_LEAGUE
+{
+	 int32 dwGsId = 1;			// GsId 逻辑 GsId
+}
+
+// GS -> DBC 修改角色名
+message MG_GS2DBC_REQ_MODIFY_CHAR_NAME
+{
+	 int64 dwUserId = 1;		// 账户id
+	 int32 dwGsId = 2;			// GsId 逻辑 GsId
+	 string szCharName = 3;		// 角色名
+	 int32 dwRealGsId = 4;		// RealGsId 物理GsId
+}
+
+// DBC -> GS 角色改名完成
+message MG_GS2DBC_RET_MODIFY_CHAR_NAME
+{
+	 int64 dwUserId = 1;		// 账户id
+	 int64 dwResultCode = 2;	// 创建角色返回结果
+}

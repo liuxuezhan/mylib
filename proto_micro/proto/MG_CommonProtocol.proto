@@ -1,0 +1,85 @@
+syntax = "proto3";
+package proto_micro;
+option optimize_for = LITE_RUNTIME;
+option cc_generic_services = false;
+
+
+//------------------------------------------------------------
+//数据结构，2维Int数组
+message ST_Vector2Int_PB
+{
+	  int32 X				= 1;
+	  int32 Y				= 2;
+}
+//------------------------------------------------------------
+//数据结构，3维Int数组
+message ST_Vector3Int_PB
+{
+	  int32 X				= 1;
+	  int32 Y				= 2;
+	  int32 Z				= 3;
+}
+//------------------------------------------------------------
+//数据结构，2维Int64数组
+message ST_Vector2Int64_PB
+{
+	  int64 X				= 1;
+	  int64 Y				= 2;
+}
+//------------------------------------------------------------
+//数据结构，4维Int数组
+message ST_Vector4Int_PB
+{
+	  int32 X				= 1;
+	  int32 Y				= 2;
+	  int32 Z				= 3;
+	  int32 W               = 4;
+}
+message ST_Vector4UInt64_PB
+{
+	  uint64 X				= 1;
+	  uint64 Y				= 2;
+	  uint64 Z				= 3;
+	  uint64 W              = 4;
+}
+
+message ST_Uint64List_PB
+{
+	repeated uint64 list        = 1;
+}
+
+message ST_Int32List_PB
+{
+	repeated int32 list			= 1;
+}
+
+message ST_Uint32List_PB
+{
+	repeated uint32 list			= 1;
+}
+
+message ST_Int64List_PB
+{
+	repeated int64 list			= 1;
+}
+
+message ST_ResponPair_PB
+{
+	 string					key 		= 1;
+	 bytes					value		= 2;
+	 uint32                 repeatTimes = 3;
+}
+message ST_ResponForm_PB
+{
+	repeated ST_ResponPair_PB		valueList	= 1;
+	 uint64                 messageId   = 2;
+}
+
+message ST_Vector2IntList_PB
+{
+	repeated ST_Vector2Int_PB list = 1;
+}
+message ST_Vector4UInt64List_PB
+{
+	repeated ST_Vector4UInt64_PB list = 1;
+}
