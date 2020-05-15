@@ -16,10 +16,9 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/valyala/fasthttp"
 	"io/ioutil"
-	"log"
 	"net/http"
+	_ "net/http/pprof"
 	"os"
-	"regexp"
 	"strings"
 	"sync"
 	"time"
@@ -32,16 +31,22 @@ var (
 	csv_data = map[string]*map[string][]string{}
 	old      = map[string]int32{}
 	path     = flag.String("dir", "./", "filepath")
-
 )
+func reload() {
+
+}
+
 func main() {
-	//sh_sz()
-		open_chrome()
+	go func() {
+		http.ListenAndServe(":6000", nil)//pprof
+	}()
+	flag.Parse()
+	//	sh_sz()
+	open_chrome()
 	//proto_micro.LoginServer()
 	signal.Init(exit, reload)
 }
 func open_chrome() {
-	wlog.Info("")
 	ctx := context.Background()
 	options := []chromedp.ExecAllocatorOption{
 		chromedp.Flag("headless", false),
@@ -50,45 +55,49 @@ func open_chrome() {
 		chromedp.ExecPath("C:\\Users\\Administrator\\AppData\\Local\\Google\\Chrome\\Application\\chrome.exe"),
 		chromedp.UserAgent(`Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.103 Safari/537.36`),
 	}
+
 	options = append(chromedp.DefaultExecAllocatorOptions[:], options...)
+
 	c, cc := chromedp.NewExecAllocator(ctx, options...)
 	defer cc()
 	// create context
-
 	ctx, cancel := chromedp.NewContext(c)
 	defer cancel()
 	var site, res string
 	err := chromedp.Run(ctx,googleSearch("site:sohu.com", "Easy Money Management", &site, &res))
+
 	if err != nil {
 		wlog.Error(err)
 	}
-
 }
+
 func googleSearch(q, text string, site, res *string) chromedp.Tasks {
 	var buf []byte
 	sel := fmt.Sprintf(`//a[text()[contains(., '%s')]]`, text)
 	return chromedp.Tasks{
-		chromedp.Navigate(`https://www.sohu.com`),
-		chromedp.Sleep(2 * time.Second),
-		chromedp.WaitVisible(`#hplogo`, chromedp.ByID),
-		chromedp.SendKeys(`#lst-ib`, q+"\n", chromedp.ByID),
-		chromedp.WaitVisible(`#res`, chromedp.ByID),
-		chromedp.Text(sel, res),
-		chromedp.Click(sel),
-		chromedp.Sleep(2 * time.Second),
-		chromedp.WaitVisible(`#footer`, chromedp.ByQuery),
-		chromedp.WaitNotVisible(`div.v-middle > div.la-ball-clip-rotate`, chromedp.ByQuery),
-		chromedp.Location(site),
-		chromedp.Screenshot(`#testimonials`, &buf, chromedp.ByID),
-		chromedp.ActionFunc(func(context.Context) error {
+		chromedp.ActionFunc(func(ctx context.Context) error {
+			chromedp.Navigate(`https://item.jd.com/7332617.html`).Do(ctx)
+			chromedp.Sleep( 1* time.Second).Do(ctx)
+			chromedp.WaitVisible(`#InitCartUrl`, chromedp.ByID).Do(ctx)
+			//if wlog.GetNow()> wlog.ParseTimeToUnixTime("2020-05-02 15:04:05",8*60*60) {
+			//
+			//}
+			chromedp.Click(`#InitCartUrl`, chromedp.NodeVisible).Do(ctx)
+			chromedp.SendKeys(`#lst-ib`, q+"\n", chromedp.ByID).Do(ctx)
+			chromedp.Text(sel, res).Do(ctx)
+			chromedp.Sleep( 1* time.Second).Do(ctx)
+			chromedp.WaitVisible(`#footer`, chromedp.ByQuery).Do(ctx)
+			chromedp.WaitNotVisible(`div.v-middle > div.la-ball-clip-rotate`, chromedp.ByQuery).Do(ctx)
+			chromedp.Location(site).Do(ctx)
+			chromedp.Screenshot(`#testimonials`, &buf, chromedp.ByID).Do(ctx)
 			return ioutil.WriteFile("testimonials.png", buf, 0644)
 		}),
 	}
 }
+
+
 func VisitWeb(url string, cookies ...string) chromedp.Tasks {// 获取登录账号后的页面
-	//创建一个chrome任务
 	return chromedp.Tasks{
-		//ActionFunc是一个适配器，允许使用普通函数作为操作。
 		chromedp.ActionFunc(func(ctx context.Context) error {
 			// 设置Cookie存活时间
 			expr := cdp.TimeSinceEpoch(time.Now().Add(180 * 24 * time.Hour))
@@ -140,57 +149,27 @@ func WirteText(savefile string,txt string) {
 	bw.WriteString(txt + "\n")
 	bw.Flush()
 }
-func IsMobile(text string) bool {//是否是手机号
-	match,_:=regexp.MatchString(`^((\+86)|(86))?(1(([35][0-9])|[8][0-9]|[7][01356789]|[4][579]|[6][2567]))\d{8}$`,text)
-	return  match
-}
+
 func GetAccount(text string) {//选择网页数据
 	dom, err := goquery.NewDocumentFromReader(strings.NewReader(strings.Replace(text, "tbody", "table", -1)))
 	if err != nil {
-		log.Fatalln(err)
+		wlog.Error(err)
 	}
 	dom.Find("tr").Each(func(i int, selection *goquery.Selection) {
 		s:= selection.Find("td").Eq(6).Text()
 		fmt.Println(s)
 		WirteText("Acount.txt",s)
-		if IsMobile(s) {
+		if wlog.IsMobile(s) {
 			WirteText("Mobile.txt",s)
 		}
 	})
 }
 
-func chromedp_ex() {
-	ctx, cancel := chromedp.NewContext(
-		context.Background(),
-		chromedp.WithLogf(log.Printf),
-	)
-	defer cancel()
 
-	//执行任务
-	url := "http://dl.xzg01.com:83/OpRoot/MemberScoreList.aspx?uid=0&op=0&uname=003008"
-	err:= chromedp.Run(ctx, VisitWeb(url,
-		"ASP.NET_SessionId", "zkamxkic4oiuwyc5obzgl2oj",
-		"__cfduid", "d04d769b567cbe9e6f24369423b440f0d1575981989",
-		"security_session_verify", "af027d69fbfbf4c925819043a50740b5",
-	))
-	if err != nil {
-		log.Fatal(err)
-	}
-	var res string
-	for i := 1; i < 27170; i++ {
-		//执行
-		err = chromedp.Run(ctx, DoCrawler(&res)) //执行爬虫任务
-		if err != nil {
-			log.Fatal(err)
-		}
-		GetAccount(res)
-	}
-}
 
 
 
 func sh_sz() {
-	flag.Parse()
 	name := *path + "sh_sz.toml"
 	conf := map[string][]string{}
 	db.TomlDecode(name, &conf)
@@ -311,7 +290,7 @@ func page(ctx *gin.Context) {
 	)
 	f, err := os.Create("page.html")
 	if err != nil {
-		log.Println(err)
+		wlog.Error(err)
 	}
 	p.Render(f)
 	ctx.HTML(http.StatusOK, "page.html", gin.H{
@@ -387,7 +366,4 @@ func Sankey() *charts.Sankey {
 	sankey.SetGlobalOptions(charts.TitleOpts{Title: "流量图"})
 	sankey.Add("sankey", sankeyNode, sankeyLink, charts.LabelTextOpts{Show: true})
 	return sankey
-}
-func reload() {
-
 }
